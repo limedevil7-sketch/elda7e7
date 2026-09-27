@@ -1,0 +1,98 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+    function signedIn() {
+      return request.auth != null;
+    }
+
+    function isAdmin() {
+      return signedIn()
+        && exists(/databases/$(database)/documents/admins/$(request.auth.uid))
+        && get(/databases/$(database)/documents/admins/$(request.auth.uid)).data.active == true;
+    }
+
+    match /questions/{questionId} {
+      allow read: if true;
+
+      allow create: if signedIn()
+        && request.resource.data.keys().hasOnly([
+          'title', 'category', 'author', 'authorUid', 'time',
+          'answer', 'answerBy', 'answerAt', 'admin'
+        ])
+        && request.resource.data.title is string
+        && request.resource.data.title.size() >= 5
+        && request.resource.data.title.size() <= 1000
+        && request.resource.data.category is string
+        && request.resource.data.author is string
+        && request.resource.data.author.size() <= 80
+        && request.resource.data.authorUid == request.auth.uid
+        && request.resource.data.time is int
+        && request.resource.data.answer == ''
+        && request.resource.data.answerBy == ''
+        && request.resource.data.answerAt == 0
+        && request.resource.data.admin == false;
+
+      allow update: if isAdmin()
+        && request.resource.data.diff(resource.data).affectedKeys()
+          .hasOnly(['answer', 'answerBy', 'answerAt'])
+        && request.resource.data.answer is string
+        && request.resource.data.answer.size() <= 1000
+        && request.resource.data.answerBy == 'lime_devil'
+        && request.resource.data.answerAt is int;
+
+      allow delete: if isAdmin();
+    }
+
+    match /admins/{uid} {
+      allow read: if signedIn() && request.auth.uid == uid;
+      allow write: if false;
+    }
+
+    match /creatorInbox/{studentUid} {
+      allow create: if signedIn()
+        && request.auth.uid == studentUid
+        && request.resource.data.keys().hasOnly(['studentUid', 'studentName', 'created', 'updated'])
+        && request.resource.data.studentUid == request.auth.uid
+        && request.resource.data.studentName is string
+        && request.resource.data.studentName.size() <= 80
+        && request.resource.data.created is int
+        && request.resource.data.updated is int;
+      allow read: if isAdmin() || (signedIn() && request.auth.uid == studentUid);
+      allow update: if signedIn()
+        && (isAdmin() || request.auth.uid == studentUid)
+        && request.resource.data.diff(resource.data).affectedKeys().hasOnly(['updated'])
+        && request.resource.data.updated is int;
+      allow delete: if isAdmin();
+
+      match /messages/{messageId} {
+        function ownsThread() {
+          return signedIn()
+            && exists(/databases/$(database)/documents/creatorInbox/$(studentUid))
+            && get(/databases/$(database)/documents/creatorInbox/$(studentUid)).data.studentUid == request.auth.uid;
+        }
+        allow read: if isAdmin() || ownsThread();
+        allow create: if (ownsThread()
+            && request.resource.data.fromAdmin == false
+            && request.resource.data.author is string
+            && request.resource.data.body is string
+            && request.resource.data.body.size() > 0
+            && request.resource.data.body.size() <= 2000
+            && request.resource.data.time is int
+            && request.resource.data.keys().hasOnly(['author', 'body', 'fromAdmin', 'time']))
+          || (isAdmin()
+            && request.resource.data.fromAdmin == true
+            && request.resource.data.author == 'العرباوي'
+            && request.resource.data.body is string
+            && request.resource.data.body.size() > 0
+            && request.resource.data.body.size() <= 2000
+            && request.resource.data.time is int
+            && request.resource.data.keys().hasOnly(['author', 'body', 'fromAdmin', 'time']));
+        allow update, delete: if isAdmin();
+      }
+    }
+
+    match /{document=**} {
+      allow read, write: if false;
+    }
+  }
+}
