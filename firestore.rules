@@ -48,47 +48,43 @@ service cloud.firestore {
       allow write: if false;
     }
 
-    match /creatorInbox/{studentUid} {
-      allow create: if signedIn()
-        && request.auth.uid == studentUid
-        && request.resource.data.keys().hasOnly(['studentUid', 'studentName', 'created', 'updated'])
-        && request.resource.data.studentUid == request.auth.uid
-        && request.resource.data.studentName is string
-        && request.resource.data.studentName.size() <= 80
-        && request.resource.data.created is int
-        && request.resource.data.updated is int;
-      allow read: if isAdmin() || (signedIn() && request.auth.uid == studentUid);
-      allow update: if signedIn()
-        && (isAdmin() || request.auth.uid == studentUid)
-        && request.resource.data.diff(resource.data).affectedKeys().hasOnly(['updated'])
-        && request.resource.data.updated is int;
-      allow delete: if isAdmin();
+    match /sitePresence/{uid} {
+      allow read: if isAdmin();
 
-      match /messages/{messageId} {
-        function ownsThread() {
-          return signedIn()
-            && exists(/databases/$(database)/documents/creatorInbox/$(studentUid))
-            && get(/databases/$(database)/documents/creatorInbox/$(studentUid)).data.studentUid == request.auth.uid;
-        }
-        allow read: if isAdmin() || ownsThread();
-        allow create: if (ownsThread()
-            && request.resource.data.fromAdmin == false
-            && request.resource.data.author is string
-            && request.resource.data.body is string
-            && request.resource.data.body.size() > 0
-            && request.resource.data.body.size() <= 2000
-            && request.resource.data.time is int
-            && request.resource.data.keys().hasOnly(['author', 'body', 'fromAdmin', 'time']))
-          || (isAdmin()
-            && request.resource.data.fromAdmin == true
-            && request.resource.data.author == 'العرباوي'
-            && request.resource.data.body is string
-            && request.resource.data.body.size() > 0
-            && request.resource.data.body.size() <= 2000
-            && request.resource.data.time is int
-            && request.resource.data.keys().hasOnly(['author', 'body', 'fromAdmin', 'time']));
-        allow update, delete: if isAdmin();
-      }
+      allow create, update: if signedIn()
+        && request.auth.uid == uid
+        && request.resource.data.keys().hasOnly([
+          'uid', 'username', 'page', 'lastSeen'
+        ])
+        && request.resource.data.uid == request.auth.uid
+        && request.resource.data.username is string
+        && request.resource.data.username.size() <= 80
+        && request.resource.data.page is string
+        && request.resource.data.page.size() <= 160
+        && request.resource.data.lastSeen is timestamp;
+
+      allow delete: if (signedIn() && request.auth.uid == uid) || isAdmin();
+    }
+
+    match /activityLogs/{eventId} {
+      allow read: if isAdmin();
+
+      allow create: if signedIn()
+        && request.resource.data.keys().hasOnly([
+          'uid', 'actor', 'action', 'target', 'details', 'createdAt'
+        ])
+        && request.resource.data.uid == request.auth.uid
+        && request.resource.data.actor is string
+        && request.resource.data.actor.size() <= 80
+        && request.resource.data.action is string
+        && request.resource.data.action.size() <= 50
+        && request.resource.data.target is string
+        && request.resource.data.target.size() <= 160
+        && request.resource.data.details is map
+        && request.resource.data.details.size() <= 5
+        && request.resource.data.createdAt is timestamp;
+
+      allow update, delete: if false;
     }
 
     match /{document=**} {
