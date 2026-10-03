@@ -87,7 +87,6 @@ function isSubAdmin(username){
 
 function startAdminPresenceCount(){
   if(user.startsWith('admin')) {
-    // للأدمن الفرعيين متاح لهم رؤية المتصلين أيضاً
     const badge=$('onlineUserCount');
     if(badge) badge.textContent = adminPresenceRows.length ? String(adminPresenceRows.length) : '0';
     return;
@@ -110,10 +109,8 @@ function observe(){const o=new IntersectionObserver(es=>es.forEach(e=>{if(e.isIn
 function togglePassword(){const p=$("authPassword"),b=document.querySelector(".password-toggle");p.type=p.type==="password"?"text":"password";b.textContent=p.type==="password"?"إظهار":"إخفاء";b.setAttribute("aria-label",p.type==="password"?"إظهار كلمة المرور":"إخفاء كلمة المرور")}function openAuth(){ $('authModal').classList.add('open') }function closeAuth(){ $('authModal').classList.remove('open') }function toggleAuthMode(){authMode=authMode==='login'?'register':'login';const registering=authMode==='register';$('modalTitle').textContent=registering?'إنشاء حساب جديد':'تسجيل الدخول';$('modalSub').textContent=registering?'أنشئ حسابًا ببريدك الإلكتروني وكلمة مرور للمتابعة من أي جهاز.':'أدخل اسم المستخدم وكلمة المرور.';$('authUsernameLabel').firstChild.textContent='اسم المستخدم';$('authUsername').type=registering?'text':'text';$('authUsername').placeholder=registering?'اختر اسم المستخدم':'اسم المستخدم';$('authUsername').autocomplete=registering?'username':'username';$('authUsername').required=true;$('authEmailLabel').style.display=registering?'grid':'none';$('authEmail').required=registering;$('authPassword').autocomplete=registering?'new-password':'current-password';$('authSubmit').innerHTML=registering?'إنشاء الحساب <span>←</span>':'دخول إلى المنصة <span>←</span>';$('switchText').textContent=registering?'لديك حساب بالفعل؟':'ليس لديك حساب؟';$('switchBtn').textContent=registering?'سجّل الدخول':'أنشئ حسابًا';$('loginNote').textContent=registering?'كلمة المرور تُدار بأمان عبر Supabase Auth ولا تُخزّن في الموقع.':'يمكنك تصفح المواد الدراسية دون تسجيل.'}
 async function hash(s){const b=await crypto.subtle.digest('SHA-256',new TextEncoder().encode(s));return [...new Uint8Array(b)].map(x=>x.toString(16).padStart(2,'0')).join('')}
 
-// نظام تسجيل الدخول المحسّن للتحقق من الأدمن الرئيسي ومشرفي الـ Admin الأربعة
 $('authForm').onsubmit=async e=>{e.preventDefault();const identifier=$('authUsername').value.trim(),pass=$('authPassword').value;const lowId=identifier.toLowerCase();
 
-// التحقق من حسابات الأدمن الفرعية (admin1 إلى admin4)
 const subData = isSubAdmin(lowId);
 if(subData){
   if(!subData.active){
@@ -161,7 +158,6 @@ function renderAuth(){
         monitor.append(logs,maintenance);
         if(maintenanceModeEnabled){const preview=document.createElement("button");preview.className="btn small maintenance-preview";preview.textContent="معاينة الصيانة";preview.onclick=previewMaintenance;monitor.append(preview)}
         
-        // زر فتح إدارة المشرفين الأربعة (ادمن)
         const subBtn=document.createElement('button');subBtn.className='btn small admin-sub-manager-btn';subBtn.textContent='ادمن';subBtn.onclick=openSubAdminsModal;
         monitor.append(subBtn);
       }
@@ -182,7 +178,6 @@ function renderAuth(){
     const out=document.createElement('button');out.className='btn small';out.textContent='خروج';out.onclick=logout;slot.append(out);
   }
   
-  // لوحة الإدارة تظهر لمسؤول الموقع وللمشرفين الفرعيين المسموح لهم برفع الملفات
   const canUploadPanel = isAdmin || (isSub && getSubAdminsState()[user]?.active);
   $('adminPanel').classList.toggle('show',canUploadPanel);
   if(isSub){
@@ -195,7 +190,6 @@ function renderAuth(){
   renderFiles();renderQA();updateInboxBadge();window.updateFirebaseAdminHint?.();updateMaintenanceScreen();
 }
 
-// نافذة إدارة المشرفين الأربعة وصلاحياتهم
 function openSubAdminsModal(){
   if(user!==ADMIN)return;
   renderSubAdminsList();
@@ -227,6 +221,7 @@ function toggleSubAdminAccess(key){
     st[key].active = !st[key].active;
     saveSubAdminsState(st);
     renderSubAdminsList();
+    renderAuth();
     toast('تم تحديث صلاحيات الحساب بنجاح');
   }
 }
@@ -273,7 +268,6 @@ function renderFiles(){
     const label=document.createElement('span');label.textContent='📄 '+f.title+' · '+(CATS.find(c=>c[0]===f.category)?.[1]||'');
     row.append(label);
     
-    // المشرفون الفرعيون (admin1-4) متاح لهم الرفع فقط وممنوعون من الحذف نهائياً حسب طلبك
     if(isAdmin){
       const button=document.createElement('button');button.className='btn small';button.textContent='حذف';button.onclick=()=>deleteFile(f.id);
       row.append(button);
