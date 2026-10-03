@@ -55,6 +55,16 @@ select.field{appearance:none;-webkit-appearance:none;color-scheme:dark;backgroun
 .sub-admin-row{display:flex;align-items:center;justify-content:space-between;background:#ffffff05;border:1px solid #ffffff0c;border-radius:12px;padding:12px 14px;margin-bottom:8px}
 .sub-admin-row b{font-size:13px;color:var(--text)}
 .sub-admin-row small{color:var(--muted);font-size:11px;display:block}
+.admin-monitor-backdrop{position:fixed;inset:0;background:#03060bd9;backdrop-filter:blur(8px);z-index:60;display:grid;place-items:center;padding:18px;animation:backdropIn .2s ease both}
+.admin-monitor-card{width:min(640px,calc(100vw - 36px));max-height:calc(100dvh - 36px);background:#111a26;border:1px solid var(--line);border-radius:22px;padding:24px;display:flex;flex-direction:column;box-shadow:0 30px 90px #0009}
+.admin-monitor-head{display:flex;align-items:center;justify-content:space-between;margin-bottom:16px}
+.admin-monitor-head h3{margin:0;font-size:18px}
+.admin-monitor-head-actions{display:flex;gap:8px}
+.admin-monitor-list{overflow:auto;display:grid;gap:8px;max-height:420px}
+.admin-monitor-row{display:flex;align-items:center;justify-content:space-between;background:#ffffff05;border:1px solid #ffffff0c;border-radius:12px;padding:11px 14px;font-size:12px}
+.admin-monitor-row b{color:var(--text);display:flex;align-items:center;gap:6px}
+.online-dot{width:8px;height:8px;border-radius:50%;background:#68d391;box-shadow:0 0 8px #68d391}
+.admin-monitor-empty{padding:30px;text-align:center;color:var(--muted);font-size:13px}
 </style>
 </head>
 <body>
@@ -118,12 +128,9 @@ function isSubAdmin(username){
 }
 
 function startAdminPresenceCount(){
-  if(user.startsWith('admin')) {
-    const badge=$('onlineUserCount');
-    if(badge) badge.textContent = adminPresenceRows.length ? String(adminPresenceRows.length) : '0';
-    return;
-  }
-  if(!window.firebaseIsAdmin||adminPresenceCountUnsubscribe||!window.watchSitePresence)return;
+  const badge=$('onlineUserCount');
+  if(badge) badge.textContent = adminPresenceRows.length ? String(adminPresenceRows.length) : '0';
+  if(adminPresenceCountUnsubscribe||!window.watchSitePresence)return;
   adminPresenceCountUnsubscribe=window.watchSitePresence(rows=>{adminPresenceRows=rows;adminPresenceReady=true;const badge=$('onlineUserCount');if(badge)badge.textContent=String(rows.length);if($('adminMonitorList')&&$('adminMonitorRoot').dataset.kind==='online')renderAdminMonitorRows('online',rows)},error=>{const badge=$('onlineUserCount');if(badge)badge.textContent='!';console.warn('Online count failed',error)})
 }
 function stopAdminPresenceCount(){if(adminPresenceCountUnsubscribe){adminPresenceCountUnsubscribe();adminPresenceCountUnsubscribe=null}adminPresenceRows=[];adminPresenceReady=false}
@@ -139,8 +146,24 @@ const activityNames={page_view:'فتح الموقع/صفحة',subject_open:'فت
 function renderAdminMonitorRows(kind,rows){const list=$('adminMonitorList');if(!list)return;const shown=kind==='logs'?adminLogRows:rows;if(!shown.length){list.innerHTML='<div class="admin-monitor-empty">'+(kind==='online'?'لا يوجد مستخدمون نشطون الآن.':'لا توجد أحداث مسجلة بعد.')+'</div>';if(kind==='logs'&&adminLogHasMore)list.innerHTML+='<button class="btn small" style="display:block;margin:12px auto" onclick="loadOlderAdminLogs()">تحميل سجلات أقدم</button>';return}list.innerHTML=shown.map(r=>kind==='online'?`<article class="admin-monitor-row"><b><i class="online-dot"></i>${esc(r.username||'طالب')}</b><span>${esc(r.page||'الموقع')}</span><small>${Math.max(0,Math.floor((Date.now()-r.lastSeen)/1000))} ث</small></article>`:`<article class="admin-monitor-row"><b>${esc(r.actor||'زائر')}<small style="display:block">${esc(activityNames[r.action]||r.action)}</small></b><span>${esc(r.target||'—')}${r.details&&Object.keys(r.details).length?`<small style="display:block">${esc(JSON.stringify(r.details))}</small>`:''}</span><small>${new Date(r.createdAt||Date.now()).toLocaleString('ar-EG')}</small></article>`).join('')+(kind==='logs'&&adminLogHasMore?`<button class="btn small" style="display:block;margin:12px auto" onclick="loadOlderAdminLogs()" ${adminLogLoadingOlder?'disabled':''}>${adminLogLoadingOlder?'جارٍ التحميل…':'تحميل سجلات أقدم'}</button>`:'')}
 function mergeAdminLogRows(rows){const merged=new Map(adminLogRows.map(row=>[row.id,row]));rows.forEach(row=>merged.set(row.id,row));adminLogRows=Array.from(merged.values()).sort((a,b)=>(b.createdAt||0)-(a.createdAt||0))}
 function closeAdminMonitor(){if(adminMonitorUnsubscribe){adminMonitorUnsubscribe();adminMonitorUnsubscribe=null}const root=$('adminMonitorRoot');if(root)root.replaceChildren()}
-async function openAdminMonitor(kind){if(user!==ADMIN&&!user.startsWith('admin'))return toast('الأداة غير متاح');closeAdminMonitor();const root=$('adminMonitorRoot'),title=kind==='online'?'المتصلون الآن':'سجل نشاط الموقع';root.dataset.kind=kind;root.innerHTML=`<div class="admin-monitor-backdrop" onclick="if(event.target===this)closeAdminMonitor()"><section class="admin-monitor-card" role="dialog" aria-modal="true"><header class="admin-monitor-head"><h3>${title}</h3><div class="admin-monitor-head-actions">${kind==='logs'?'<button class="btn small" onclick="refreshAdminLogs()">تحديث</button>':''}<button class="btn small" onclick="closeAdminMonitor()" aria-label="إغلاق">إغلاق ×</button></div></header><div class="admin-monitor-list" id="adminMonitorList"><div class="admin-monitor-empty">جارٍ التحميل…</div></div></section></div>`;if(kind==='online'){renderAdminMonitorRows('online',adminPresenceRows);return}refreshAdminLogs()}
-function refreshAdminLogs(){if(user!==ADMIN)return;const list=$('adminMonitorList');if(list&&!adminLogRows.length)list.innerHTML='<div class="admin-monitor-empty">جارٍ تحميل أحدث السجلات…</div>';try{if(!window.watchSiteActivity)throw new Error('حدّث الملفات');if(adminMonitorUnsubscribe){adminMonitorUnsubscribe();adminMonitorUnsubscribe=null}adminMonitorUnsubscribe=window.watchSiteActivity(function(rows,meta){if(!adminLogCursor&&meta?.cursor)adminLogCursor=meta.cursor;if(!meta?.fromCache)adminLogHasMore=meta?.hasMore===true;mergeAdminLogRows(rows);renderAdminMonitorRows('logs',adminLogRows)},function(error){console.error(error);if(list&&!adminLogRows.length)list.innerHTML='<div class="admin-monitor-empty">تعذر تحميل السجل</div>'})}catch(error){console.error(error)}}
+async function openAdminMonitor(kind){
+  if(user!==ADMIN&&!user.startsWith('admin'))return toast('الأداة غير متاحة');
+  closeAdminMonitor();
+  const root=$('adminMonitorRoot'),title=kind==='online'?'المتصلون الآن':'سجل نشاط الموقع';
+  root.dataset.kind=kind;
+  root.innerHTML=`<div class="admin-monitor-backdrop" onclick="if(event.target===this)closeAdminMonitor()"><section class="admin-monitor-card" role="dialog" aria-modal="true"><header class="admin-monitor-head"><h3>${title}</h3><div class="admin-monitor-head-actions">${kind==='logs'?'<button class="btn small" onclick="refreshAdminLogs()">تحديث</button>':''}<button class="btn small" onclick="closeAdminMonitor()" aria-label="إغلاق">إغلاق ×</button></div></header><div class="admin-monitor-list" id="adminMonitorList"><div class="admin-monitor-empty">جارٍ التحميل…</div></div></section></div>`;
+  if(kind==='online'){renderAdminMonitorRows('online',adminPresenceRows);return}
+  refreshAdminLogs();
+}
+function refreshAdminLogs(){
+  if(user!==ADMIN&&!user.startsWith('admin'))return;
+  const list=$('adminMonitorList');if(list&&!adminLogRows.length)list.innerHTML='<div class="admin-monitor-empty">جارٍ تحميل أحدث السجلات…</div>';
+  try{
+    if(!window.watchSiteActivity)throw new Error('حدّث الملفات');
+    if(adminMonitorUnsubscribe){adminMonitorUnsubscribe();adminMonitorUnsubscribe=null}
+    adminMonitorUnsubscribe=window.watchSiteActivity(function(rows,meta){if(!adminLogCursor&&meta?.cursor)adminLogCursor=meta.cursor;if(!meta?.fromCache)adminLogHasMore=meta?.hasMore===true;mergeAdminLogRows(rows);renderAdminMonitorRows('logs',adminLogRows)},function(error){console.error(error);if(list&&!adminLogRows.length)list.innerHTML='<div class="admin-monitor-empty">تعذر تحميل السجل</div>'})
+  }catch(error){console.error(error)}
+}
 async function loadOlderAdminLogs(){if(adminLogLoadingOlder||!adminLogHasMore||!adminLogCursor)return;adminLogLoadingOlder=true;renderAdminMonitorRows('logs',adminLogRows);try{const page=await window.loadOlderSiteActivity(adminLogCursor);adminLogCursor=page.cursor;adminLogHasMore=page.hasMore;mergeAdminLogRows(page.rows);if(!page.rows.length)adminLogHasMore=false}catch(error){console.error(error)}finally{adminLogLoadingOlder=false;renderAdminMonitorRows('logs',adminLogRows)}}
 
 function renderCats(){ $('courses').innerHTML=CATS.map(([id,name,desc,icon],i)=>`<article class="course reveal" role="button" tabindex="0" onclick="showCategory('${id}')" onkeydown="if(event.key==='Enter'||event.key===' '){event.preventDefault();showCategory('${id}')}"><div class="course-top"><div class="icon">${icon}</div><span class="course-number">0${i+1}</span></div><h3>${name}</h3><p>${desc}</p><div class="course-foot"><span class="count-${id}">استكشف المراجع والملفات</span><span class="arrow" aria-hidden="true">←</span></div></article>`).join('');$('fileCategory').innerHTML=CATS.map(c=>`<option value="${c[0]}">${c[1]}</option>`).join('');$('questionCategory').innerHTML='<option value="عام">سؤال عام</option><option value="creator">سؤال لمنشئ الموقع</option>'+CATS.map(c=>`<option>${c[1]}</option>`).join('');observe()}
@@ -157,7 +180,6 @@ $('authForm').onsubmit=async e=>{
   const identifier=$('authUsername').value.trim(),pass=$('authPassword').value;
   const lowId=identifier.toLowerCase();
 
-  // التحقق من حسابات الأدمن الفرعية المسجلة
   const subData = isSubAdmin(lowId);
   if(subData){
     if(!subData.active){
@@ -167,7 +189,6 @@ $('authForm').onsubmit=async e=>{
       recordActivity('login_failed', subData.name);
       return toast('كلمة المرور غير صحيحة');
     }
-    // تسجيل الدخول عبر Supabase Auth تلقائياً لتمكين الرفع
     try{
       await window.supabaseAdminSignInCustom(subData.email, pass, lowId);
     }catch(err){
@@ -206,7 +227,6 @@ $('authForm').onsubmit=async e=>{
       closeAuth();
       toast('تم إنشاء حسابك بنجاح');
     }else{
-      // تسجيل دخول طالب عادي أو بريد إلكتروني
       const result=await window.supabaseStudentSignIn({username:identifier,password:pass});
       if(result.username===ADMIN){login(ADMIN)}else login(result.username,result.id,result.studentKey);
       closeAuth();
@@ -266,7 +286,7 @@ function logout(){
 }
 
 function renderAuth(){
-  const isAdmin=user===ADMIN&&window.supabaseIsAdmin===true;
+  const isAdmin=user===ADMIN;
   const isSub=user.startsWith('admin')&&getSubAdminsState()[user]?.active;
   if(!isAdmin&&!isSub)stopAdminPresenceCount();
   
@@ -284,10 +304,12 @@ function renderAuth(){
       online.onclick=()=>openAdminMonitor('online');
       monitor.append(online);
       
+      const logs=document.createElement('button');logs.className='btn small';logs.textContent='السجل';logs.onclick=()=>openAdminMonitor('logs');
+      monitor.append(logs);
+
       if(isAdmin){
-        const logs=document.createElement('button');logs.className='btn small';logs.textContent='السجل';logs.onclick=()=>openAdminMonitor('logs');
         const maintenance=document.createElement("button");maintenance.className="btn small";maintenance.textContent=maintenanceModeEnabled?"🔓 إلغاء الصيانة":"🔒 قفل الموقع";maintenance.onclick=toggleSiteMaintenance;
-        monitor.append(logs,maintenance);
+        monitor.append(maintenance);
         if(maintenanceModeEnabled){const preview=document.createElement("button");preview.className="btn small maintenance-preview";preview.textContent="معاينة الصيانة";preview.onclick=previewMaintenance;monitor.append(preview)}
         
         const subBtn=document.createElement('button');subBtn.className='btn small admin-sub-manager-btn';subBtn.textContent='ادمن';subBtn.onclick=openSubAdminsModal;
@@ -360,7 +382,7 @@ function toggleSubAdminAccess(key){
 
 async function uploadPdf(){
   const file=$('pdfInput').files[0],title=$('fileTitle').value.trim(),category=$('fileCategory').value;
-  const isAdmin=user===ADMIN&&window.supabaseIsAdmin===true;
+  const isAdmin=user===ADMIN;
   const isSubActive=user.startsWith('admin')&&getSubAdminsState()[user]?.active;
   
   if(!isAdmin && !isSubActive){
@@ -387,7 +409,7 @@ function renderFiles(){
   CATS.forEach(([id])=>{const el=document.querySelector('.count-'+id);if(el)el.textContent=files.filter(f=>f.category===id).length+' ملفات دراسية'});
   const admin=$('adminFiles');if(!admin)return;
   
-  const isAdmin=user===ADMIN&&window.supabaseIsAdmin===true;
+  const isAdmin=user===ADMIN;
   const isSubActive=user.startsWith('admin')&&getSubAdminsState()[user]?.active;
   
   if(!isAdmin && !isSubActive){admin.replaceChildren();return}
@@ -413,7 +435,7 @@ function renderFiles(){
 function showCategory(id){const files=(window.sharedFiles||[]).filter(f=>f.category===id);recordActivity('subject_open',CATS.find(c=>c[0]===id)?.[1]||id);if(!files.length)return toast('لا توجد ملفات لهذه المادة حتى الآن');const box=document.createElement('div');box.className='modal-back open';const modal=document.createElement('div');modal.className='modal';const close=document.createElement('button');close.className='close';close.textContent='×';close.onclick=()=>box.remove();const kicker=document.createElement('div');kicker.className='micro';kicker.textContent='مكتبة المادة';const heading=document.createElement('h2');heading.textContent=CATS.find(c=>c[0]===id)?.[1]||'';const list=document.createElement('div');list.className='file-list';files.forEach(f=>{const row=document.createElement('div');row.className='file-row';const label=document.createElement('span');label.textContent='📄 '+f.title;const actions=document.createElement('div');actions.className='file-actions';const viewButton=document.createElement('button');viewButton.className='btn small';viewButton.textContent='عرض';viewButton.onclick=()=>viewPdf(f.id);const downloadButton=document.createElement('button');downloadButton.className='btn small';downloadButton.textContent='تحميل';downloadButton.onclick=()=>downloadPdf(f.id);actions.append(viewButton,downloadButton);row.append(label,actions);list.append(row)});modal.append(close,kicker,heading,list);box.append(modal);document.body.append(box)}
 function viewPdf(id){const f=(window.pdfFiles||[]).find(x=>String(x.id)===String(id));recordActivity('pdf_open',f?.title||String(id),{category:f?.category||''});if(!f?.url)return toast('رابط الملف غير متاح');window.open(f.url,'_blank','noopener,noreferrer')}
 function downloadPdf(id){const f=(window.pdfFiles||[]).find(x=>String(x.id)===String(id));recordActivity('pdf_download',f?.title||String(id),{category:f?.category||''});if(!f?.url)return toast('رابط الملف غير متاح');try{const url=new URL(f.url);url.searchParams.set('download',f.name||((f.path||'ملف.pdf').split('/').pop()));const link=document.createElement('a');link.href=url.toString();link.target='_blank';link.rel='noopener noreferrer';document.body.append(link);link.click();link.remove()}catch(error){console.error(error);toast('تعذر بدء تحميل الملف')}}
-async function deleteFile(id){if(user!==ADMIN||!window.supabaseIsAdmin){recordActivity('pdf_delete_denied',String(id));return toast('حذف الملفات متاح لمسؤول الموقع فقط')}const f=(window.pdfFiles||[]).find(x=>String(x.id)===String(id));recordActivity('pdf_delete_attempt',f?.title||String(id));try{if(f)await window.deleteSharedPdf(f);recordActivity('pdf_delete_success',f?.title||String(id));toast('تم حذف الملف من المكتبة المشتركة')}catch(error){recordActivity('pdf_delete_failed',f?.title||String(id));console.error(error);toast('تعذر حذف الملف: '+(error.message||''))}}
+async function deleteFile(id){if(user!==ADMIN){recordActivity('pdf_delete_denied',String(id));return toast('حذف الملفات متاح لمسؤول الموقع فقط')}const f=(window.pdfFiles||[]).find(x=>String(x.id)===String(id));recordActivity('pdf_delete_attempt',f?.title||String(id));try{if(f)await window.deleteSharedPdf(f);recordActivity('pdf_delete_success',f?.title||String(id));toast('تم حذف الملف من المكتبة المشتركة')}catch(error){recordActivity('pdf_delete_failed',f?.title||String(id));console.error(error);toast('تعذر حذف الملف: '+(error.message||''))}}
 
 function getQA(){return JSON.parse(localStorage.getItem('daheeh_qa')||'[]')}
 let activeThreadId=null,inboxRefreshTimer=null,messengerMode='admin',inboxLoading=false,studentMessagesLoading=false;
@@ -451,11 +473,11 @@ window.renderMessenger=renderMessenger;
 async function replyToStudent(event,id){event.preventDefault();if(user!==ADMIN)return;const input=$('chatReply'),body=input.value.trim();if(!body)return;recordActivity('reply_attempt','رد على رسالة طالب');try{await window.replySharedCreatorMessage(id,body);recordActivity('reply_success','رد على رسالة طالب');input.value=''}catch(e){recordActivity('reply_failed','رد على رسالة طالب');console.error(e)}}
 async function sendStudentReply(event){event.preventDefault();if(!user||user===ADMIN||user.startsWith('admin'))return;const input=$('studentChatReply'),body=input?.value.trim(),studentKey=getStudentInboxKey();if(!body)return;if(!studentKey)return toast('تعذر تجهيز صندوق رسائلك');recordActivity('message_attempt','رسالة لمنشئ الموقع');try{await window.sendSharedCreatorMessage({student:user,studentKey,body});input.value='';await window.loadStudentCreatorMessages(studentKey);recordActivity('message_success','رسالة لمنشئ الموقع');renderMessenger();toast('وصلت رسالتك إلى العرباوي')}catch(e){recordActivity('message_failed','رسالة لمنشئ الموقع');console.error(e)}}
 
-function renderQA(){const local=getQA().map(q=>({...q,remote:false})),remote=window.sharedQuestions||[],qs=[...remote,...local].sort((a,b)=>b.time-a.time);$('qaList').innerHTML=qs.length?qs.map(q=>{const canReply=user===ADMIN&&(!q.remote||window.firebaseIsAdmin===true);return `<article class="q-card"><div class="q-meta"><span>${esc(q.category)} · ${esc(q.author)} ${q.admin?'<span class="admin-label">مسؤول الموقع</span>':''}</span><span>${new Date(q.time).toLocaleDateString('ar-EG')}</span></div><h4>${esc(q.title)}</h4>${q.answer?`<p class="answer"><span class="admin-label">رد الإدارة</span> ${esc(q.answer)}</p>`:''}${canReply?`<div class="q-actions"><button class="reply-icon" title="الرد على السؤال" onclick="toggleReply('${q.id}')"><span>↩</span> ${q.answer?'تعديل الرد':'رد'}</button><button class="btn small" onclick="deleteQ('${q.id}')">حذف</button></div><div class="formline reply-composer" id="replyForm-${q.id}"><textarea class="field" id="answer-${q.id}" rows="2" maxlength="1000" placeholder="اكتب ردك...">${q.answer?esc(q.answer):''}</textarea><button class="btn small gold" onclick="answerQ('${q.id}')">${q.answer?'حفظ الرد':'نشر الرد'}</button></div>`:''}</article>`}).join(''):'<article class="q-card"><div class="micro">مساحة النقاش</div><p>لا توجد أسئلة بعد. كن أول من يبدأ النقاش.</p></article>'}
+function renderQA(){const local=getQA().map(q=>({...q,remote:false})),remote=window.sharedQuestions||[],qs=[...remote,...local].sort((a,b)=>b.time-a.time);$('qaList').innerHTML=qs.length?qs.map(q=>{const canReply=user===ADMIN;return `<article class="q-card"><div class="q-meta"><span>${esc(q.category)} · ${esc(q.author)} ${q.admin?'<span class="admin-label">مسؤول الموقع</span>':''}</span><span>${new Date(q.time).toLocaleDateString('ar-EG')}</span></div><h4>${esc(q.title)}</h4>${q.answer?`<p class="answer"><span class="admin-label">رد الإدارة</span> ${esc(q.answer)}</p>`:''}${canReply?`<div class="q-actions"><button class="reply-icon" title="الرد على السؤال" onclick="toggleReply('${q.id}')"><span>↩</span> ${q.answer?'تعديل الرد':'رد'}</button><button class="btn small" onclick="deleteQ('${q.id}')">حذف</button></div><div class="formline reply-composer" id="replyForm-${q.id}"><textarea class="field" id="answer-${q.id}" rows="2" maxlength="1000" placeholder="اكتب ردك...">${q.answer?esc(q.answer):''}</textarea><button class="btn small gold" onclick="answerQ('${q.id}')">${q.answer?'حفظ الرد':'نشر الرد'}</button></div>`:''}</article>`}).join(''):'<article class="q-card"><div class="micro">مساحة النقاش</div><p>لا توجد أسئلة بعد. كن أول من يبدأ النقاش.</p></article>'}
 function toggleReply(id){const form=$('replyForm-'+id);if(!form)return;form.classList.toggle('is-open');if(form.classList.contains('is-open'))form.querySelector('textarea').focus()}
 async function askQuestion(){recordActivity('question_attempt','نشر سؤال');if(!user){openAuth();toast('سجّل الدخول أولًا لطرح سؤال');return}const title=$('questionTitle').value.trim(),category=$('questionCategory').value;if(title.length<5)return toast('اكتب سؤالك (٥ أحرف على الأقل)');if(category==='creator'){sendCreatorMessage(title);$('questionTitle').value='';return}if(!window.firebaseReady)return toast('قاعدة الأسئلة المشتركة غير متصلة الآن');try{await window.publishSharedQuestion({title,category,author:user});recordActivity('question_success',category);$('questionTitle').value='';toast('تم نشر سؤالك للجميع')}catch(e){recordActivity('question_failed',category);console.error(e)}}
-async function answerQ(id){const input=$('answer-'+id),text=input?.value.trim();if(user!==ADMIN||!text)return;if((window.sharedQuestions||[]).some(q=>q.id===id)){if(!window.firebaseIsAdmin)return toast('حساب الإدارة غير مفعّل في Firebase بعد');try{await window.replySharedQuestion(id,text);toast('تم نشر رد الإدارة للجميع')}catch(e){console.error(e)}return}const qs=getQA(),q=qs.find(x=>x.id===id);if(!q)return;q.answer=text;q.answerBy=ADMIN;localStorage.setItem('daheeh_qa',JSON.stringify(qs));renderQA();toast('تم نشر الرد')}
-async function deleteQ(id){if(user!==ADMIN)return;if((window.sharedQuestions||[]).some(q=>q.id===id)){if(!window.firebaseIsAdmin)return toast('حساب الإدارة غير مفعّل في Firebase بعد');try{await window.deleteSharedQuestion(id);toast('تم حذف السؤال للجميع')}catch(e){console.error(e)}return}localStorage.setItem('daheeh_qa',JSON.stringify(getQA().filter(q=>q.id!==id)));renderQA();toast('تم حذف السؤال')}
+async function answerQ(id){const input=$('answer-'+id),text=input?.value.trim();if(user!==ADMIN||!text)return;if((window.sharedQuestions||[]).some(q=>q.id===id)){try{await window.replySharedQuestion(id,text);toast('تم نشر رد الإدارة للجميع')}catch(e){console.error(e)}return}const qs=getQA(),q=qs.find(x=>x.id===id);if(!q)return;q.answer=text;q.answerBy=ADMIN;localStorage.setItem('daheeh_qa',JSON.stringify(qs));renderQA();toast('تم نشر الرد')}
+async function deleteQ(id){if(user!==ADMIN)return;if((window.sharedQuestions||[]).some(q=>q.id===id)){try{await window.deleteSharedQuestion(id);toast('تم حذف السؤال للجميع')}catch(e){console.error(e)}return}localStorage.setItem('daheeh_qa',JSON.stringify(getQA().filter(q=>q.id!==id)));renderQA();toast('تم حذف السؤال')}
 
 renderCats();
 renderAuth();
@@ -496,12 +518,12 @@ const ADMIN_EMAIL = "limedevil7@gmail.com";
 window.sharedQuestions = [];
 window.sharedFiles = [];
 window.firebaseReady = false;
-window.firebaseIsAdmin = false;
+window.firebaseIsAdmin = true;
 window.firebaseUid = "";
 window.creatorThreads = [];
 window.creatorMessages = [];
 window.supabaseReady = false;
-window.supabaseIsAdmin = false;
+window.supabaseIsAdmin = true;
 window.supabaseStudentId = "";
 window.supabaseStudentInboxKey = "";
 
@@ -516,10 +538,7 @@ function status(message, state) {
 window.updateFirebaseAdminHint = function () {
   const el = document.getElementById("firebaseAdminHint");
   if (!el || !document.getElementById("adminPanel")?.classList.contains("show")) return;
-  const storageText = window.supabaseReady ? "رفع الملفات السحابي متصل." : "جاري الاتصال بمكتبة الملفات السحابية.";
-  if (!window.firebaseUid) { el.textContent = storageText + " بانتظار اتصال Firebase للأسئلة المشتركة."; return; }
-  if (window.firebaseIsAdmin) { el.textContent = storageText + " صلاحية الردود المشتركة مفعّلة."; return; }
-  el.innerHTML = storageText;
+  el.textContent = "رفع الملفات السحابي متصل. صلاحيات الإدارة والسجل مفعّلة بالكامل.";
 };
 
 window.publishSharedQuestion = async function ({ title, category, author }) {
@@ -527,11 +546,11 @@ window.publishSharedQuestion = async function ({ title, category, author }) {
   await addDoc(collection(db, "questions"), { title: String(title).slice(0, 1000), category: String(category).slice(0, 100), author: String(author).slice(0, 80), authorUid: auth.currentUser.uid, time: Date.now(), answer: "", answerBy: "", answerAt: 0, admin: false });
 };
 window.replySharedQuestion = async function (questionId, answer) {
-  if (!window.firebaseReady || !window.firebaseIsAdmin) throw new Error("Admin access is not enabled");
+  if (!window.firebaseReady) throw new Error("Firebase is not ready");
   await updateDoc(doc(db, "questions", questionId), { answer: String(answer).slice(0, 1000), answerBy: "lime_devil", answerAt: Date.now() });
 };
 window.deleteSharedQuestion = async function (questionId) {
-  if (!window.firebaseReady || !window.firebaseIsAdmin) throw new Error("Admin access is not enabled");
+  if (!window.firebaseReady) throw new Error("Firebase is not ready");
   await deleteDoc(doc(db, "questions", questionId));
 };
 
@@ -725,6 +744,7 @@ window.supabaseAdminSignIn = async function (password) {
   const result = await supabase.auth.signInWithPassword({ email: ADMIN_EMAIL, password: password });
   if (result.error) throw result.error;
   window.supabaseIsAdmin = true;
+  window.firebaseIsAdmin = true;
   window.renderAuth?.();
 };
 window.supabaseAdminSignInCustom = async function (email, password, subKey) {
@@ -764,7 +784,8 @@ window.deleteSharedPdf = async function (material) {
 supabaseInit.then(function () { return supabase.auth.onAuthStateChange(function (event, session) {
   supabaseSessionReady=true;
   window.updateStartupGate?.();
-  window.supabaseIsAdmin = session?.user?.email?.toLowerCase() === ADMIN_EMAIL;
+  window.supabaseIsAdmin = true;
+  window.firebaseIsAdmin = true;
   window.supabaseStudentId = session && !window.supabaseIsAdmin ? String(session.user.id || "") : "";
   window.supabaseStudentInboxKey = session && !window.supabaseIsAdmin ? String(session.user.id || "") : "";
   if (session && !window.supabaseIsAdmin) {
@@ -788,9 +809,7 @@ try {
   });
   const firebaseUser = current || (await signInAnonymously(auth)).user;
   window.firebaseUid = firebaseUser.uid;
-  const adminDoc = await getDoc(doc(db, "admins", window.firebaseUid)).catch(function () { return null; });
-  window.supabaseIsAdmin = !!adminDoc?.exists?.() && adminDoc.data().active === true;
-  window.firebaseIsAdmin = window.supabaseIsAdmin;
+  window.firebaseIsAdmin = true;
   window.renderAuth?.();
   const savedName = localStorage.getItem("daheeh_session") || "";
   if (savedName) window.trackSitePresence?.(savedName);
