@@ -62,12 +62,12 @@ body{isolation:isolate}body:before,body:after{content:'';position:fixed;inset:au
 .modal-back.open{animation:backdropIn .25s ease both}.auth-modal{width:min(490px,100%);max-height:calc(100dvh - 36px);padding:0;overflow:hidden;border-radius:26px;border-color:#cfb77942;box-shadow:0 35px 120px #000b;animation:authIn .45s var(--ease) both}.auth-content{padding:38px 32px 32px;align-self:center}.auth-content h2{font-size:26px;margin:9px 0 4px;letter-spacing:-.5px}.auth-content>p:not(.login-note){margin:0 0 20px;color:#98a5b3;font-size:13px}.auth-content form{gap:15px}.auth-content label{display:grid;gap:7px;color:#d3d8dd;font-size:12px;font-weight:500}.auth-content .field{min-height:46px;padding:12px 14px;background:#0a111a;border-color:#ffffff12}.password-wrap{position:relative}.password-wrap .field{padding-left:62px}.password-toggle{position:absolute;left:9px;top:50%;transform:translateY(-50%);border:0;background:none;color:var(--gold);font-size:11px;padding:6px}.auth-submit{min-height:48px;display:flex;align-items:center;justify-content:center;gap:10px;margin-top:2px}.auth-submit span{font-size:17px;transition:transform .2s}.auth-submit:hover span{transform:translateX(-4px)}.auth-modal .close{z-index:3;left:14px;top:14px;width:34px;height:34px;border-radius:50%;background:#ffffff08;line-height:1}.auth-modal .close:hover{color:var(--gold2);background:#ffffff12}
 select.field{appearance:none;-webkit-appearance:none;color-scheme:dark;background-color:#0a111a;background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' viewBox='0 0 24 24' fill='none' stroke='%23cfb779' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='m6 9 6 6 6-6'/%3E%3C/svg%3E");background-repeat:no-repeat;background-position:left 14px center;background-size:16px;padding-left:42px;cursor:pointer}select.field option{background:#101925;color:#f2f0e9;padding:10px}select.field option:checked{background:#cfb779;color:#11151c}
 
-.admin-monitor-backdrop{position:fixed;inset:0;z-index:100;background:#03070bc9;backdrop-filter:blur(8px);display:grid;place-items:center;padding:18px}.admin-monitor-card{width:min(780px,100%);max-height:calc(100dvh - 36px);display:flex;flex-direction:column;background:#0c141e;border:1px solid #cfb77940;border-radius:22px;overflow:hidden;box-shadow:0 28px 100px #000b}.admin-monitor-head{height:68px;display:flex;align-items:center;justify-content:space-between;padding:0 20px;border-bottom:1px solid #ffffff0b}.admin-monitor-head h3{margin:0;font-size:18px}.admin-monitor-head-actions{display:flex;gap:8px}.admin-monitor-list{flex:1;overflow:auto;padding:16px;display:grid;gap:8px}.admin-monitor-empty{text-align:center;padding:32px;color:var(--muted);font-size:13px}
-.admin-monitor-row{display:grid;grid-template-columns:1fr 1fr 1.2fr auto;align-items:center;gap:10px;padding:12px 14px;background:#ffffff05;border:1px solid #ffffff0b;border-radius:12px;font-size:12px}
+.admin-monitor-backdrop{position:fixed;inset:0;z-index:100;background:#03070bc9;backdrop-filter:blur(8px);display:grid;place-items:center;padding:18px}.admin-monitor-card{width:min(850px,100%);max-height:calc(100dvh - 36px);display:flex;flex-direction:column;background:#0c141e;border:1px solid #cfb77940;border-radius:22px;overflow:hidden;box-shadow:0 28px 100px #000b}.admin-monitor-head{height:68px;display:flex;align-items:center;justify-content:space-between;padding:0 20px;border-bottom:1px solid #ffffff0b}.admin-monitor-head h3{margin:0;font-size:18px}.admin-monitor-head-actions{display:flex;gap:8px}.admin-monitor-list{flex:1;overflow:auto;padding:16px;display:grid;gap:8px}.admin-monitor-empty{text-align:center;padding:32px;color:var(--muted);font-size:13px}
+.admin-monitor-row{display:grid;grid-template-columns:1fr 1fr 1fr 1fr auto;align-items:center;gap:8px;padding:12px 14px;background:#ffffff05;border:1px solid #ffffff0b;border-radius:12px;font-size:12px}
 .admin-monitor-row b{color:var(--gold2);display:flex;align-items:center;gap:6px}
 .online-dot{width:7px;height:7px;border-radius:50%;background:#4caf50;box-shadow:0 0 8px #4caf50}
 .admin-monitor-row small{color:#8b97a5}
-.log-device-badge{background:rgba(207,183,121,0.08);border:1px solid rgba(207,183,121,0.2);padding:3px 8px;border-radius:8px;color:var(--gold2);font-size:11px}
+.log-device-badge{background:rgba(207,183,121,0.08);border:1px solid rgba(207,183,121,0.2);padding:3px 8px;border-radius:8px;color:var(--gold2);font-size:11px;display:inline-block}
 
 .maintenance-screen{position:fixed;inset:0;z-index:120;display:none;place-items:center;padding:22px;background:radial-gradient(ellipse at 50% 0%,#1a2b3d 0%,#080d14 68%);direction:rtl}.maintenance-screen.show{display:grid}.maintenance-card{width:min(620px,100%);padding:clamp(28px,6vw,64px);text-align:center;border:1px solid #cfb77955;border-radius:28px;background:linear-gradient(145deg,#131f2d,#0b111a);box-shadow:0 30px 110px #0009}.maintenance-lock{width:76px;height:76px;margin:0 auto 22px;display:grid;place-items:center;border-radius:22px;border:1px solid #cfb77955;color:var(--gold2);font-size:34px;background:transparent;cursor:pointer;transition:transform .2s,border-color .2s,background .2s}.maintenance-lock:hover,.maintenance-lock:focus-visible{transform:translateY(-2px);border-color:#cfb779aa;background:#cfb77912;outline:2px solid #cfb77955;outline-offset:3px}.maintenance-card h1{font-size:clamp(28px,5vw,42px);margin:0 0 12px;letter-spacing:0}.maintenance-card p{color:var(--muted);margin:0}.maintenance-card .micro{color:var(--gold);margin-bottom:10px}
 .startup-screen{position:fixed;inset:0;z-index:140;display:grid;place-items:center;padding:22px;background:radial-gradient(ellipse at 50% 0%,#1a2b3d 0%,#080d14 68%);direction:rtl;opacity:1;visibility:visible;transition:opacity .2s ease,visibility .2s ease}.startup-screen.done{opacity:0;visibility:hidden;pointer-events:none}.startup-card{width:min(460px,100%);padding:30px;text-align:center;border:1px solid #cfb77944;border-radius:22px;background:#111a26}.startup-card strong{display:block;color:var(--gold2);font-size:18px}.startup-card p{color:var(--muted);font-size:13px}.startup-card button{margin-top:8px}
@@ -99,22 +99,38 @@ const CATS=[['مدخل','المدخل للعلوم القانونية','مباد
 window.pdfFiles=[];window.sharedFiles=[];
 const $=id=>document.getElementById(id),esc=s=>String(s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 
-function getClientPlatformInfo(){const ua=navigator.userAgent;let device='كمبيوتر مكتبي';if(/Mobi|Android|iPhone|iPad|iPod/i.test(ua)){if(/iPad|Tablet/i.test(ua))device='جهاز لوحي (Tablet)';else if(/iPhone/i.test(ua))device='آيفون (iPhone)';else device='هاتف محمول (Android)';}let browser='متصفح غير معروف';if(ua.indexOf('Firefox')>-1)browser='Mozilla Firefox';else if(ua.indexOf('SamsungBrowser')>-1)browser='Samsung Internet';else if(ua.indexOf('Opera')>-1||ua.indexOf('OPR')>-1)browser='Opera';else if(ua.indexOf('Trident')>-1)browser='Internet Explorer';else if(ua.indexOf('Edge')>-1)browser='Microsoft Edge';else if(ua.indexOf('Chrome')>-1)browser='Google Chrome';else if(ua.indexOf('Safari')>-1)browser='Apple Safari';return {device, browser};}
+let cachedRegion = 'مصر';
+fetch('https://ipapi.co/json/').then(r=>r.json()).then(d=>{if(d && (d.region || d.city)){cachedRegion = (d.region || d.city) + '، ' + (d.country_name || 'مصر');}}).catch(()=>{});
 
-window.pendingSiteActivity=[];function recordActivity(action,target='',details={}){const pInfo=getClientPlatformInfo();const actorLabel=user?(user==='lime_devil'?'مسؤول الموقع: lime_devil':'مشرف: '+user):('زائر');const row={actor:actorLabel,device:pInfo.device,browser:pInfo.browser,action:String(action).slice(0,50),target:String(target||'').slice(0,160),details};if(window.writeSiteActivity&&window.firebaseUid){window.writeSiteActivity(row).catch(()=>{})}else{window.pendingSiteActivity.push(row);if(window.pendingSiteActivity.length>200)window.pendingSiteActivity.shift()}}window.recordSiteActivity=recordActivity;window.addEventListener('hashchange',()=>{recordActivity('page_view',location.hash.slice(1)||'home');if(user)window.trackSitePresence?.(user)});function toast(s){const t=$('toast');t.textContent=s;t.classList.add('show');setTimeout(()=>t.classList.remove('show'),2600)}
+function getClientPlatformInfo(){const ua=navigator.userAgent;let device='كمبيوتر مكتبي';if(/iPhone|iPad|iPod/i.test(ua)){device='آيفون (iPhone)';}else if(/Android/i.test(ua)){device='هاتف أندرويد (Android)';}else if(/Mobi/i.test(ua)){device='هاتف محمول';}let browser='Google Chrome';if(ua.indexOf('Firefox')>-1)browser='Mozilla Firefox';else if(ua.indexOf('SamsungBrowser')>-1)browser='Samsung Internet';else if(ua.indexOf('Opera')>-1||ua.indexOf('OPR')>-1)browser='Opera';else if(ua.indexOf('Edge')>-1)browser='Microsoft Edge';else if(ua.indexOf('Safari')>-1&&ua.indexOf('Chrome')==-1)browser='Apple Safari';return {device, browser, region: cachedRegion};}
+
+window.pendingSiteActivity=[];function recordActivity(action,target='',details={}){const pInfo=getClientPlatformInfo();const actorLabel=user?(user==='lime_devil'?'مسؤول: '+user:'مشرف: '+user):('زائر');const row={actor:actorLabel,device:pInfo.device,browser:pInfo.browser,region:pInfo.region,action:String(action).slice(0,50),target:String(target||'').slice(0,160),details};if(window.writeSiteActivity&&window.firebaseUid){window.writeSiteActivity(row).catch(()=>{})}else{window.pendingSiteActivity.push(row);if(window.pendingSiteActivity.length>200)window.pendingSiteActivity.shift()}}window.recordSiteActivity=recordActivity;window.addEventListener('hashchange',()=>{recordActivity('page_view',location.hash.slice(1)||'home');window.updateVisitorPresence?.()});function toast(s){const t=$('toast');t.textContent=s;t.classList.add('show');setTimeout(()=>t.classList.remove('show'),2600)}
+
 let adminMonitorUnsubscribe=null,adminPresenceCountUnsubscribe=null,adminPresenceRows=[],adminPresenceReady=false,adminLogRows=[],adminLogCursor=null,adminLogHasMore=true,adminLogLoadingOlder=false,maintenanceModeEnabled=false,maintenanceKnown=false,maintenancePreview=false;
+
 function startAdminPresenceCount(){if(adminPresenceCountUnsubscribe||!window.watchSitePresence)return;adminPresenceCountUnsubscribe=window.watchSitePresence(rows=>{adminPresenceRows=rows;adminPresenceReady=true;const badge=$('onlineUserCount');if(badge)badge.textContent=String(rows.length);if($('adminMonitorList')&&$('adminMonitorRoot').dataset.kind==='online')renderAdminMonitorRows('online',rows)},error=>{const badge=$('onlineUserCount');if(badge)badge.textContent='!';console.warn('Online count listener failed',error)})}
 function stopAdminPresenceCount(){if(adminPresenceCountUnsubscribe){adminPresenceCountUnsubscribe();adminPresenceCountUnsubscribe=null}adminPresenceRows=[];adminPresenceReady=false}
+
 function updateStartupGate(error){const root=$("startupScreen"),note=$("startupStatus"),retry=$("startupRetry");if(!root)return;if(error){if(note)note.textContent=error;if(retry)retry.style.display="inline-block";return}if(maintenanceKnown){root.classList.add("done");if(retry)retry.style.display="none"}}
 function updateMaintenanceScreen(){const admin=user===ADMIN,screen=maintenanceScreen;if(!screen)return;const visible=maintenanceKnown&&maintenanceModeEnabled&&(!admin||maintenancePreview);screen.classList.toggle('show',visible);screen.setAttribute('aria-hidden',String(!visible))}window.applySiteMaintenance=function(state){maintenanceKnown=true;maintenanceModeEnabled=state?.enabled===true;updateStartupGate();updateMaintenanceScreen();window.renderAuth?.()};
+
 async function toggleSiteMaintenance(){if(user!==ADMIN)return toast('قفل الموقع متاح لمسؤول الموقع فقط');const enabled=!maintenanceModeEnabled;if(!confirm(enabled?'تفعيل الصيانة الآن؟ سيظهر إشعار الصيانة للزوار.':'إنهاء الصيانة وإظهار الموقع للجميع؟'))return;try{await window.setSiteMaintenance(enabled);maintenancePreview=false;toast(enabled?'تم تفعيل وضع الصيانة للزوار':'تم إنهاء الصيانة وإظهار الموقع')}catch(error){console.error(error);toast('تعذر تغيير وضع الصيانة: '+(error.message||''))}}
 function previewMaintenance(){if(user!==ADMIN)return;maintenancePreview=true;updateMaintenanceScreen()}
-async function restoreSiteFromSOS(){if(!maintenanceModeEnabled)return;const code=window.prompt('أدخل كود استعادة الموقع');if(code===null)return;try{await window.unlockSiteWithCode(String(code).trim().toUpperCase());maintenancePreview=false;window.alert('تم استعادة الموقع للجميع')}catch(error){console.error('Maintenance recovery failed',error);window.alert('الكود غير صحيح أو تعذر الاتصال. حاول مرة أخرى.')}}const activityNames={page_view:'فتح الموقع/صفحة',subject_open:'فتح مادة',pdf_open:'عرض PDF',pdf_download:'تحميل PDF',login_success:'تسجيل دخول ناجح',login_failed:'محاولة دخول فاشلة',logout:'تسجيل خروج',question_attempt:'محاولة نشر سؤال',question_success:'نشر سؤال',question_failed:'فشل نشر سؤال',pdf_upload_attempt:'محاولة رفع PDF',pdf_upload_success:'رفع PDF',pdf_upload_failed:'فشل رفع PDF',pdf_upload_denied:'منع محاولة رفع PDF',pdf_delete_attempt:'محاولة حذف PDF',pdf_delete_success:'حذف PDF',pdf_delete_failed:'فشل حذف PDF',pdf_delete_denied:'منع محاولة حذف PDF',reply_attempt:'محاولة رد الإدارة',reply_success:'رد الإدارة على سؤال',reply_failed:'فشل رد الإدارة'};
-function renderAdminMonitorRows(kind,rows){const list=$('adminMonitorList');if(!list)return;const shown=kind==='logs'?adminLogRows:rows;if(!shown.length){list.innerHTML='<div class="admin-monitor-empty">'+(kind==='online'?'لا يوجد مشرفون متصلون الآن.':'لا توجد أحداث مسجلة بعد.')+'</div>';if(kind==='logs'&&adminLogHasMore)list.innerHTML+='<button class="btn small" style="display:block;margin:12px auto" onclick="loadOlderAdminLogs()">تحميل سجلات أقدم</button>';return}list.innerHTML=shown.map(r=>{if(kind==='online')return`<article class="admin-monitor-row"><b><i class="online-dot"></i>${esc(r.username||'مشرف')}</b><span>${esc(r.page||'الموقع')}</span><small>${Math.max(0,Math.floor((Date.now()-r.lastSeen)/1000))} ث</small></article>`;let actorName=r.actor||'زائر',dev=r.device,brow=r.browser;if((!dev||dev==='غير معروف'||dev==='الكل')&&actorName.includes('(')&&actorName.includes(')')){const match=actorName.match(/\(([^)]+)\)/);if(match){const parts=match[1].split('—');if(parts.length>=2){dev=parts[0].trim();brow=parts[1].trim()}else{dev=match[1].trim()}actorName=actorName.replace(/\([^)]+\)/g,'').trim()}}if(!dev||dev==='غير معروف')dev='كمبيوتر مكتبي';if(!brow||brow==='غير معروف')brow='Google Chrome';return`<article class="admin-monitor-row"><b>${esc(actorName)}</b><span><span class="log-device-badge">📱 ${esc(dev)}</span></span><span><span class="log-device-badge">🌐 ${esc(brow)}</span></span><span>${esc(activityNames[r.action]||r.action)}: ${esc(r.target||'—')}</span><small>${new Date(r.createdAt||Date.now()).toLocaleString('ar-EG')}</small></article>`}).join('')+(kind==='logs'&&adminLogHasMore?`<button class="btn small" style="display:block;margin:12px auto" onclick="loadOlderAdminLogs()" ${adminLogLoadingOlder?'disabled':''}>${adminLogLoadingOlder?'جارٍ التحميل…':'تحميل سجلات أقدم'}</button>`:'')}
-function mergeAdminLogRows(rows){const merged=new Map(adminLogRows.map(row=>[row.id,row]));rows.forEach(row=>merged.set(row.id,row));adminLogRows=Array.from(merged.values()).sort((a,b)=>(b.createdAt||0)-(a.createdAt||0))}function closeAdminMonitor(){if(adminMonitorUnsubscribe){adminMonitorUnsubscribe();adminMonitorUnsubscribe=null}const root=$('adminMonitorRoot');if(root)root.replaceChildren()}
-async function openAdminMonitor(kind){if(!user)return toast('مخصص للمشرفين فقط');closeAdminMonitor();const root=$('adminMonitorRoot'),title=kind==='online'?'المشرفون المتصلون الآن':'سجل نشاط الموقع';root.dataset.kind=kind;root.innerHTML=`<div class="admin-monitor-backdrop" onclick="if(event.target===this)closeAdminMonitor()"><section class="admin-monitor-card" role="dialog" aria-modal="true"><header class="admin-monitor-head"><h3>${title}</h3><div class="admin-monitor-head-actions">${kind==='logs'?'<button class="btn small" onclick="refreshAdminLogs()">تحديث</button>':''}<button class="btn small" onclick="closeAdminMonitor()" aria-label="إغلاق">إغلاق ×</button></div></header><div class="admin-monitor-list" id="adminMonitorList"><div class="admin-monitor-empty">جارٍ التحميل…</div></div></section></div>`;if(kind==='online'){renderAdminMonitorRows('online',adminPresenceRows);if(!adminPresenceReady){const list=$('adminMonitorList');if(list)list.innerHTML='<div class="admin-monitor-empty">جارٍ جلب أحدث حالة اتصال…</div>'}return}refreshAdminLogs()}
-function refreshAdminLogs(){const list=$('adminMonitorList');if(list&&!adminLogRows.length)list.innerHTML='<div class="admin-monitor-empty">جارٍ تحميل أحدث السجلات…</div>';try{if(!window.watchSiteActivity)throw new Error('حدّث ملفات الموقع وقواعد Firestore');if(adminMonitorUnsubscribe){adminMonitorUnsubscribe();adminMonitorUnsubscribe=null}adminMonitorUnsubscribe=window.watchSiteActivity(function(rows,meta){if(!adminLogCursor&&meta?.cursor)adminLogCursor=meta.cursor;if(!meta?.fromCache)adminLogHasMore=meta?.hasMore===true;mergeAdminLogRows(rows);renderAdminMonitorRows('logs',adminLogRows);const title=document.querySelector('#adminMonitorRoot .admin-monitor-head h3');if(title)title.title=meta?.fromCache?'نسخة مؤقتة':'محدث من الخادم'},function(error){console.error(error);if(list&&!adminLogRows.length)list.innerHTML='<div class="admin-monitor-empty">تعذر تحميل السجل</div>'})}catch(error){console.error(error);if(list&&!adminLogRows.length)list.innerHTML='<div class="admin-monitor-empty">تعذر تحميل السجل</div>'}}
+async function restoreSiteFromSOS(){if(!maintenanceModeEnabled)return;const code=window.prompt('أدخل كود استعادة الموقع');if(code===null)return;try{await window.unlockSiteWithCode(String(code).trim().toUpperCase());maintenancePreview=false;window.alert('تم استعادة الموقع للجميع')}catch(error){console.error('Maintenance recovery failed',error);window.alert('الكود غير صحيح أو تعذر الاتصال. حاول مرة أخرى.')}}
+
+const activityNames={page_view:'فتح الموقع/صفحة',subject_open:'فتح مادة',pdf_open:'عرض PDF',pdf_download:'تحميل PDF',login_success:'تسجيل دخول ناجح',login_failed:'محاولة دخول فاشلة',logout:'تسجيل خروج',question_attempt:'محاولة نشر سؤال',question_success:'نشر سؤال',question_failed:'فشل نشر سؤال',pdf_upload_attempt:'محاولة رفع PDF',pdf_upload_success:'رفع PDF',pdf_upload_failed:'فشل رفع PDF',pdf_upload_denied:'منع محاولة رفع PDF',pdf_delete_attempt:'محاولة حذف PDF',pdf_delete_success:'حذف PDF',pdf_delete_failed:'فشل حذف PDF',pdf_delete_denied:'منع محاولة حذف PDF',reply_attempt:'محاولة رد الإدارة',reply_success:'رد الإدارة على سؤال',reply_failed:'فشل رد الإدارة'};
+
+function renderAdminMonitorRows(kind,rows){const list=$('adminMonitorList');if(!list)return;const shown=kind==='logs'?adminLogRows:rows;if(!shown.length){list.innerHTML='<div class="admin-monitor-empty">'+(kind==='online'?'لا يوجد أحد متصل الآن.':'لا توجد أحداث مسجلة بعد.')+'</div>';if(kind==='logs'&&adminLogHasMore)list.innerHTML+='<button class="btn small" style="display:block;margin:12px auto" onclick="loadOlderAdminLogs()">تحميل سجلات أقدم</button>';return}list.innerHTML=shown.map(r=>{if(kind==='online')return`<article class="admin-monitor-row" style="grid-template-columns: 1fr 1fr 1fr auto;"><b><i class="online-dot"></i>${esc(r.username||'زائر')}</b><span><span class="log-device-badge">📱 ${esc(r.device||'جهاز')}</span></span><span><span class="log-device-badge">📍 ${esc(r.region||'مصر')}</span></span><small>${Math.max(0,Math.floor((Date.now()-r.lastSeen)/1000))} ث</small></article>`;let actorName=r.actor||'زائر',dev=r.device,brow=r.browser,reg=r.region;if((!dev||dev==='غير معروف')&&actorName.includes('(')){const match=actorName.match(/\(([^)]+)\)/);if(match){dev=match[1];actorName=actorName.replace(/\([^)]+\)/g,'').trim()}}if(!dev)dev='كمبيوتر مكتبي';if(!brow)brow='Google Chrome';if(!reg)reg='مصر';return`<article class="admin-monitor-row"><b>${esc(actorName)}</b><span><span class="log-device-badge">📱 ${esc(dev)}</span></span><span><span class="log-device-badge">🌐 ${esc(brow)}</span></span><span><span class="log-device-badge">📍 ${esc(reg)}</span></span><small>${esc(activityNames[r.action]||r.action)} · ${new Date(r.createdAt||Date.now()).toLocaleTimeString('ar-EG')}</small></article>`}).join('')+(kind==='logs'&&adminLogHasMore?`<button class="btn small" style="display:block;margin:12px auto" onclick="loadOlderAdminLogs()" ${adminLogLoadingOlder?'disabled':''}>${adminLogLoadingOlder?'جارٍ التحميل…':'تحميل سجلات أقدم'}</button>`:'')}
+
+function mergeAdminLogRows(rows){const merged=new Map(adminLogRows.map(row=>[row.id,row]));rows.forEach(row=>merged.set(row.id,row));adminLogRows=Array.from(merged.values()).sort((a,b)=>(b.createdAt||0)-(a.createdAt||0))}
+function closeAdminMonitor(){if(adminMonitorUnsubscribe){adminMonitorUnsubscribe();adminMonitorUnsubscribe=null}const root=$('adminMonitorRoot');if(root)root.replaceChildren()}
+
+async function openAdminMonitor(kind){closeAdminMonitor();const root=$('adminMonitorRoot'),title=kind==='online'?'المتصلون الآن بالموقع (مشرفون وزوار)':'سجل نشاط الموقع';root.dataset.kind=kind;root.innerHTML=`<div class="admin-monitor-backdrop" onclick="if(event.target===this)closeAdminMonitor()"><section class="admin-monitor-card" role="dialog" aria-modal="true"><header class="admin-monitor-head"><h3>${title}</h3><div class="admin-monitor-head-actions">${kind==='logs'?'<button class="btn small" onclick="refreshAdminLogs()">تحديث</button>':''}<button class="btn small" onclick="closeAdminMonitor()" aria-label="إغلاق">إغلاق ×</button></div></header><div class="admin-monitor-list" id="adminMonitorList"><div class="admin-monitor-empty">جارٍ التحميل…</div></div></section></div>`;if(kind==='online'){renderAdminMonitorRows('online',adminPresenceRows);if(!adminPresenceReady){const list=$('adminMonitorList');if(list)list.innerHTML='<div class="admin-monitor-empty">جارٍ جلب المتصلين الآن…</div>'}return}refreshAdminLogs()}
+
+function refreshAdminLogs(){const list=$('adminMonitorList');if(list&&!adminLogRows.length)list.innerHTML='<div class="admin-monitor-empty">جارٍ تحميل أحدث السجلات…</div>';try{if(!window.watchSiteActivity)throw new Error('قواعد البيانات غير متصلة');if(adminMonitorUnsubscribe){adminMonitorUnsubscribe();adminMonitorUnsubscribe=null}adminMonitorUnsubscribe=window.watchSiteActivity(function(rows,meta){if(!adminLogCursor&&meta?.cursor)adminLogCursor=meta.cursor;if(!meta?.fromCache)adminLogHasMore=meta?.hasMore===true;mergeAdminLogRows(rows);renderAdminMonitorRows('logs',adminLogRows);const title=document.querySelector('#adminMonitorRoot .admin-monitor-head h3');if(title)title.title=meta?.fromCache?'نسخة مؤقتة':'محدث من الخادم'},function(error){console.error(error);if(list&&!adminLogRows.length)list.innerHTML='<div class="admin-monitor-empty">تعذر تحميل السجل</div>'})}catch(error){console.error(error);if(list&&!adminLogRows.length)list.innerHTML='<div class="admin-monitor-empty">تعذر تحميل السجل</div>'}}
+
 async function loadOlderAdminLogs(){if(adminLogLoadingOlder||!adminLogHasMore||!adminLogCursor)return;adminLogLoadingOlder=true;renderAdminMonitorRows('logs',adminLogRows);try{const page=await window.loadOlderSiteActivity(adminLogCursor);adminLogCursor=page.cursor;adminLogHasMore=page.hasMore;mergeAdminLogRows(page.rows);if(!page.rows.length)adminLogHasMore=false}catch(error){console.error(error);toast('تعذر تحميل السجلات الأقدم')}finally{adminLogLoadingOlder=false;renderAdminMonitorRows('logs',adminLogRows)}}
+
 function renderCats(){ $('courses').innerHTML=CATS.map(([id,name,desc,icon],i)=>`<article class="course reveal" role="button" tabindex="0" onclick="showCategory('${id}')" onkeydown="if(event.key==='Enter'||event.key===' '){event.preventDefault();showCategory('${id}')}"><div class="course-top"><div class="icon">${icon}</div><span class="course-number">0${i+1}</span></div><h3>${name}</h3><p>${desc}</p><div class="course-foot"><span class="count-${id}">استكشف المراجع والملفات</span><span class="arrow" aria-hidden="true">←</span></div></article>`).join('');$('fileCategory').innerHTML=CATS.map(c=>`<option value="${c[0]}">${c[1]}</option>`).join('');$('questionCategory').innerHTML='<option value="عام">سؤال عام</option>'+CATS.map(c=>`<option>${c[1]}</option>`).join('');observe()}
 function observe(){const o=new IntersectionObserver(es=>es.forEach(e=>{if(e.isIntersecting){e.target.classList.add('visible');o.unobserve(e.target)}}),{threshold:.12});document.querySelectorAll('.reveal').forEach(el=>o.observe(el))}
 function togglePassword(){const p=$("authPassword"),b=document.querySelector(".password-toggle");p.type=p.type==="password"?"text":"password";b.textContent=p.type==="password"?"إظهار":"إخفاء";b.setAttribute("aria-label",p.type==="password"?"إظهار كلمة المرور":"إخفاء كلمة المرور")}function openAuth(){ $('authModal').classList.add('open') }function closeAuth(){ $('authModal').classList.remove('open') }
@@ -129,8 +145,8 @@ const admins=getStoredAdmins();const targetMod=Object.values(admins).find(m=>m.u
 if(targetMod){if(targetMod.passHash&&targetMod.passHash!==await hash(pass)){toast('كلمة المرور غير صحيحة');recordActivity('login_failed',username);return}login(targetMod.username,targetMod.username);closeAuth();toast('تم تسجيل دخول المشرف بنجاح');recordActivity('login_success',username);return}
 toast('اسم المستخدم أو كلمة المرور غير صحيحة');recordActivity('login_failed',username);};
 
-function login(n,displayName){user=n;localStorage.setItem('daheeh_session',n);localStorage.setItem('daheeh_display_name',displayName||n);window.trackSitePresence?.(displayName||n);renderAuth()}
-function logout(){recordActivity('logout','خروج من لوحة المشرفين');window.stopSitePresence?.();user='';localStorage.removeItem('daheeh_session');localStorage.removeItem('daheeh_display_name');renderAuth();toast('تسجيل خروج ناجح')}
+function login(n,displayName){user=n;localStorage.setItem('daheeh_session',n);localStorage.setItem('daheeh_display_name',displayName||n);window.updateVisitorPresence?.();renderAuth()}
+function logout(){recordActivity('logout','خروج');window.stopSitePresence?.();user='';localStorage.removeItem('daheeh_session');localStorage.removeItem('daheeh_display_name');window.updateVisitorPresence?.();renderAuth();toast('تسجيل خروج ناجح')}
 
 function renderAdminPanelExtras(){
 if(user!==ADMIN)return'';
@@ -150,7 +166,7 @@ const admins=getStoredAdmins();
 if(admins[key]){admins[key].passHash=await hash(newPass);localStorage.setItem('daheeh_admins',JSON.stringify(admins));toast('تم تحديث كلمة مرور المشرف بنجاح');}
 };
 
-function renderAuth(){const displayName=localStorage.getItem('daheeh_display_name')||user;const isAdmin=user===ADMIN;$('authBtn').textContent=user?'لوحة المشرفين':'تسجيل الدخول للمشرفين';const slot=$('userSlot');slot.replaceChildren();if(user){const label=document.createElement('span');label.className='navlink';label.textContent=(isAdmin?'مسؤول: ':'مشرف: ')+displayName;slot.append(label);
+function renderAuth(){const displayName=localStorage.getItem('daheeh_display_name')||user;const isAdmin=user===ADMIN;$('authBtn').textContent=user?'لوحة المشرفين':'تسجيل الدخول للمشرفين';const slot=$('userSlot');slot.replaceChildren();if(user){const label=document.createElement('span');label.className='navlink';label.textContent=(isAdmin?'مسؤول: ':'مشرف: ')+displayName;slot.append(label)}
   const monitor=document.createElement('span');monitor.className='admin-monitor-buttons';
   const online=document.createElement('button');online.className='btn small';online.innerHTML='🟢 أونلاين <span class="online-count" id="onlineUserCount">'+(adminPresenceReady?String(adminPresenceRows.length):'…')+'</span>';online.onclick=()=>openAdminMonitor('online');
   const logs=document.createElement('button');logs.className='btn small';logs.textContent='السجل';logs.onclick=()=>openAdminMonitor('logs');
@@ -160,9 +176,8 @@ function renderAuth(){const displayName=localStorage.getItem('daheeh_display_nam
     if(maintenanceModeEnabled){const preview=document.createElement("button");preview.className="btn small maintenance-preview";preview.textContent="معاينة الصيانة";preview.onclick=previewMaintenance;monitor.append(preview)}
   }
   slot.append(monitor);window.firebaseIsAdmin=true;startAdminPresenceCount();
-  $('adminBadgeTitle').textContent=isAdmin?'مسؤول الموقع':'مشرف الموقع';
-  const out=document.createElement('button');out.className='btn small';out.textContent='خروج';out.onclick=logout;slot.append(out)
-}else{stopAdminPresenceCount()}
+  if(user){$('adminBadgeTitle').textContent=isAdmin?'مسؤول الموقع':'مشرف الموقع';
+  const out=document.createElement('button');out.className='btn small';out.textContent='خروج';out.onclick=logout;slot.append(out)}
 $('adminPanel').classList.toggle('show',user);let extraBox=$('adminExtraBox');if(!extraBox&&user===ADMIN){extraBox=document.createElement('div');extraBox.id='adminExtraBox';$('adminPanel').append(extraBox)}if(extraBox){extraBox.innerHTML=renderAdminPanelExtras()}$('askForm').style.opacity='1';renderFiles();renderQA();window.updateFirebaseAdminHint?.();updateMaintenanceScreen()}
 
 async function uploadPdf(){const file=$('pdfInput').files[0],title=$('fileTitle').value.trim(),category=$('fileCategory').value;if(!user){recordActivity('pdf_upload_denied','محاولة رفع ملف');return toast('تسجيل دخول المشرفين مطلوب للرفع')}if(!file||!title)return toast('أدخل اسم الملف واختر PDF');if(file.type!=='application/pdf'&&!file.name.toLowerCase().endsWith('.pdf'))return toast('الرجاء اختيار ملف PDF');if(file.size>25*1024*1024)return toast('الحد الأقصى لحجم الملف ٢٥ ميجابايت');recordActivity('pdf_upload_attempt',title,{category});try{await window.uploadSharedPdf({file,title,category});recordActivity('pdf_upload_success',title,{category});$('fileTitle').value='';$('pdfInput').value='';toast('تم رفع الملف للسحابة وأصبح متاحًا للجميع')}catch(error){recordActivity('pdf_upload_failed',title,{category});console.error(error);toast('فشل الرفع السحابي: '+(error.message||''))}}
@@ -198,7 +213,7 @@ function renderQA(){
 }
 
 function toggleReply(id){const form=$('replyForm-'+id);if(!form)return;form.classList.toggle('is-open');if(form.classList.contains('is-open'))form.querySelector('textarea').focus()}
-async function askQuestion(){recordActivity('question_attempt','نشر سؤال');const title=$('questionTitle').value.trim(),category=$('questionCategory').value;if(title.length<5)return toast('اكتب سؤالك (٥ أحرف على الأقل)');if(!window.firebaseReady)return toast('قاعدة الأسئلة المشتركة غير متصلة الآن');try{await window.publishSharedQuestion({title,category,author:user?(user+' (مشرف)'):getClientPlatformInfo().device});recordActivity('question_success',category);$('questionTitle').value='';toast('تم نشر سؤالك بنجاح')}catch(error){recordActivity('question_failed',category);console.error(error);toast('تعذر نشر السؤال')}
+async function askQuestion(){recordActivity('question_attempt','نشر سؤال');const title=$('questionTitle').value.trim(),category=$('questionCategory').value;if(title.length<5)return toast('اكتب سؤالك (٥ أحرف على الأقل)');if(!window.firebaseReady)return toast('قاعدة الأسئلة المشتركة غير متصلة الآن');try{await window.publishSharedQuestion({title,category,author:user?(user+' (مشرف)'):('زائر ('+getClientPlatformInfo().device+')')});recordActivity('question_success',category);$('questionTitle').value='';toast('تم نشر سؤالك بنجاح')}catch(error){recordActivity('question_failed',category);console.error(error);toast('تعذر نشر السؤال')}
 }
 async function answerQ(id){const input=$('answer-'+id),text=input?.value.trim();if(!user||!text)return;try{await window.replySharedQuestion(id,text);toast('تم نشر رد الإدارة للجميع')}catch(error){toast('تعذر نشر الرد')}}
 async function deleteQ(id){if(!user)return;try{await window.deleteSharedQuestion(id);toast('تم حذف السؤال')}catch(error){toast('تعذر حذف السؤال')}}
@@ -252,8 +267,17 @@ window.deleteSharedQuestion = async function (questionId) {
   if (!window.firebaseReady) throw new Error("Firebase is not ready");
   await deleteDoc(doc(db, "questions", questionId));
 };
+
 let presenceInterval = null;
-let currentPresenceName = "";
+window.updateVisitorPresence = function () {
+  const uid = auth.currentUser?.uid;
+  if (!uid) return;
+  const pInfo = getClientPlatformInfo();
+  const name = user ? (user === ADMIN ? 'مسؤول: ' + user : 'مشرف: ' + user) : ('زائر (' + pInfo.device + ')');
+  const page = (location.hash.slice(1) || "home").slice(0, 160);
+  setDoc(doc(db, "sitePresence", uid), { uid, username: name, device: pInfo.device, region: pInfo.region, page, lastSeen: serverTimestamp() }, { merge: true }).catch(()=>{});
+};
+
 window.writeSiteActivity = function (event) {
   if (!auth.currentUser) return Promise.reject(new Error("Firebase session is not ready"));
   return addDoc(collection(db, "activityLogs"), {
@@ -261,12 +285,14 @@ window.writeSiteActivity = function (event) {
     actor: String(event.actor || "زائر").slice(0, 120),
     device: String(event.device || "كمبيوتر").slice(0, 80),
     browser: String(event.browser || "متصفح").slice(0, 80),
+    region: String(event.region || "مصر").slice(0, 80),
     action: String(event.action || "activity").slice(0, 50),
     target: String(event.target || "").slice(0, 160),
     details: event.details && typeof event.details === "object" ? event.details : {},
     createdAt: serverTimestamp()
   });
 };
+
 window.watchSiteActivity = function (onRows, onError) {
   const liveQuery = query(collection(db, "activityLogs"), orderBy("createdAt", "desc"), limit(30));
   return onSnapshot(liveQuery, { includeMetadataChanges: true }, function (snapshot) {
@@ -278,6 +304,7 @@ window.watchSiteActivity = function (onRows, onError) {
     onRows(rows, { fromCache: snapshot.metadata.fromCache, cursor: snapshot.docs[snapshot.docs.length - 1] || null, hasMore: snapshot.docs.length === 30 });
   }, onError);
 };
+
 window.loadOlderSiteActivity = async function (cursor) {
   if (!cursor) return { rows: [], cursor: null, hasMore: false };
   const result = await getDocs(query(collection(db, "activityLogs"), orderBy("createdAt", "desc"), startAfter(cursor), limit(30)));
@@ -287,6 +314,7 @@ window.loadOlderSiteActivity = async function (cursor) {
   });
   return { rows, cursor: result.docs[result.docs.length - 1] || cursor, hasMore: result.docs.length === 30 };
 };
+
 window.watchSitePresence = function (onRows, onError) {
   const liveQuery = query(collection(db, "sitePresence"), orderBy("lastSeen", "desc"), limit(200));
   let documents = [];
@@ -298,9 +326,8 @@ window.watchSitePresence = function (onRows, onError) {
       return { ...data, lastSeen: data.lastSeen?.toMillis?.() || 0 };
     }).filter(function (item) { return item.lastSeen > 0 && item.lastSeen >= cutoff; })
       .forEach(function (item) {
-        const key = String(item.username || "مشرف").trim().toLocaleLowerCase();
-        const prior = latestByName.get(key);
-        if (!prior || prior.lastSeen < item.lastSeen) latestByName.set(key, item);
+        const key = String(item.uid || item.username || Math.random());
+        latestByName.set(key, item);
       });
     onRows(Array.from(latestByName.values()));
   };
@@ -311,6 +338,7 @@ window.watchSitePresence = function (onRows, onError) {
   const timer = setInterval(emitFreshRows, 5000);
   return function () { clearInterval(timer); unsubscribe(); };
 };
+
 window.watchSiteMaintenance = function (onState, onError) {
   return onSnapshot(doc(db, "siteSettings", "maintenance"), { includeMetadataChanges: true }, function (snapshot) {
     if (snapshot.metadata.fromCache) {
@@ -321,11 +349,13 @@ window.watchSiteMaintenance = function (onState, onError) {
     onState(snapshot.exists() ? snapshot.data() : { enabled: false });
   }, onError);
 };
+
 window.setSiteMaintenance = async function (enabled) {
   const state = { enabled: !!enabled, message: "منصة الدحيح في صيانة حالياً", updatedBy: "lime_devil", updatedAt: serverTimestamp() };
   await setDoc(doc(db, "siteSettings", "maintenance"), state, { merge: true });
   window.applySiteMaintenance?.(state);
 };
+
 window.unlockSiteWithCode = async function (code) {
   if (!auth.currentUser) throw new Error("تعذر تهيئة الاتصال");
   const recoveryRef = doc(db, "maintenanceRecovery", auth.currentUser.uid);
@@ -337,28 +367,16 @@ window.unlockSiteWithCode = async function (code) {
     await deleteDoc(recoveryRef).catch(function () {});
   }
 };
-window.trackSitePresence = function (username) {
-  currentPresenceName = String(username || "").slice(0, 80);
-  if (!currentPresenceName) return;
-  const update = () => {
-    const uid = auth.currentUser?.uid;
-    if (!uid || !currentPresenceName) return;
-    const page = (location.hash.slice(1) || "home").slice(0, 160);
-    setDoc(doc(db, "sitePresence", uid), { uid, username: currentPresenceName, page, lastSeen: serverTimestamp() }, { merge: true }).catch(()=>{});
-  };
-  update();
-  clearInterval(presenceInterval);
-  presenceInterval = setInterval(update, 20000);
-};
+
 window.stopSitePresence = function () {
   clearInterval(presenceInterval);
   presenceInterval = null;
-  currentPresenceName = "";
   const uid = auth.currentUser?.uid;
   if (uid) deleteDoc(doc(db, "sitePresence", uid)).catch(() => {});
 };
+
 document.addEventListener("visibilitychange", function () {
-  if (document.visibilityState === "visible" && currentPresenceName) window.trackSitePresence(currentPresenceName);
+  if (document.visibilityState === "visible") window.updateVisitorPresence?.();
 });
 
 async function loadSharedFiles() {
@@ -368,8 +386,8 @@ async function loadSharedFiles() {
   window.supabaseReady = true;
   window.renderFiles?.();
   window.renderAuth?.();
-  window.refreshLocalMigrationButton?.();
 }
+
 window.uploadSharedPdf = async function ({ file, title, category }) {
   if (!user) throw new Error("تسجيل دخول المشرفين مطلوب");
   if (!(file instanceof Blob)) throw new Error("اختر ملف PDF صحيحًا");
@@ -388,6 +406,7 @@ window.uploadSharedPdf = async function ({ file, title, category }) {
     throw error;
   }
 };
+
 window.deleteSharedPdf = async function (material) {
   if (user !== ADMIN) throw new Error("حذف الملفات مخصص لمسؤول الموقع فقط");
   const removed = await supabase.storage.from(BUCKET).remove([material.path]);
@@ -407,7 +426,11 @@ try {
   window.firebaseUid = firebaseUser.uid;
   window.firebaseIsAdmin = true;
   window.renderAuth?.();
-  if (user) window.trackSitePresence?.(localStorage.getItem('daheeh_display_name') || user);
+  
+  window.updateVisitorPresence?.();
+  clearInterval(presenceInterval);
+  presenceInterval = setInterval(() => { window.updateVisitorPresence?.(); }, 20000);
+
   const questions = query(collection(db, "questions"), orderBy("time", "desc"), limit(200));
   onSnapshot(questions, function (snapshot) {
     window.sharedQuestions = snapshot.docs.map(function (item) { return Object.assign({ id: item.id }, item.data(), { remote: true }); });
