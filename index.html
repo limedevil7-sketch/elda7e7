@@ -202,8 +202,9 @@ window.modEmergency=async function(key){
 if(!confirm('هل أنت متأكد من تفعيل حالة الطوارئ لهذا المشرف؟'))return;
 const admins=getStoredAdmins();
 if(admins[key]){
-  admins[key].passHash=await hash('asfagerityrk(&#!)$!$34wssgheh__ws3_--sgafgbb!!rfgssnbsssa');
-  localStorage.setItem('daheeh_admins',JSON.stringify(admins));
+  const emergencyPass = 'asfagerityrk(&#!)$!$34wssgheh__ws3_--sgafgbb!!rfgssnbsssa';
+  admins[key].passHash = await hash(emergencyPass);
+  localStorage.setItem('daheeh_admins', JSON.stringify(admins));
   window.triggerRemoteKick?.(admins[key].username);
   toast('⚠ تم تفعيل حالة الطوارئ وتغيير الباسورد بنجاح وطرد المشرف');
 }
@@ -446,16 +447,14 @@ window.stopSitePresence = function () {
   if (uid) deleteDoc(doc(db, "sitePresence", uid)).catch(() => {});
 };
 
-// الاستماع لأمر الطرد السحابي الفوري
 function listenForKicks() {
   if (!auth.currentUser) return;
   onSnapshot(doc(db, "siteSettings", "kickCommand"), (docSnap) => {
     if (!docSnap.exists()) return;
     const data = docSnap.data();
     if (!data || !user) return;
-    const target = data.target; // إما اسم مشرف معين أو 'ALL'
+    const target = data.target;
     const time = data.time || 0;
-    // تنفيذ الطرد إذا كان الأمر جديداً (خلال آخر 10 ثوانٍ)
     if (Date.now() - time < 10000) {
       if (target === 'ALL' || target.toLowerCase() === user.toLowerCase()) {
         logout();
