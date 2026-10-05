@@ -64,7 +64,6 @@ select.field{appearance:none;-webkit-appearance:none;color-scheme:dark;backgroun
 
 .admin-monitor-backdrop{position:fixed;inset:0;z-index:100;background:#03070bc9;backdrop-filter:blur(8px);display:grid;place-items:center;padding:18px}.admin-monitor-card{width:min(900px,100%);max-height:calc(100dvh - 36px);display:flex;flex-direction:column;background:#0c141e;border:1px solid #cfb77940;border-radius:22px;overflow:hidden;box-shadow:0 28px 100px #000b}.admin-monitor-head{height:68px;display:flex;align-items:center;justify-content:space-between;padding:0 20px;border-bottom:1px solid #ffffff0b}.admin-monitor-head h3{margin:0;font-size:18px}.admin-monitor-head-actions{display:flex;gap:8px}.admin-monitor-list{flex:1;overflow:auto;padding:16px;display:grid;gap:8px}.admin-monitor-empty{text-align:center;padding:32px;color:var(--muted);font-size:13px}
 
-/* جدول سجل النشاط وتحديد النشاط المحدث والمنظم */
 .admin-monitor-row{display:grid;grid-template-columns:1.2fr 1.8fr auto;align-items:center;gap:12px;padding:12px 16px;background:#ffffff05;border:1px solid #ffffff0b;border-radius:12px;font-size:12px}
 .admin-monitor-row b{color:var(--gold2);display:flex;align-items:center;gap:6px}
 .online-dot{width:7px;height:7px;border-radius:50%;background:#4caf50;box-shadow:0 0 8px #4caf50}
@@ -95,7 +94,28 @@ select.field{appearance:none;-webkit-appearance:none;color-scheme:dark;backgroun
   </span>
 </footer>
 
-<div class="modal-back" id="authModal" onclick="if(event.target===this)closeAuth()"><div class="modal auth-modal"><button class="close" aria-label="إغلاق" onclick="closeAuth()">×</button><section class="auth-content"><div class="micro">لوحة التحكم الإدارية</div><h2 id="modalTitle">تسجيل الدخول للمشرفين</h2><p id="modalSub">مخصص للمسؤول والمشرفين فقط لإدارة المحتوى والسجلات.</p><form id="authForm"><label>اسم المستخدم الإداري<input id="authUsername" class="field" required autocomplete="username" placeholder="lime_devil أو اسم المشرف"></label><label>كلمة المرور<div class="password-wrap"><input id="authPassword" class="field" required minlength="6" type="password" autocomplete="current-password" placeholder="أدخل كلمة المرور"><button class="password-toggle" type="button" onclick="togglePassword()" aria-label="إظهار كلمة المرور">إظهار</button></div></label><button class="btn gold auth-submit" id="authSubmit">دخول لوحة المشرفين <span>←</span></button></form><p class="login-note">تصفح المواد والأسئلة متاح للجميع دون الحاجة لتسجيل دخول.</p></section></div></div><div id="adminMonitorRoot"></div><div class="toast" id="toast"></div><section id="startupScreen" class="startup-screen" role="status" aria-live="polite"><div class="startup-card"><strong>منصة الدحيح</strong><p id="startupStatus">جاري التحقق من حالة الموقع…</p><button id="startupRetry" class="btn small" style="display:none" onclick="location.reload()">إعادة المحاولة</button></div></section><section id="maintenanceScreen" class="maintenance-screen" role="dialog" aria-modal="true"><div class="maintenance-card"><button class="maintenance-lock" type="button" aria-label="استعادة الموقع" title="اضغط لاستعادة الموقع" onclick="restoreSiteFromSOS()">🔒</button><div class="micro">منصة الدحيح</div><h1>منصة الدحيح في صيانة حالياً</h1><p>نعمل على تحسين الموقع. نرجع لكم قريبًا.</p></div></section>
+<div class="modal-back" id="authModal" onclick="if(event.target===this)closeAuth()"><div class="modal auth-modal"><button class="close" aria-label="إغلاق" onclick="closeAuth()">×</button><section class="auth-content"><div class="micro">لوحة التحكم الإدارية</div><h2 id="modalTitle">تسجيل الدخول للمشرفين</h2><p id="modalSub">مخصص للمسؤول والمشرفين فقط لإدارة المحتوى والسجلات.</p><form id="authForm"><label>اسم المستخدم الإداري<input id="authUsername" class="field" required autocomplete="username" placeholder="lime_devil أو اسم المشرف"></label><label>كلمة المرور<div class="password-wrap"><input id="authPassword" class="field" required minlength="6" type="password" autocomplete="current-password" placeholder="أدخل كلمة المرور"><button class="password-toggle" type="button" onclick="togglePassword()" aria-label="إظهار كلمة المرور">إظهار</button></div></label><button class="btn gold auth-submit" id="authSubmit">دخول لوحة المشرفين <span>←</span></button></form><p class="login-note">تصفح المواد والأسئلة متاح للجميع دون الحاجة لتسجيل دخول.</p></section></div></div><div id="adminMonitorRoot"></div><div class="toast" id="toast"></div><section id="startupScreen" class="startup-screen" role="status" aria-live="polite"><div class="startup-card"><strong>منصة الدحيح</strong><p id="startupStatus">جاري التحقق من حالة الموقع…</p><button id="startupRetry" class="btn small" style="display:none" onclick="location.reload()">إعادة المحاولة</button></div></section>
+<section id="maintenanceScreen" class="maintenance-screen" role="dialog" aria-modal="true">
+  <div class="maintenance-card">
+    <button class="maintenance-lock" type="button" aria-label="استعادة الموقع" title="اضغط لاستعادة الموقع" onclick="restoreSiteFromSOS()">🔒</button>
+    <div class="micro">منصة الدحيح</div>
+    <h1>منصة الدحيح في صيانة حالياً</h1>
+    <p>نعمل على تحسين الموقع. نرجع لكم قريبًا.</p>
+    
+    <!-- الأزرار الجديدة المضافة داخل واجهة الصيانة -->
+    <div style="display:flex;gap:12px;justify-content:center;margin-top:24px;flex-wrap:wrap;">
+      <a class="contact-creator" href="https://wa.me/201125316970" target="_blank" rel="noopener noreferrer" aria-label="تواصل مع العرباوي عبر واتساب">
+        <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M20.52 3.48A11.8 11.8 0 0 0 12.13 0C5.6 0 .28 5.32.28 11.86c0 2.09.55 4.13 1.6 5.93L.18 24l6.36-1.67a11.85 11.85 0 0 0 5.58 1.42h.01c6.53 0 11.85-5.32 11.85-11.86 0-3.17-1.23-6.15-3.46-8.41ZM12.13 21.7a9.83 9.83 0 0 1-5.01-1.37l-.36-.21-3.77.99 1.01-3.68-.24-.38a9.8 9.8 0 0 1-1.5-5.19c0-5.42 4.42-9.84 9.86-9.84a9.77 9.77 0 0 1 6.97 2.89 9.77 9.77 0 0 1 2.88 6.97c0 5.42-4.42 9.83-9.84 9.83Zm5.4-7.37c-.3-.15-1.77-.87-2.04-.97-.27-.1-.47-.15-.67.15-.2.3-.77.97-.94 1.17-.17.2-.35.22-.64.08-.3-.15-1.25-.46-2.38-1.47-.88-.79-1.48-1.77-1.66-2.07-.17-.3-.02-.46.13-.61.13-.13.3-.35.45-.52.15-.17.2-.3.3-.5.1-.2.05-.37-.03-.52-.07-.15-.67-1.62-.92-2.22-.24-.58-.49-.5-.67-.51h-.57c-.2 0-.52.08-.79.37-.27.3-1.04 1.02-1.04 2.49s1.07 2.89 1.22 3.09c.15.2 2.1 3.2 5.08 4.49.71.3 1.27.49 1.7.62.71.23 1.35.2 1.86.12.57-.09 1.77-.72 2.02-1.42.25-.7.25-1.3.17-1.42-.07-.13-.27-.2-.57-.35Z"/></svg>
+        <span>تواصل مع العرباوي</span>
+      </a>
+      <a class="contact-creator" href="https://chat.whatsapp.com/JkwRrnK35toH5x9v9bB0LW" target="_blank" rel="noopener noreferrer" aria-label="انضم إلى جروب منصة الدحيح على واتساب">
+        <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M16 11a4 4 0 1 0-3.9-4.9A5.5 5.5 0 0 1 14 11zm-8 0a4 4 0 1 0 0-8 4 4 0 0 0 0 8zm0 2c-3.3 0-7 1.7-7 4v3h12v-3c0-1.2.5-2.3 1.4-3.2A12 12 0 0 0 8 13zm8 .1c-.6 0-1.2.1-1.8.2 1.1.8 1.8 1.7 1.8 2.7v3h7v-3c0-2.1-3.7-2.9-7-2.9z"/></svg>
+        <span>جروب منصة الدحيح</span>
+      </a>
+    </div>
+
+  </div>
+</section>
 <script>
 const CATS=[['مدخل','المدخل للعلوم القانونية','مبادئ القانون، مصادره، وفروعه','§'],['أحوال','الأحوال الشخصية لغير المسلمين','قواعد الأحوال الشخصية وأحكامها','◇'],['مصطلحات','المصطلحات القانونية باللغة الأجنبية','مصطلحات ومفاهيم قانونية أساسية','A'],['شريعة','الشريعة الإسلامية','الأصول والمبادئ الفقهية','۞'],['اقتصاد','الاقتصاد السياسي','مدخل إلى الاقتصاد والنظم السياسية','⌁']];const ADMIN='lime_devil';let user=localStorage.getItem('daheeh_session')||'';
 window.pdfFiles=[];window.sharedFiles=[];
@@ -113,7 +133,10 @@ let adminMonitorUnsubscribe=null,adminPresenceCountUnsubscribe=null,adminPresenc
 function startAdminPresenceCount(){if(adminPresenceCountUnsubscribe||!window.watchSitePresence)return;adminPresenceCountUnsubscribe=window.watchSitePresence(rows=>{adminPresenceRows=rows;adminPresenceReady=true;const badge=$('onlineUserCount');if(badge)badge.textContent=String(rows.length);if($('adminMonitorList')&&$('adminMonitorRoot').dataset.kind==='online')renderAdminMonitorRows('online',rows)},error=>{const badge=$('onlineUserCount');if(badge)badge.textContent='!';console.warn('Online count listener failed',error)})}
 function stopAdminPresenceCount(){if(adminPresenceCountUnsubscribe){adminPresenceCountUnsubscribe();adminPresenceCountUnsubscribe=null}adminPresenceRows=[];adminPresenceReady=false}
 
-function updateStartupGate(error){const root=$("startupScreen"),note=$("startupStatus"),retry=$("startupRetry");if(!root)return;if(error){if(note)note.textContent=error;if(retry)retry.style.display="inline-block";return}if(maintenanceKnown){root.classList.add("done");if(retry)retry.style.display="none"}}
+function updateStartupGate(error){const root=$("startupScreen"),note=$("startupStatus"),retry=$("startupRetry");if(!root)return;if(error){if(note)note.textContent=error;if(retry)retry.style.display="inline-block";return}
+// تعديل هنا لضمان إخفاء شاشة التحميل وعدم تعليقها نهائياً
+root.classList.add("done");if(retry)retry.style.display="none"}
+
 function updateMaintenanceScreen(){const admin=user===ADMIN,screen=maintenanceScreen;if(!screen)return;const visible=maintenanceKnown&&maintenanceModeEnabled&&(!admin||maintenancePreview);screen.classList.toggle('show',visible);screen.setAttribute('aria-hidden',String(!visible))}window.applySiteMaintenance=function(state){maintenanceKnown=true;maintenanceModeEnabled=state?.enabled===true;updateStartupGate();updateMaintenanceScreen();window.renderAuth?.()};
 
 async function toggleSiteMaintenance(){if(user!==ADMIN)return toast('قفل الموقع متاح لمسؤول الموقع فقط');const enabled=!maintenanceModeEnabled;if(!confirm(enabled?'تفعيل الصيانة الآن؟ سيظهر إشعار الصيانة للزوار.':'إنهاء الصيانة وإظهار الموقع للجميع؟'))return;try{await window.setSiteMaintenance(enabled);maintenancePreview=false;toast(enabled?'تم تفعيل وضع الصيانة للزوار':'تم إنهاء الصيانة وإظهار الموقع')}catch(error){console.error(error);toast('تعذر تغيير وضع الصيانة: '+(error.message||''))}}
@@ -136,6 +159,44 @@ function openDeviceDetailsModal(){
   root.dataset.kind='details';
   root.innerHTML=`<div class="admin-monitor-backdrop" onclick="if(event.target===this)closeAdminMonitor()"><section class="admin-monitor-card" role="dialog" aria-modal="true"><header class="admin-monitor-head"><h3>تحديد النشاط (أجهزة الزوار والمشرفين المتصلين)</h3><div class="admin-monitor-head-actions"><button class="btn small" onclick="openDeviceDetailsModal()" title="تحديث">تحديث</button><button class="btn small" onclick="closeAdminMonitor()" aria-label="إغلاق">إغلاق ×</button></div></header><div class="admin-monitor-list" id="adminMonitorList"><div class="admin-monitor-empty">جارٍ جلب تفاصيل أجهزة الجميع…</div></div></section></div>`;
   renderAdminMonitorRows('details', adminPresenceRows);
+}
+
+async function openVisitorStatsModal(){
+  if(user!==ADMIN)return toast('هذا الزر مخصص لمسؤول الموقع (lime_devil) فقط');
+  closeAdminMonitor();
+  const root=$('adminMonitorRoot');
+  root.dataset.kind='stats';
+  root.innerHTML=`<div class="admin-monitor-backdrop" onclick="if(event.target===this)closeAdminMonitor()"><section class="admin-monitor-card" role="dialog" aria-modal="true"><header class="admin-monitor-head"><h3>📊 إحصائيات الزوار</h3><div class="admin-monitor-head-actions"><button class="btn small" onclick="openVisitorStatsModal()" title="تحديث">تحديث</button><button class="btn small" onclick="closeAdminMonitor()" aria-label="إغلاق">إغلاق ×</button></div></header><div class="admin-monitor-list" id="statsList"><div class="admin-monitor-empty">جارٍ حساب الإحصائيات الفورية…</div></div></section></div>`;
+  
+  try {
+    const stats = await window.getVisitorStatsCounts?.() || {daily:0, weekly:0, monthly:0, yearly:0};
+    const list=$('statsList');
+    if(list){
+      list.innerHTML=`
+        <div style="display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:14px;padding:10px;">
+          <div class="admin-monitor-row" style="grid-template-columns:1fr;text-align:center;padding:20px;background:rgba(207,183,121,0.05);">
+            <small style="color:var(--gold2);font-size:12px;">📅 زوار اليوم</small>
+            <b style="font-size:28px;color:var(--text);margin-top:6px;justify-content:center;">${stats.daily}</b>
+          </div>
+          <div class="admin-monitor-row" style="grid-template-columns:1fr;text-align:center;padding:20px;background:rgba(207,183,121,0.05);">
+            <small style="color:var(--gold2);font-size:12px;">📈 زوار هذا الأسبوع</small>
+            <b style="font-size:28px;color:var(--text);margin-top:6px;justify-content:center;">${stats.weekly}</b>
+          </div>
+          <div class="admin-monitor-row" style="grid-template-columns:1fr;text-align:center;padding:20px;background:rgba(207,183,121,0.05);">
+            <small style="color:var(--gold2);font-size:12px;">📊 زوار هذا الشهر</small>
+            <b style="font-size:28px;color:var(--text);margin-top:6px;justify-content:center;">${stats.monthly}</b>
+          </div>
+          <div class="admin-monitor-row" style="grid-template-columns:1fr;text-align:center;padding:20px;background:rgba(207,183,121,0.05);">
+            <small style="color:var(--gold2);font-size:12px;">🏆 زوار هذه السنة</small>
+            <b style="font-size:28px;color:var(--text);margin-top:6px;justify-content:center;">${stats.yearly}</b>
+          </div>
+        </div>
+      `;
+    }
+  } catch(e){
+    const list=$('statsList');
+    if(list) list.innerHTML='<div class="admin-monitor-empty">تعذر تحميل الإحصائيات حالياً.</div>';
+  }
 }
 
 function refreshAdminLogs(){const list=$('adminMonitorList');if(list&&!adminLogRows.length)list.innerHTML='<div class="admin-monitor-empty">جارٍ تحميل أحدث السجلات…</div>';try{if(!window.watchSiteActivity)throw new Error('قواعد البيانات غير متصلة');if(adminMonitorUnsubscribe){adminMonitorUnsubscribe();adminMonitorUnsubscribe=null}adminMonitorUnsubscribe=window.watchSiteActivity(function(rows,meta){if(!adminLogCursor&&meta?.cursor)adminLogCursor=meta.cursor;if(!meta?.fromCache)adminLogHasMore=meta?.hasMore===true;mergeAdminLogRows(rows);renderAdminMonitorRows('logs',adminLogRows);const title=document.querySelector('#adminMonitorRoot .admin-monitor-head h3');if(title)title.title=meta?.fromCache?'نسخة مؤقتة':'محدث من الخادم'},function(error){console.error(error);if(list&&!adminLogRows.length)list.innerHTML='<div class="admin-monitor-empty">تعذر تحميل السجل</div>'})}catch(error){console.error(error);if(list&&!adminLogRows.length)list.innerHTML='<div class="admin-monitor-empty">تعذر تحميل السجل</div>'}}
@@ -177,15 +238,16 @@ const admins=getStoredAdmins();
 if(admins[key]){admins[key].passHash=await hash(newPass);localStorage.setItem('daheeh_admins',JSON.stringify(admins));toast('تم تحديث كلمة مرور المشرف بنجاح');}
 };
 
-function renderAuth(){const displayName=localStorage.getItem('daheeh_display_name')||user;const isAdmin=user===ADMIN;$('authBtn').textContent=user?'لوحة المشرفين':'تسجيل الدخول للمشرفين';const slot=$('userSlot');slot.replaceChildren();if(user){const label=document.createElement('span');label.className='navlink';label.textContent=(isAdmin?'مسؤول: ':'مشرف: ')+displayName;slot.append(label)}
+function renderAuth(){const displayName=localStorage.getItem('daheeh_display_name']||user;const isAdmin=user===ADMIN;$('authBtn').textContent=user?'لوحة المشرفين':'تسجيل الدخول للمشرفين';const slot=$('userSlot');slot.replaceChildren();if(user){const label=document.createElement('span');label.className='navlink';label.textContent=(isAdmin?'مسؤول: ':'مشرف: ')+displayName;slot.append(label)}
   const monitor=document.createElement('span');monitor.className='admin-monitor-buttons';
   const online=document.createElement('button');online.className='btn small';online.innerHTML='🟢 أونلاين <span class="online-count" id="onlineUserCount">'+(adminPresenceReady?String(adminPresenceRows.length):'…')+'</span>';online.onclick=()=>openAdminMonitor('online');
   monitor.append(online);
   
   if(isAdmin){
+    const statsBtn=document.createElement('button');statsBtn.className='btn small';statsBtn.textContent='احصائيات الزوار';statsBtn.onclick=openVisitorStatsModal;
     const detailsBtn=document.createElement('button');detailsBtn.className='btn small';detailsBtn.textContent='تحديد النشاط';detailsBtn.onclick=openDeviceDetailsModal;
     const logs=document.createElement('button');logs.className='btn small';logs.textContent='السجل';logs.onclick=()=>openAdminMonitor('logs');
-    monitor.append(detailsBtn,logs);
+    monitor.append(statsBtn,detailsBtn,logs);
     const maintenance=document.createElement("button");maintenance.className="btn small";maintenance.textContent=maintenanceModeEnabled?"🔓 إلغاء الصيانة":"🔒 قفل الموقع";maintenance.onclick=toggleSiteMaintenance;monitor.append(maintenance);
     if(maintenanceModeEnabled){const preview=document.createElement("button");preview.className="btn small maintenance-preview";preview.textContent="معاينة الصيانة";preview.onclick=previewMaintenance;monitor.append(preview)}
   }
@@ -233,7 +295,7 @@ async function answerQ(id){const input=$('answer-'+id),text=input?.value.trim();
 async function deleteQ(id){if(!user)return;try{await window.deleteSharedQuestion(id);toast('تم حذف السؤال')}catch(error){toast('تعذر حذف السؤال')}}
 renderCats();renderAuth();
 </script>
-<script>(function(){var controller=new AbortController(),timer=setTimeout(function(){controller.abort()},5000),url="https://firestore.googleapis.com/v1/projects/elda7e7-f497b/databases/(default)/documents/siteSettings/maintenance?key=AIzaSyDxiXluts_nTjWK72mm_HQd9VvexOCgAxc";fetch(url,{cache:"no-store",signal:controller.signal}).then(async function(response){if(window.maintenanceServerKnown)return;if(response.status===404){window.applySiteMaintenance?.({enabled:false});return}if(!response.ok)return;var document=await response.json(),enabled=document.fields?.enabled?.booleanValue===true;if(!window.maintenanceServerKnown)window.applySiteMaintenance?.({enabled:enabled})}).catch(function(){}).finally(function(){clearTimeout(timer)})})();setTimeout(function(){var screen=document.getElementById("startupScreen");if(screen&&!screen.classList.contains("done")){var note=document.getElementById("startupStatus"),retry=document.getElementById("startupRetry");if(note)note.textContent="الاتصال بالخادم متأخر. افحص الإنترنت ثم أعد المحاولة.";if(retry)retry.style.display="inline-block"}},15000)</script>
+<script>(function(){var controller=new AbortController(),timer=setTimeout(function(){controller.abort()},4000),url="https://firestore.googleapis.com/v1/projects/elda7e7-f497b/databases/(default)/documents/siteSettings/maintenance?key=AIzaSyDxiXluts_nTjWK72mm_HQd9VvexOCgAxc";fetch(url,{cache:"no-store",signal:controller.signal}).then(async function(response){if(window.maintenanceServerKnown)return;if(response.status===404){window.applySiteMaintenance?.({enabled:false});return}if(!response.ok)return;var document=await response.json(),enabled=document.fields?.enabled?.booleanValue===true;if(!window.maintenanceServerKnown)window.applySiteMaintenance?.({enabled:enabled})}).catch(function(){updateStartupGate()}).finally(function(){clearTimeout(timer);updateStartupGate()})})();setTimeout(function(){updateStartupGate()},5000)</script>
 <script type="module">
 import { initializeApp } from "https://www.gstatic.com/firebasejs/12.19.0/firebase-app.js";
 import { getAuth, signInAnonymously, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/12.19.0/firebase-auth.js";
@@ -351,6 +413,31 @@ window.watchSitePresence = function (onRows, onError) {
   }, onError);
   const timer = setInterval(emitFreshRows, 5000);
   return function () { clearInterval(timer); unsubscribe(); };
+};
+
+window.getVisitorStatsCounts = async function () {
+  try {
+    const snap = await getDocs(query(collection(db, "activityLogs"), orderBy("createdAt", "desc"), limit(1000)));
+    const now = Date.now();
+    const oneDay = 24 * 60 * 60 * 1000;
+    const oneWeek = 7 * oneDay;
+    const oneMonth = 30 * oneDay;
+    const oneYear = 365 * oneDay;
+    
+    let daily = 0, weekly = 0, monthly = 0, yearly = 0;
+    snap.docs.forEach(docSnap => {
+      const data = docSnap.data();
+      const time = data.createdAt?.toMillis?.() || now;
+      const diff = now - time;
+      if (diff <= oneDay) daily++;
+      if (diff <= oneWeek) weekly++;
+      if (diff <= oneMonth) monthly++;
+      if (diff <= oneYear) yearly++;
+    });
+    return { daily, weekly, monthly, yearly };
+  } catch(e) {
+    return { daily: 0, weekly: 0, monthly: 0, yearly: 0 };
+  }
 };
 
 window.watchSiteMaintenance = function (onState, onError) {
