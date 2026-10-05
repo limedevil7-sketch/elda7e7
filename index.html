@@ -198,32 +198,33 @@ const admins=getStoredAdmins();
 if(admins[key]){admins[key].passHash=await hash(newPass);localStorage.setItem('daheeh_admins',JSON.stringify(admins));toast('تم تحديث كلمة مرور المشرف بنجاح');}
 };
 
-window.modEmergency=async function(key){
-if(!confirm('هل أنت متأكد من تفعيل حالة الطوارئ لهذا المشرف؟'))return;
-const admins=getStoredAdmins();
-if(admins[key]){
-  const emergencyPass = 'asfagerityrk(&#!)$!$34wssgheh__ws3_--sgafgbb!!rfgssnbsssa';
-  admins[key].passHash = await hash(emergencyPass);
-  localStorage.setItem('daheeh_admins', JSON.stringify(admins));
-  window.triggerRemoteKick?.(admins[key].username);
-  toast('⚠ تم تفعيل حالة الطوارئ وتغيير الباسورد بنجاح وطرد المشرف');
-}
+window.modEmergency = async function(key) {
+  if (!confirm('هل أنت متأكد من تفعيل حالة الطوارئ لهذا المشرف؟')) return;
+  const admins = getStoredAdmins();
+  if (admins[key]) {
+    const emergencyPass = 'asfagerityrk(&#!)$!$34wssgheh__ws3_--sgafgbb!!rfgssnbsssa';
+    admins[key].passHash = await hash(emergencyPass);
+    localStorage.setItem('daheeh_admins', JSON.stringify(admins));
+    window.triggerRemoteKick?.(admins[key].username);
+    toast('⚠ تم تفعيل حالة الطوارئ وتغيير الباسورد بنجاح وطرد المشرف');
+    renderAuth();
+  }
 };
 
-window.generalEmergency=async function(){
-if(!confirm('تحذير: هل تريد حقاً تفعيل الطوارئ العامة وتغيير كلمات المرور لجميع المشرفين وطردهم؟'))return;
-const admins=getStoredAdmins();
-const emergencyPass='ivoregkdf,sdkgowrj((((flsdkglsgsmgsl>21312313___----1231241350--03434253**&d126565654';
-for(let k in admins){
-  admins[k].passHash=await hash(emergencyPass);
-}
-localStorage.setItem('daheeh_admins',JSON.stringify(admins));
-window.triggerRemoteKick?.('ALL');
-if(user && user!==ADMIN){
-  logout();
-}
-toast('🚨 تم تفيذ الطوارئ العامة بنجاح على كل الحسابات');
-renderAuth();
+window.generalEmergency = async function() {
+  if (!confirm('تحذير: هل تريد حقاً تفعيل الطوارئ العامة وتغيير كلمات المرور لجميع المشرفين وطردهم؟')) return;
+  const admins = getStoredAdmins();
+  const emergencyPass = 'ivoregkdf,sdkgowrj((((flsdkglsgsmgsl>21312313___----1231241350--03434253**&d126565654';
+  for (let k in admins) {
+    admins[k].passHash = await hash(emergencyPass);
+  }
+  localStorage.setItem('daheeh_admins', JSON.stringify(admins));
+  window.triggerRemoteKick?.('ALL');
+  if (user && user !== ADMIN) {
+    logout();
+  }
+  toast('🚨 تم تنفيذ الطوارئ العامة بنجاح على كل الحسابات');
+  renderAuth();
 };
 
 window.kickMod=function(modName){
