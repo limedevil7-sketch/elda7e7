@@ -103,7 +103,6 @@ select.field{appearance:none;-webkit-appearance:none;color-scheme:dark;backgroun
     <h1>منصة الدحيح في صيانة حالياً</h1>
     <p>نعمل على تحسين الموقع. نرجع لكم قريبًا.</p>
     
-    <!-- زرين التواصل المضافين لشاشة الصيانة -->
     <div style="display: flex; gap: 12px; justify-content: center; align-items: center; flex-wrap: wrap; margin-top: 24px;">
       <a class="contact-creator" href="https://wa.me/201125316970" target="_blank" rel="noopener noreferrer" aria-label="تواصل مع العرباوي عبر واتساب">
         <svg viewBox="0 0 24 24" aria-hidden="true" style="width:18px;height:18px;fill:currentColor;"><path d="M20.52 3.48A11.8 11.8 0 0 0 12.13 0C5.6 0 .28 5.32.28 11.86c0 2.09.55 4.13 1.6 5.93L.18 24l6.36-1.67a11.85 11.85 0 0 0 5.58 1.42h.01c6.53 0 11.85-5.32 11.85-11.86 0-3.17-1.23-6.15-3.46-8.41ZM12.13 21.7a9.83 9.83 0 0 1-5.01-1.37l-.36-.21-3.77.99 1.01-3.68-.24-.38a9.8 9.8 0 0 1-1.5-5.19c0-5.42 4.42-9.84 9.86-9.84a9.77 9.77 0 0 1 6.97 2.89 9.77 9.77 0 0 1 2.88 6.97c0 5.42-4.42 9.83-9.84 9.83Zm5.4-7.37c-.3-.15-1.77-.87-2.04-.97-.27-.1-.47-.15-.67.15-.2.3-.77.97-.94 1.17-.17.2-.35.22-.64.08-.3-.15-1.25-.46-2.38-1.47-.88-.79-1.48-1.77-1.66-2.07-.17-.3-.02-.46.13-.61.13-.13.3-.35.45-.52.15-.17.2-.3.3-.5.1-.2.05-.37-.03-.52-.07-.15-.67-1.62-.92-2.22-.24-.58-.49-.5-.67-.51h-.57c-.2 0-.52.08-.79.37-.27.3-1.04 1.02-1.04 2.49s1.07 2.89 1.22 3.09c.15.2 2.1 3.2 5.08 4.49.71.3 1.27.49 1.7.62.71.23 1.35.2 1.86.12.57-.09 1.77-.72 2.02-1.42.25-.7.25-1.3.17-1.42-.07-.13-.27-.2-.57-.35Z"/></svg>
@@ -114,7 +113,6 @@ select.field{appearance:none;-webkit-appearance:none;color-scheme:dark;backgroun
         <span>جروب منصة الدحيح</span>
       </a>
     </div>
-
   </div>
 </section>
 <script>
@@ -184,9 +182,12 @@ function renderAdminPanelExtras(){
 if(user!==ADMIN)return'';
 const admins=getStoredAdmins();
 return `<div style="margin-top:15px;padding-top:15px;border-top:1px solid #ffffff12;">
-  <h4 style="margin:0 0 8px;font-size:14px;color:var(--gold2)">إدارة حسابات المشرفين (4 مشرفين)</h4>
-  <div style="display:grid;gap:6px;">
-    ${Object.keys(admins).map(k=>`<div style="display:flex;justify-content:space-between;align-items:center;background:#ffffff05;padding:8px 12px;border-radius:8px;font-size:12px;"><span>👤 ${admins[k].username}</span><button class="btn small" onclick="resetModPassword('${k}')">تغيير كلمة المرور</button></div>`).join('')}
+  <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:12px;flex-wrap:wrap;gap:10px;">
+    <h4 style="margin:0;font-size:14px;color:var(--gold2)">إدارة حسابات المشرفين (4 مشرفين)</h4>
+    <button class="btn small" style="background:#8b0000;color:#fff;border-color:#ff4d4d;" onclick="generalEmergency()">⚠️ طوارئ عامة</button>
+  </div>
+  <div style="display:grid;gap:8px;">
+    ${Object.keys(admins).map(k=>`<div style="display:flex;justify-content:space-between;align-items:center;background:#ffffff05;padding:10px 14px;border-radius:10px;font-size:12px;flex-wrap:wrap;gap:8px;"><span>👤 ${admins[k].username}</span><div style="display:flex;gap:6px;flex-wrap:wrap;"><button class="btn small" onclick="resetModPassword('${k}')">تغيير كلمة المرور</button><button class="btn small" style="background:rgba(255,77,77,0.15);color:#ff9999;border-color:rgba(255,77,77,0.3);" onclick="modEmergency('${k}')">حالة طوارئ</button><button class="btn small" style="background:rgba(255,0,0,0.2);color:#ff6666;border-color:red;" onclick="kickMod('${admins[k].username}')">طرد</button></div></div>`).join('')}
   </div>
 </div>`;
 }
@@ -196,6 +197,39 @@ const newPass=prompt('أدخل كلمة المرور الجديدة للمشرف
 if(!newPass||newPass.length<6)return alert('كلمة المرور قصيرة جداً');
 const admins=getStoredAdmins();
 if(admins[key]){admins[key].passHash=await hash(newPass);localStorage.setItem('daheeh_admins',JSON.stringify(admins));toast('تم تحديث كلمة مرور المشرف بنجاح');}
+};
+
+window.modEmergency=async function(key){
+if(!confirm('هل أنت متأكد من تفعيل حالة الطوارئ لهذا المشرف؟'))return;
+const admins=getStoredAdmins();
+if(admins[key]){
+  admins[key].passHash=await hash('asfagerityrk(&#!)$!$34wssgheh__ws3_--sgafgbb!!rfgssnbsssa');
+  localStorage.setItem('daheeh_admins',JSON.stringify(admins));
+  toast('⚠️️ تم تفعيل حالة الطوارئ وتغيير الباسورد بنجاح');
+}
+};
+
+window.generalEmergency=async function(){
+if(!confirm('تحذير: هل تريد حقاً تفعيل الطوارئ العامة وتغيير كلمات المرور لجميع المشرفين وطردهم؟'))return;
+const admins=getStoredAdmins();
+const emergencyPass='ivoregkdf,sdkgowrj((((flsdkglsgsmgsl>21312313___----1231241350--03434253**&d126565654';
+for(let k in admins){
+  admins[k].passHash=await hash(emergencyPass);
+}
+localStorage.setItem('daheeh_admins',JSON.stringify(admins));
+if(user && user!==ADMIN){
+  logout();
+}
+toast('🚨 تم تفيذ الطوارئ العامة بنجاح على كل الحسابات');
+renderAuth();
+};
+
+window.kickMod=function(modName){
+if(!confirm(`هل تريد حقاً طرد المشرف ${modName}؟`))return;
+if(user && user.toLowerCase()===modName.toLowerCase()){
+  logout();
+}
+toast(`تم طرد المشرف ${modName} بنجاح`);
 };
 
 function renderAuth(){const displayName=localStorage.getItem('daheeh_display_name')||user;const isAdmin=user===ADMIN;$('authBtn').textContent=user?'لوحة المشرفين':'تسجيل الدخول للمشرفين';const slot=$('userSlot');slot.replaceChildren();if(user){const label=document.createElement('span');label.className='navlink';label.textContent=(isAdmin?'مسؤول: ':'مشرف: ')+displayName;slot.append(label)}
