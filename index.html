@@ -64,7 +64,6 @@ select.field{appearance:none;-webkit-appearance:none;color-scheme:dark;backgroun
 
 .admin-monitor-backdrop{position:fixed;inset:0;z-index:100;background:#03070bc9;backdrop-filter:blur(8px);display:grid;place-items:center;padding:18px}.admin-monitor-card{width:min(900px,100%);max-height:calc(100dvh - 36px);display:flex;flex-direction:column;background:#0c141e;border:1px solid #cfb77940;border-radius:22px;overflow:hidden;box-shadow:0 28px 100px #000b}.admin-monitor-head{height:68px;display:flex;align-items:center;justify-content:space-between;padding:0 20px;border-bottom:1px solid #ffffff0b}.admin-monitor-head h3{margin:0;font-size:18px}.admin-monitor-head-actions{display:flex;gap:8px}.admin-monitor-list{flex:1;overflow:auto;padding:16px;display:grid;gap:8px}.admin-monitor-empty{text-align:center;padding:32px;color:var(--muted);font-size:13px}
 
-/* جدول سجل النشاط وتحديد النشاط المحدث والمنظم */
 .admin-monitor-row{display:grid;grid-template-columns:1.2fr 1.8fr auto;align-items:center;gap:12px;padding:12px 16px;background:#ffffff05;border:1px solid #ffffff0b;border-radius:12px;font-size:12px}
 .admin-monitor-row b{color:var(--gold2);display:flex;align-items:center;gap:6px}
 .online-dot{width:7px;height:7px;border-radius:50%;background:#4caf50;box-shadow:0 0 8px #4caf50}
@@ -138,6 +137,44 @@ function openDeviceDetailsModal(){
   renderAdminMonitorRows('details', adminPresenceRows);
 }
 
+async function openVisitorStatsModal(){
+  if(user!==ADMIN)return toast('هذا الزر مخصص لمسؤول الموقع (lime_devil) فقط');
+  closeAdminMonitor();
+  const root=$('adminMonitorRoot');
+  root.dataset.kind='stats';
+  root.innerHTML=`<div class="admin-monitor-backdrop" onclick="if(event.target===this)closeAdminMonitor()"><section class="admin-monitor-card" role="dialog" aria-modal="true"><header class="admin-monitor-head"><h3>📊 إحصائيات الزوار</h3><div class="admin-monitor-head-actions"><button class="btn small" onclick="openVisitorStatsModal()" title="تحديث">تحديث</button><button class="btn small" onclick="closeAdminMonitor()" aria-label="إغلاق">إغلاق ×</button></div></header><div class="admin-monitor-list" id="statsList"><div class="admin-monitor-empty">جارٍ حساب الإحصائيات الفورية…</div></div></section></div>`;
+  
+  try {
+    const stats = await window.getVisitorStatsCounts?.() || {daily:0, weekly:0, monthly:0, yearly:0};
+    const list=$('statsList');
+    if(list){
+      list.innerHTML=`
+        <div style="display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:14px;padding:10px;">
+          <div class="admin-monitor-row" style="grid-template-columns:1fr;text-align:center;padding:20px;background:rgba(207,183,121,0.05);">
+            <small style="color:var(--gold2);font-size:12px;">📅 زوار اليوم</small>
+            <b style="font-size:28px;color:var(--text);margin-top:6px;justify-content:center;">${stats.daily}</b>
+          </div>
+          <div class="admin-monitor-row" style="grid-template-columns:1fr;text-align:center;padding:20px;background:rgba(207,183,121,0.05);">
+            <small style="color:var(--gold2);font-size:12px;">📈 زوار هذا الأسبوع</small>
+            <b style="font-size:28px;color:var(--text);margin-top:6px;justify-content:center;">${stats.weekly}</b>
+          </div>
+          <div class="admin-monitor-row" style="grid-template-columns:1fr;text-align:center;padding:20px;background:rgba(207,183,121,0.05);">
+            <small style="color:var(--gold2);font-size:12px;">📊 زوار هذا الشهر</small>
+            <b style="font-size:28px;color:var(--text);margin-top:6px;justify-content:center;">${stats.monthly}</b>
+          </div>
+          <div class="admin-monitor-row" style="grid-template-columns:1fr;text-align:center;padding:20px;background:rgba(207,183,121,0.05);">
+            <small style="color:var(--gold2);font-size:12px;">🏆 زوار هذه السنة</small>
+            <b style="font-size:28px;color:var(--text);margin-top:6px;justify-content:center;">${stats.yearly}</b>
+          </div>
+        </div>
+      `;
+    }
+  } catch(e){
+    const list=$('statsList');
+    if(list) list.innerHTML='<div class="admin-monitor-empty">تعذر تحميل الإحصائيات حالياً.</div>';
+  }
+}
+
 function refreshAdminLogs(){const list=$('adminMonitorList');if(list&&!adminLogRows.length)list.innerHTML='<div class="admin-monitor-empty">جارٍ تحميل أحدث السجلات…</div>';try{if(!window.watchSiteActivity)throw new Error('قواعد البيانات غير متصلة');if(adminMonitorUnsubscribe){adminMonitorUnsubscribe();adminMonitorUnsubscribe=null}adminMonitorUnsubscribe=window.watchSiteActivity(function(rows,meta){if(!adminLogCursor&&meta?.cursor)adminLogCursor=meta.cursor;if(!meta?.fromCache)adminLogHasMore=meta?.hasMore===true;mergeAdminLogRows(rows);renderAdminMonitorRows('logs',adminLogRows);const title=document.querySelector('#adminMonitorRoot .admin-monitor-head h3');if(title)title.title=meta?.fromCache?'نسخة مؤقتة':'محدث من الخادم'},function(error){console.error(error);if(list&&!adminLogRows.length)list.innerHTML='<div class="admin-monitor-empty">تعذر تحميل السجل</div>'})}catch(error){console.error(error);if(list&&!adminLogRows.length)list.innerHTML='<div class="admin-monitor-empty">تعذر تحميل السجل</div>'}}
 
 async function loadOlderAdminLogs(){if(adminLogLoadingOlder||!adminLogHasMore||!adminLogCursor)return;adminLogLoadingOlder=true;renderAdminMonitorRows('logs',adminLogRows);try{const page=await window.loadOlderSiteActivity(adminLogCursor);adminLogCursor=page.cursor;adminLogHasMore=page.hasMore;mergeAdminLogRows(page.rows);if(!page.rows.length)adminLogHasMore=false}catch(error){console.error(error);toast('تعذر تحميل السجلات الأقدم')}finally{adminLogLoadingOlder=false;renderAdminMonitorRows('logs',adminLogRows)}}
@@ -177,15 +214,16 @@ const admins=getStoredAdmins();
 if(admins[key]){admins[key].passHash=await hash(newPass);localStorage.setItem('daheeh_admins',JSON.stringify(admins));toast('تم تحديث كلمة مرور المشرف بنجاح');}
 };
 
-function renderAuth(){const displayName=localStorage.getItem('daheeh_display_name')||user;const isAdmin=user===ADMIN;$('authBtn').textContent=user?'لوحة المشرفين':'تسجيل الدخول للمشرفين';const slot=$('userSlot');slot.replaceChildren();if(user){const label=document.createElement('span');label.className='navlink';label.textContent=(isAdmin?'مسؤول: ':'مشرف: ')+displayName;slot.append(label)}
+function renderAuth(){const displayName=localStorage.getItem('daheeh_display_name']||user;const isAdmin=user===ADMIN;$('authBtn').textContent=user?'لوحة المشرفين':'تسجيل الدخول للمشرفين';const slot=$('userSlot');slot.replaceChildren();if(user){const label=document.createElement('span');label.className='navlink';label.textContent=(isAdmin?'مسؤول: ':'مشرف: ')+displayName;slot.append(label)}
   const monitor=document.createElement('span');monitor.className='admin-monitor-buttons';
   const online=document.createElement('button');online.className='btn small';online.innerHTML='🟢 أونلاين <span class="online-count" id="onlineUserCount">'+(adminPresenceReady?String(adminPresenceRows.length):'…')+'</span>';online.onclick=()=>openAdminMonitor('online');
   monitor.append(online);
   
   if(isAdmin){
+    const statsBtn=document.createElement('button');statsBtn.className='btn small';statsBtn.textContent='احصائيات الزوار';statsBtn.onclick=openVisitorStatsModal;
     const detailsBtn=document.createElement('button');detailsBtn.className='btn small';detailsBtn.textContent='تحديد النشاط';detailsBtn.onclick=openDeviceDetailsModal;
     const logs=document.createElement('button');logs.className='btn small';logs.textContent='السجل';logs.onclick=()=>openAdminMonitor('logs');
-    monitor.append(detailsBtn,logs);
+    monitor.append(statsBtn,detailsBtn,logs);
     const maintenance=document.createElement("button");maintenance.className="btn small";maintenance.textContent=maintenanceModeEnabled?"🔓 إلغاء الصيانة":"🔒 قفل الموقع";maintenance.onclick=toggleSiteMaintenance;monitor.append(maintenance);
     if(maintenanceModeEnabled){const preview=document.createElement("button");preview.className="btn small maintenance-preview";preview.textContent="معاينة الصيانة";preview.onclick=previewMaintenance;monitor.append(preview)}
   }
@@ -351,6 +389,31 @@ window.watchSitePresence = function (onRows, onError) {
   }, onError);
   const timer = setInterval(emitFreshRows, 5000);
   return function () { clearInterval(timer); unsubscribe(); };
+};
+
+window.getVisitorStatsCounts = async function () {
+  try {
+    const snap = await getDocs(query(collection(db, "activityLogs"), orderBy("createdAt", "desc"), limit(1000)));
+    const now = Date.now();
+    const oneDay = 24 * 60 * 60 * 1000;
+    const oneWeek = 7 * oneDay;
+    const oneMonth = 30 * oneDay;
+    const oneYear = 365 * oneDay;
+    
+    let daily = 0, weekly = 0, monthly = 0, yearly = 0;
+    snap.docs.forEach(docSnap => {
+      const data = docSnap.data();
+      const time = data.createdAt?.toMillis?.() || now;
+      const diff = now - time;
+      if (diff <= oneDay) daily++;
+      if (diff <= oneWeek) weekly++;
+      if (diff <= oneMonth) monthly++;
+      if (diff <= oneYear) yearly++;
+    });
+    return { daily, weekly, monthly, yearly };
+  } catch(e) {
+    return { daily: 0, weekly: 0, monthly: 0, yearly: 0 };
+  }
 };
 
 window.watchSiteMaintenance = function (onState, onError) {
