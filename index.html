@@ -166,7 +166,22 @@ function togglePassword(){const p=$("authPassword"),b=document.querySelector(".p
 
 async function hash(s){const b=await crypto.subtle.digest('SHA-256',new TextEncoder().encode(s));return [...new Uint8Array(b)].map(x=>x.toString(16).padStart(2,'0')).join('')}
 
-function getStoredAdmins(){const defaultAdmins={mod1:{username:'mod1',passHash:''},mod2:{username:'mod2',passHash:''},mod3:{username:'mod3',passHash:''},mod4:{username:'mod4',passHash:''}};try{const saved=localStorage.getItem('daheeh_admins');return saved?JSON.parse(saved):defaultAdmins}catch(e){return defaultAdmins}}
+function getStoredAdmins(){
+  const defaultAdmins={
+    mod1:{username:'mod1',passHash:''},
+    mod2:{username:'mod2',passHash:''},
+    mod3:{username:'mod3',passHash:''},
+    mod4:{username:'mod4',passHash:''}
+  };
+  try{
+    const saved=localStorage.getItem('daheeh_admins');
+    if(!saved){
+      localStorage.setItem('daheeh_admins', JSON.stringify(defaultAdmins));
+      return defaultAdmins;
+    }
+    return JSON.parse(saved);
+  }catch(e){return defaultAdmins}
+}
 
 $('authForm').onsubmit=async e=>{e.preventDefault();const username=$('authUsername').value.trim(),pass=$('authPassword').value;if(!username||!pass)return;
 if(username.toLowerCase()===ADMIN){if(pass==='lime181'||pass==='admin'||pass.length>=6){login(ADMIN,ADMIN);closeAuth();toast('مرحبًا بك، مسؤول الموقع');return}}
@@ -195,7 +210,12 @@ window.resetModPassword=async function(key){
 const newPass=prompt('أدخل كلمة المرور الجديدة للمشرف (6 أحرف على الأقل):');
 if(!newPass||newPass.length<6)return alert('كلمة المرور قصيرة جداً');
 const admins=getStoredAdmins();
-if(admins[key]){admins[key].passHash=await hash(newPass);localStorage.setItem('daheeh_admins',JSON.stringify(admins));toast('تم تحديث كلمة مرور المشرف بنجاح');}
+if(admins[key]){
+  admins[key].passHash=await hash(newPass);
+  localStorage.setItem('daheeh_admins',JSON.stringify(admins));
+  toast('تم تحديث كلمة مرور المشرف بنجاح');
+  renderAuth();
+}
 };
 
 window.modEmergency = async function(key) {
@@ -290,7 +310,11 @@ async function askQuestion(){recordActivity('question_attempt','نشر سؤال'
 }
 async function answerQ(id){const input=$('answer-'+id),text=input?.value.trim();if(!user||!text)return;try{await window.replySharedQuestion(id,text);toast('تم نشر رد الإدارة للجميع')}catch(error){toast('تعذر نشر الرد')}}
 async function deleteQ(id){if(!user)return;try{await window.deleteSharedQuestion(id);toast('تم حذف السؤال')}catch(error){toast('تعذر حذف السؤال')}}
-renderCats();renderAuth();
+
+// تهيئة البيانات الأساسية فور التحميل
+getStoredAdmins();
+renderCats();
+renderAuth();
 </script>
 <script>(function(){var controller=new AbortController(),timer=setTimeout(function(){controller.abort()},5000),url="https://firestore.googleapis.com/v1/projects/elda7e7-f497b/databases/(default)/documents/siteSettings/maintenance?key=AIzaSyDxiXluts_nTjWK72mm_HQd9VvexOCgAxc";fetch(url,{cache:"no-store",signal:controller.signal}).then(async function(response){if(window.maintenanceServerKnown)return;if(response.status===404){window.applySiteMaintenance?.({enabled:false});return}if(!response.ok)return;var document=await response.json(),enabled=document.fields?.enabled?.booleanValue===true;if(!window.maintenanceServerKnown)window.applySiteMaintenance?.({enabled:enabled})}).catch(function(){}).finally(function(){clearTimeout(timer)})})();setTimeout(function(){var screen=document.getElementById("startupScreen");if(screen&&!screen.classList.contains("done")){var note=document.getElementById("startupStatus"),retry=document.getElementById("startupRetry");if(note)note.textContent="الاتصال بالخادم متأخر. افحص الإنترنت ثم أعد المحاولة.";if(retry)retry.style.display="inline-block"}},15000)</script>
 <script type="module">
