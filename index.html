@@ -405,21 +405,71 @@ window.stopModeratorKickListener = function () {
   }
 };
 
+let moderatorKickHandled = false;
+
+window.finishModeratorKick = function () {
+  if (moderatorKickHandled || !user || user === ADMIN) return;
+  moderatorKickHandled = true;
+  window.stopModeratorKickListener?.();
+  window.stopSitePresence?.();
+  user = '';
+  localStorage.removeItem('daheeh_session');
+  localStorage.removeItem('daheeh_display_name');
+  localStorage.removeItem('daheeh_login_at');
+  renderAuth();
+  toast('تم طرد حسابك من لوحة المشرفين بواسطة مسؤول الموقع');
+};
+
 window.revokeModeratorSession = async function (username) {
   if (user !== ADMIN) throw new Error("غير مصرح بهذا الإجراء");
   const cleanUsername = String(username || "").trim().toLowerCase();
   if (!cleanUsername || cleanUsername === ADMIN.toLowerCase()) {
     throw new Error("حساب غير صالح");
   }
-  await setDoc(doc(db, "moderatorSessions", cleanUsername), {
-    username: cleanUsername,
-    revokedAt: serverTimestamp(),
-    revokedBy: ADMIN
-  }, { merge: true });
+
+  // المسار الأساسي: سجل مستقل لكل مشرف.
+  let sessionWritten = false;
+  try {
+    await setDoc(doc(db, "moderatorSessions", cleanUsername), {
+      username: cleanUsername,
+      revokedAt: serverTimestamp(),
+      revokedBy: ADMIN
+    }, { merge: true });
+    sessionWritten = true;
+  } catch (error) {
+    console.warn('moderatorSessions write failed; using maintenance fallback:', error);
+  }
+
+  // مسار احتياطي موثوق: وثيقة الصيانة موجودة أصلًا ومتصلة لكل الأجهزة.
+  // هذا يجعل زر الطرد يعمل حتى لو كانت قواعد Firestore لا تسمح بمجموعة moderatorSessions.
+  let fallbackWritten = false;
+  try {
+    await setDoc(doc(db, "siteSettings", "maintenance"), {
+      moderatorKicks: { [cleanUsername]: serverTimestamp() }
+    }, { merge: true });
+    fallbackWritten = true;
+  } catch (error) {
+    console.warn('maintenance kick fallback failed:', error);
+  }
+
+  if (!sessionWritten && !fallbackWritten) {
+    throw new Error('تعذر حفظ أمر الطرد في Firestore');
+  }
+};
+
+window.handleModeratorKickState = function (state) {
+  if (!user || user === ADMIN || !state) return;
+  const username = String(user).trim().toLowerCase();
+  const loginAt = Number(localStorage.getItem('daheeh_login_at') || 0);
+  if (!username || !loginAt) return;
+
+  const kickedAt = state?.moderatorKicks?.[username]?.toMillis?.() || 0;
+  if (kickedAt && kickedAt > loginAt) window.finishModeratorKick?.();
 };
 
 window.startModeratorKickListener = function () {
   window.stopModeratorKickListener();
+  moderatorKickHandled = false;
   if (!user || user === ADMIN || !auth.currentUser) return;
 
   const username = String(user).trim().toLowerCase();
@@ -437,19 +487,10 @@ window.startModeratorKickListener = function () {
       if (!snapshot.exists()) return;
       const data = snapshot.data() || {};
       const revokedAt = data.revokedAt?.toMillis?.() || 0;
-      if (!revokedAt || revokedAt <= loginAt) return;
-
-      window.stopModeratorKickListener();
-      window.stopSitePresence?.();
-      user = '';
-      localStorage.removeItem('daheeh_session');
-      localStorage.removeItem('daheeh_display_name');
-      localStorage.removeItem('daheeh_login_at');
-      renderAuth();
-      toast('تم طرد حسابك من لوحة المشرفين بواسطة مسؤول الموقع');
+      if (revokedAt && revokedAt > loginAt) window.finishModeratorKick?.();
     },
     function (error) {
-      console.error('Moderator kick listener failed:', error);
+      console.warn('Moderator session listener unavailable; maintenance fallback remains active:', error);
     }
   );
 };
@@ -566,12 +607,15 @@ window.watchSitePresence = function (onRows, onError) {
 
 window.watchSiteMaintenance = function (onState, onError) {
   return onSnapshot(doc(db, "siteSettings", "maintenance"), { includeMetadataChanges: true }, function (snapshot) {
+    const state = snapshot.exists() ? (snapshot.data() || {}) : { enabled: false };
+    // نفس الوثيقة تُستخدم كقناة احتياطية لطرد المشرفين.
+    window.handleModeratorKickState?.(state);
     if (snapshot.metadata.fromCache) {
-      if (snapshot.exists()) onState(snapshot.data());
+      if (snapshot.exists()) onState(state);
       return;
     }
     window.maintenanceServerKnown = true;
-    onState(snapshot.exists() ? snapshot.data() : { enabled: false });
+    onState(state);
   }, onError);
 };
 
