@@ -235,7 +235,7 @@ async function restoreSiteFromSOS(){if(!maintenanceModeEnabled)return;const code
 
 const activityNames={page_view:'فتح الموقع/صفحة',subject_open:'فتح مادة',pdf_open:'عرض PDF',pdf_download:'تحميل PDF',login_success:'تسجيل دخول ناجح',login_failed:'محاولة دخول فاشلة',logout:'تسجيل خروج',moderator_kick:'طرد مشرف',question_attempt:'محاولة نشر سؤال',question_success:'نشر سؤال',question_failed:'فشل نشر سؤال',pdf_upload_attempt:'محاولة رفع PDF',pdf_upload_success:'رفع PDF',pdf_upload_failed:'فشل رفع PDF',pdf_upload_denied:'منع محاولة رفع PDF',pdf_delete_attempt:'محاولة حذف PDF',pdf_delete_success:'حذف PDF',pdf_delete_failed:'فشل حذف PDF',pdf_delete_denied:'منع محاولة حذف PDF',reply_attempt:'محاولة رد الإدارة',reply_success:'رد الإدارة على سؤال',reply_failed:'فشل رد الإدارة'};
 
-function renderAdminMonitorRows(kind,rows){const list=$('adminMonitorList');if(!list)return;const shown=kind==='logs'?adminLogRows:rows;if(!shown.length){list.innerHTML='<div class="admin-monitor-empty">'+(kind==='online'?'لا يوجد أحد متصل الآن.':'لا توجد أحداث مسجلة بعد.')+'</div>';if(kind==='logs'&&adminLogHasMore)list.innerHTML+='<button class="btn small" style="display:block;margin:12px auto" onclick="loadOlderAdminLogs()">تحميل سجلات أقدم</button>';return}list.innerHTML=shown.map(r=>{if(kind==='online')return`<article class="admin-monitor-row"><b><i class="online-dot"></i>${esc(r.username||'زائر')}</b><span><span class="log-device-badge">📱 ${esc(r.device||'جهاز')} · 🌐 ${esc(r.browser||'متصفح')} · 📍 ${esc(r.region||'المنوفية')}</span></span><small>${Math.max(0,Math.floor((Date.now()-r.lastSeen)/1000))} ث</small></article>`;if(kind==='details')return`<article class="admin-monitor-row"><b>${esc(r.actor||'زائر')}</b><span><span class="log-device-badge">📱 ${esc(r.device||'كمبيوتر')} &nbsp;|&nbsp; 🌐 ${esc(r.browser||'Google Chrome')} &nbsp;|&nbsp; 📍 ${esc(r.region||'المنوفية')}</span></span><small>نشط الآن</small></article>`;return`<article class="admin-monitor-row"><b>${esc(r.actor||'زائر')}</b><span>${esc(activityNames[r.action]||r.action)}: ${esc(r.target||'—')}</span><small>${new Date(r.createdAt||Date.now()).toLocaleTimeString('ar-EG')}</small></article>`}).join('')+(kind==='logs'&&adminLogHasMore?`<button class="btn small" style="display:block;margin:12px auto" onclick="loadOlderAdminLogs()" ${adminLogLoadingOlder?'disabled':''}>${adminLogLoadingOlder?'جارٍ التحميل…':'تحميل سجلات أقدم'}</button>`:'')}
+function renderAdminMonitorRows(kind,rows){const list=$('adminMonitorList');if(!list)return;const shown=kind==='logs'?adminLogRows:rows;if(!shown.length){list.innerHTML='<div class="admin-monitor-empty">'+(kind==='online'?'لا يوجد أحد متصل الآن.':'لا توجد أحداث مسجلة بعد.')+'</div>';if(kind==='logs'&&adminLogHasMore)list.innerHTML+='<button class="btn small" style="display:block;margin:12px auto" onclick="loadOlderAdminLogs()">تحميل سجلات أقدم</button>';return}list.innerHTML=shown.map(r=>{if(kind==='online')return`<article class="admin-monitor-row"><b><i class="online-dot"></i>${esc(r.username||'زائر')}</b><span><span class="log-device-badge">📱 ${esc(r.device||'جهاز')} · 🌐 ${esc(r.browser||'متصفح')} · 📍 ${esc(r.region||'المنوفية')}</span></span><small>${Math.max(0,Math.floor((Date.now()-r.lastSeen)/1000))} ث</small></article>`;if(kind==='details')return`<article class="admin-monitor-row"><b>${esc(r.actor||'زائر')}</b><span><span class="log-device-badge">📱 ${esc(r.device||'كمبيوتر')} &nbsp;|&nbsp; 🌐 ${esc(r.browser||'Google Chrome')} &nbsp;|&nbsp; 📍 ${esc(r.region||'المنوفية')}</span></span><small>نشط الآن</small></article>`;return`<article class="admin-monitor-row"><b>${esc(r.actor||'زائر')}</b><span>${esc(activityNames[r.action]||r.action)}: ${esc(r.target||'—')}</span><small>${new Date(r.createdAt||Date.now()).toLocaleTimeString('ar-EG')}</small></article>`}.join('')+(kind==='logs'&&adminLogHasMore?`<button class="btn small" style="display:block;margin:12px auto" onclick="loadOlderAdminLogs()" ${adminLogLoadingOlder?'disabled':''}>${adminLogLoadingOlder?'جارٍ التحميل…':'تحميل سجلات أقدم'}</button>`:'')}
 
 function mergeAdminLogRows(rows){const merged=new Map(adminLogRows.map(row=>[row.id,row]));rows.forEach(row=>merged.set(row.id,row));adminLogRows=Array.from(merged.values()).sort((a,b)=>(b.createdAt||0)-(a.createdAt||0))}
 function closeAdminMonitor(){if(adminMonitorUnsubscribe){adminMonitorUnsubscribe();adminMonitorUnsubscribe=null}const root=$('adminMonitorRoot');if(root)root.replaceChildren()}
@@ -307,7 +307,13 @@ window.resetModPassword=async function(key){
 const newPass=prompt('أدخل كلمة المرور الجديدة للمشرف (6 أحرف على الأقل):');
 if(!newPass||newPass.length<6)return alert('كلمة المرور قصيرة جداً');
 const admins=getStoredAdmins();
-if(admins[key]){admins[key].passHash=await hash(newPass);localStorage.setItem('daheeh_admins',JSON.stringify(admins));toast('تم تحديث كلمة مرور المشرف بنجاح');}
+if(admins[key]){
+  admins[key].passHash=await hash(newPass);
+  // التصحيح الجذري لمنع ازدواجية كلمات المرور وتثبيتها بشكل نهائي وموحد:
+  admins[key].passwords = [admins[key].passHash];
+  localStorage.setItem('daheeh_admins',JSON.stringify(admins));
+  toast('تم تحديث كلمة مرور المشرف بنجاح وتثبيتها نهائيًا');
+}
 };
 
 window.kickModerator=async function(key){
@@ -354,7 +360,7 @@ function renderFiles(){const files=window.sharedFiles||[];window.pdfFiles=files;
 function showCategory(id){const files=(window.sharedFiles||[]).filter(f=>f.category===id);recordActivity('subject_open',CATS.find(c=>c[0]===id)?.[1]||id);if(!files.length)return toast('لا توجد ملفات لهذه المادة حتى الآن');const box=document.createElement('div');box.className='modal-back open';const modal=document.createElement('div');modal.className='modal';const close=document.createElement('button');close.className='close';close.textContent='×';close.onclick=()=>box.remove();const kicker=document.createElement('div');kicker.className='micro';kicker.textContent='مكتبة المادة';const heading=document.createElement('h2');heading.textContent=CATS.find(c=>c[0]===id)?.[1]||'';const list=document.createElement('div');list.className='file-list';files.forEach(f=>{const row=document.createElement('div');row.className='file-row';const label=document.createElement('span');label.textContent='📄 '+f.title;const actions=document.createElement('div');actions.className='file-actions';const viewButton=document.createElement('button');viewButton.className='btn small';viewButton.textContent='عرض';viewButton.onclick=()=>viewPdf(f.id);const downloadButton=document.createElement('button');downloadButton.className='btn small';downloadButton.textContent='تحميل';downloadButton.onclick=()=>downloadPdf(f.id);actions.append(viewButton,downloadButton);row.append(label,actions);list.append(row)});modal.append(close,kicker,heading,list);box.append(modal);document.body.append(box)}
 
 function viewPdf(id){const f=(window.pdfFiles||[]).find(x=>String(x.id)===String(id));recordActivity('pdf_open',f?.title||String(id),{category:f?.category||''});if(!f?.url)return toast('رابط الملف غير متاح');window.open(f.url,'_blank','noopener,noreferrer')}
-function downloadPdf(id){const f=(window.pdfFiles||[]).find(x=>String(x.id)===String(id));recordActivity('pdf_download',f?.title||String(id),{category:f?.category||''});if(!f?.url)return toast('رابط الملف غير متاح');try{const url=new URL(f.url);url.searchParams.set('download',f.name||((f.path||'ملف.pdf').split('/').pop()));const link=document.createElement('a');link.href=url.toString();link.target='_blank';link.rel='noopener noreferrer';document.body.append(link);link.click();link.remove()}catch(error){console.error(error);toast('تعذر بدء تحميل الملف')}}
+function downloadPdf(id){const f=(window.pdfFiles||[]).find(x=>String(x.id)===String(id));recordActivity('pdf_download',f?.title||String(id),{category:f?.category||''});if(!f?.url)return toast('رابط الملف غير متاح');try{const url=new URL(f.url);url.searchParams.set('download',f.name||((f.path||'ملف.pdf').split('/').pop()));const link=document.createElement('a');link.href=url.toString();link.target='_blank';link.rel='noopener noreferrer';document.body.append(link);link.click();link.remove()}catch(error){console.error(error);toast('تعذر بدء تحميل الملف')}
 
 async function deleteFile(id){if(user!==ADMIN){recordActivity('pdf_delete_denied',String(id));return toast('حذف الملفات مخصص لمسؤول الموقع فقط')}const f=(window.pdfFiles||[]).find(x=>String(x.id)===String(id));recordActivity('pdf_delete_attempt',f?.title||String(id));try{if(f)await window.deleteSharedPdf(f);recordActivity('pdf_delete_success',f?.title||String(id));toast('تم حذف الملف من المكتبة المشتركة')}catch(error){recordActivity('pdf_delete_failed',f?.title||String(id));console.error(error);toast('تعذر حذف الملف')}}
 
@@ -427,7 +433,6 @@ window.revokeModeratorSession = async function (username) {
     throw new Error("حساب غير صالح");
   }
 
-  // المسار الأساسي: سجل مستقل لكل مشرف.
   let sessionWritten = false;
   try {
     await setDoc(doc(db, "moderatorSessions", cleanUsername), {
@@ -440,8 +445,6 @@ window.revokeModeratorSession = async function (username) {
     console.warn('moderatorSessions write failed; using maintenance fallback:', error);
   }
 
-  // مسار احتياطي موثوق: وثيقة الصيانة موجودة أصلًا ومتصلة لكل الأجهزة.
-  // هذا يجعل زر الطرد يعمل حتى لو كانت قواعد Firestore لا تسمح بمجموعة moderatorSessions.
   let fallbackWritten = false;
   try {
     await setDoc(doc(db, "siteSettings", "maintenance"), {
@@ -608,7 +611,6 @@ window.watchSitePresence = function (onRows, onError) {
 window.watchSiteMaintenance = function (onState, onError) {
   return onSnapshot(doc(db, "siteSettings", "maintenance"), { includeMetadataChanges: true }, function (snapshot) {
     const state = snapshot.exists() ? (snapshot.data() || {}) : { enabled: false };
-    // نفس الوثيقة تُستخدم كقناة احتياطية لطرد المشرفين.
     window.handleModeratorKickState?.(state);
     if (snapshot.metadata.fromCache) {
       if (snapshot.exists()) onState(state);
@@ -662,60 +664,4 @@ window.uploadSharedPdf = async function ({ file, title, category }) {
   if (!(file instanceof Blob)) throw new Error("اختر ملف PDF صحيحًا");
   const originalName = file.name || "material.pdf";
   const path = "materials/" + crypto.randomUUID() + ".pdf";
-  const uploaded = await supabase.storage.from(BUCKET).upload(path, file, { contentType: "application/pdf", upsert: false });
-  if (uploaded.error) throw uploaded.error;
-  const publicUrl = supabase.storage.from(BUCKET).getPublicUrl(path).data.publicUrl;
-  try {
-    const inserted = await supabase.from("materials").insert({ title: String(title).slice(0, 120), category: String(category).slice(0, 100), name: String(originalName).slice(0, 180), path: path, url: publicUrl, created: new Date().toISOString() }).select("id").single();
-    if (inserted.error) throw inserted.error;
-    await loadSharedFiles();
-    return inserted.data.id;
-  } catch (error) {
-    await supabase.storage.from(BUCKET).remove([path]);
-    throw error;
-  }
-};
-
-window.deleteSharedPdf = async function (material) {
-  if (user !== ADMIN) throw new Error("حذف الملفات مخصص لمسؤول الموقع فقط");
-  const removed = await supabase.storage.from(BUCKET).remove([material.path]);
-  if (removed.error) throw removed.error;
-  const deleted = await supabase.from("materials").delete().eq("id", material.id);
-  if (deleted.error) throw deleted.error;
-  await loadSharedFiles();
-};
-
-try {
-  window.watchSiteMaintenance(window.applySiteMaintenance, function (error) { console.error(error); });
-  const current = await new Promise(function (resolve) {
-    let stop = function () {};
-    stop = onAuthStateChanged(auth, function (u) { stop(); resolve(u); });
-  });
-  const firebaseUser = current || (await signInAnonymously(auth)).user;
-  window.firebaseUid = firebaseUser.uid;
-  window.firebaseIsAdmin = true;
-  if (user && user !== ADMIN) window.startModeratorKickListener?.();
-  window.renderAuth?.();
-  
-  window.updateVisitorPresence?.();
-  clearInterval(presenceInterval);
-  presenceInterval = setInterval(() => { window.updateVisitorPresence?.(); }, 20000);
-
-  const questions = query(collection(db, "questions"), orderBy("time", "desc"), limit(200));
-  onSnapshot(questions, function (snapshot) {
-    window.sharedQuestions = snapshot.docs.map(function (item) { return Object.assign({ id: item.id }, item.data(), { remote: true }); });
-    window.firebaseReady = true;
-    status("الأسئلة متزامنة للجميع", "connected");
-    window.renderQA?.();
-    window.updateFirebaseAdminHint?.();
-  }, function (error) {
-    window.firebaseReady = false;
-    status("تعذر تحميل الأسئلة المشتركة", "disconnected");
-  });
-} catch (error) {
-    window.firebaseReady = false;
-    status("تعذر الاتصال", "disconnected");
-}
-try { await supabaseInit; await loadSharedFiles(); }
-catch (error) { window.supabaseReady = false; }
-</script></body></html>
+  const uploaded = await supabase.
