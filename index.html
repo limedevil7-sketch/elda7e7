@@ -233,7 +233,7 @@ async function toggleSiteMaintenance(){if(user!==ADMIN)return toast('قفل ال
 function previewMaintenance(){if(user!==ADMIN)return;maintenancePreview=true;updateMaintenanceScreen()}
 async function restoreSiteFromSOS(){if(!maintenanceModeEnabled)return;const code=window.prompt('أدخل كود استعادة الموقع');if(code===null)return;try{await window.unlockSiteWithCode(String(code).trim().toUpperCase());maintenancePreview=false;window.alert('تم استعادة الموقع للجميع')}catch(error){console.error('Maintenance recovery failed',error);window.alert('الكود غير صحيح أو تعذر الاتصال. حاول مرة أخرى.')}}
 
-const activityNames={page_view:'فتح الموقع/صفحة',subject_open:'فتح مادة',pdf_open:'عرض PDF',pdf_download:'تحميل PDF',login_success:'تسجيل دخول ناجح',login_failed:'محاولة دخول فاشلة',logout:'تسجيل خروج',question_attempt:'محاولة نشر سؤال',question_success:'نشر سؤال',question_failed:'فشل نشر سؤال',pdf_upload_attempt:'محاولة رفع PDF',pdf_upload_success:'رفع PDF',pdf_upload_failed:'فشل رفع PDF',pdf_upload_denied:'منع محاولة رفع PDF',pdf_delete_attempt:'محاولة حذف PDF',pdf_delete_success:'حذف PDF',pdf_delete_failed:'فشل حذف PDF',pdf_delete_denied:'منع محاولة حذف PDF',reply_attempt:'محاولة رد الإدارة',reply_success:'رد الإدارة على سؤال',reply_failed:'فشل رد الإدارة'};
+const activityNames={page_view:'فتح الموقع/صفحة',subject_open:'فتح مادة',pdf_open:'عرض PDF',pdf_download:'تحميل PDF',login_success:'تسجيل دخول ناجح',login_failed:'محاولة دخول فاشلة',logout:'تسجيل خروج',moderator_kick:'طرد مشرف',question_attempt:'محاولة نشر سؤال',question_success:'نشر سؤال',question_failed:'فشل نشر سؤال',pdf_upload_attempt:'محاولة رفع PDF',pdf_upload_success:'رفع PDF',pdf_upload_failed:'فشل رفع PDF',pdf_upload_denied:'منع محاولة رفع PDF',pdf_delete_attempt:'محاولة حذف PDF',pdf_delete_success:'حذف PDF',pdf_delete_failed:'فشل حذف PDF',pdf_delete_denied:'منع محاولة حذف PDF',reply_attempt:'محاولة رد الإدارة',reply_success:'رد الإدارة على سؤال',reply_failed:'فشل رد الإدارة'};
 
 function renderAdminMonitorRows(kind,rows){const list=$('adminMonitorList');if(!list)return;const shown=kind==='logs'?adminLogRows:rows;if(!shown.length){list.innerHTML='<div class="admin-monitor-empty">'+(kind==='online'?'لا يوجد أحد متصل الآن.':'لا توجد أحداث مسجلة بعد.')+'</div>';if(kind==='logs'&&adminLogHasMore)list.innerHTML+='<button class="btn small" style="display:block;margin:12px auto" onclick="loadOlderAdminLogs()">تحميل سجلات أقدم</button>';return}list.innerHTML=shown.map(r=>{if(kind==='online')return`<article class="admin-monitor-row"><b><i class="online-dot"></i>${esc(r.username||'زائر')}</b><span><span class="log-device-badge">📱 ${esc(r.device||'جهاز')} · 🌐 ${esc(r.browser||'متصفح')} · 📍 ${esc(r.region||'المنوفية')}</span></span><small>${Math.max(0,Math.floor((Date.now()-r.lastSeen)/1000))} ث</small></article>`;if(kind==='details')return`<article class="admin-monitor-row"><b>${esc(r.actor||'زائر')}</b><span><span class="log-device-badge">📱 ${esc(r.device||'كمبيوتر')} &nbsp;|&nbsp; 🌐 ${esc(r.browser||'Google Chrome')} &nbsp;|&nbsp; 📍 ${esc(r.region||'المنوفية')}</span></span><small>نشط الآن</small></article>`;return`<article class="admin-monitor-row"><b>${esc(r.actor||'زائر')}</b><span>${esc(activityNames[r.action]||r.action)}: ${esc(r.target||'—')}</span><small>${new Date(r.createdAt||Date.now()).toLocaleTimeString('ar-EG')}</small></article>`}).join('')+(kind==='logs'&&adminLogHasMore?`<button class="btn small" style="display:block;margin:12px auto" onclick="loadOlderAdminLogs()" ${adminLogLoadingOlder?'disabled':''}>${adminLogLoadingOlder?'جارٍ التحميل…':'تحميل سجلات أقدم'}</button>`:'')}
 
@@ -269,8 +269,28 @@ const admins=getStoredAdmins();const targetMod=Object.values(admins).find(m=>m.u
 if(targetMod){if(targetMod.passHash&&targetMod.passHash!==await hash(pass)){toast('كلمة المرور غير صحيحة');recordActivity('login_failed',username);return}login(targetMod.username,targetMod.username);closeAuth();toast('تم تسجيل دخول المشرف بنجاح');recordActivity('login_success',username);return}
 toast('اسم المستخدم أو كلمة المرور غير صحيحة');recordActivity('login_failed',username);};
 
-function login(n,displayName){user=n;localStorage.setItem('daheeh_session',n);localStorage.setItem('daheeh_display_name',displayName||n);window.updateVisitorPresence?.();renderAuth()}
-function logout(){recordActivity('logout','خروج');window.stopSitePresence?.();user='';localStorage.removeItem('daheeh_session');localStorage.removeItem('daheeh_display_name');window.updateVisitorPresence?.();renderAuth();toast('تسجيل خروج ناجح')}
+function login(n,displayName){
+user=n;
+localStorage.setItem('daheeh_session',n);
+localStorage.setItem('daheeh_display_name',displayName||n);
+localStorage.setItem('daheeh_login_at',String(Date.now()));
+window.startModeratorKickListener?.();
+window.updateVisitorPresence?.();
+renderAuth();
+}
+
+function logout(){
+recordActivity('logout','خروج');
+window.stopModeratorKickListener?.();
+window.stopSitePresence?.();
+user='';
+localStorage.removeItem('daheeh_session');
+localStorage.removeItem('daheeh_display_name');
+localStorage.removeItem('daheeh_login_at');
+window.updateVisitorPresence?.();
+renderAuth();
+toast('تسجيل خروج ناجح');
+}
 
 function renderAdminPanelExtras(){
 if(user!==ADMIN)return'';
@@ -278,7 +298,7 @@ const admins=getStoredAdmins();
 return `<div style="margin-top:15px;padding-top:15px;border-top:1px solid #ffffff12;">
   <h4 style="margin:0 0 8px;font-size:14px;color:var(--gold2)">إدارة حسابات المشرفين (4 مشرفين)</h4>
   <div style="display:grid;gap:6px;">
-    ${Object.keys(admins).map(k=>`<div style="display:flex;justify-content:space-between;align-items:center;background:#ffffff05;padding:8px 12px;border-radius:8px;font-size:12px;"><span>👤 ${admins[k].username}</span><button class="btn small" onclick="resetModPassword('${k}')">تغيير كلمة المرور</button></div>`).join('')}
+    ${Object.keys(admins).map(k=>`<div style="display:flex;justify-content:space-between;align-items:center;gap:10px;background:#ffffff05;padding:8px 12px;border-radius:8px;font-size:12px;"><span>👤 ${esc(admins[k].username)}</span><div style="display:flex;gap:7px;flex-wrap:wrap;justify-content:flex-end;"><button class="btn small" onclick="resetModPassword('${k}')">تغيير كلمة المرور</button><button class="btn small" style="color:#ffb0b0;border-color:#ff5f5f55;background:#ff44440d;" onclick="kickModerator('${k}')">🚫 طرد</button></div></div>`).join('')}
   </div>
 </div>`;
 }
@@ -288,6 +308,26 @@ const newPass=prompt('أدخل كلمة المرور الجديدة للمشرف
 if(!newPass||newPass.length<6)return alert('كلمة المرور قصيرة جداً');
 const admins=getStoredAdmins();
 if(admins[key]){admins[key].passHash=await hash(newPass);localStorage.setItem('daheeh_admins',JSON.stringify(admins));toast('تم تحديث كلمة مرور المشرف بنجاح');}
+};
+
+window.kickModerator=async function(key){
+if(user!==ADMIN)return toast('هذا الإجراء مخصص لمسؤول الموقع فقط');
+const admins=getStoredAdmins();
+const target=admins[key];
+if(!target?.username)return toast('حساب المشرف غير موجود');
+const username=String(target.username).trim();
+if(!username||username.toLowerCase()===ADMIN.toLowerCase())return toast('لا يمكن طرد مسؤول الموقع');
+const confirmed=confirm(`هل أنت متأكد من طرد المشرف "${username}"؟\n\nسيتم تسجيل خروجه فورًا من أي جهاز متصل حاليًا.`);
+if(!confirmed)return;
+try{
+  if(!window.revokeModeratorSession)throw new Error('خدمة طرد المشرف غير جاهزة');
+  await window.revokeModeratorSession(username);
+  recordActivity('moderator_kick',username,{reason:'تم طرد المشرف من لوحة الإدارة'});
+  toast(`تم طرد المشرف ${username} فورًا`);
+}catch(error){
+  console.error('Moderator kick failed:',error);
+  toast('تعذر طرد المشرف');
+}
 };
 
 function renderAuth(){const displayName=localStorage.getItem('daheeh_display_name')||user;const isAdmin=user===ADMIN;$('authBtn').textContent=user?'لوحة المشرفين':'تسجيل الدخول للمشرفين';const slot=$('userSlot');slot.replaceChildren();if(user){const label=document.createElement('span');label.className='navlink';label.textContent=(isAdmin?'مسؤول: ':'مشرف: ')+displayName;slot.append(label)}
@@ -356,6 +396,64 @@ const firebaseConfig = { apiKey: "AIzaSyDxiXluts_nTjWK72mm_HQd9VvexOCgAxc", auth
 const app = initializeApp(firebaseConfig);
 const auth = getAuth(app);
 const db = getFirestore(app);
+let moderatorKickUnsubscribe = null;
+
+window.stopModeratorKickListener = function () {
+  if (moderatorKickUnsubscribe) {
+    moderatorKickUnsubscribe();
+    moderatorKickUnsubscribe = null;
+  }
+};
+
+window.revokeModeratorSession = async function (username) {
+  if (user !== ADMIN) throw new Error("غير مصرح بهذا الإجراء");
+  const cleanUsername = String(username || "").trim().toLowerCase();
+  if (!cleanUsername || cleanUsername === ADMIN.toLowerCase()) {
+    throw new Error("حساب غير صالح");
+  }
+  await setDoc(doc(db, "moderatorSessions", cleanUsername), {
+    username: cleanUsername,
+    revokedAt: serverTimestamp(),
+    revokedBy: ADMIN
+  }, { merge: true });
+};
+
+window.startModeratorKickListener = function () {
+  window.stopModeratorKickListener();
+  if (!user || user === ADMIN || !auth.currentUser) return;
+
+  const username = String(user).trim().toLowerCase();
+  if (!username) return;
+
+  let loginAt = Number(localStorage.getItem("daheeh_login_at") || 0);
+  if (!loginAt) {
+    loginAt = Date.now();
+    localStorage.setItem("daheeh_login_at", String(loginAt));
+  }
+
+  moderatorKickUnsubscribe = onSnapshot(
+    doc(db, "moderatorSessions", username),
+    function (snapshot) {
+      if (!snapshot.exists()) return;
+      const data = snapshot.data() || {};
+      const revokedAt = data.revokedAt?.toMillis?.() || 0;
+      if (!revokedAt || revokedAt <= loginAt) return;
+
+      window.stopModeratorKickListener();
+      window.stopSitePresence?.();
+      user = '';
+      localStorage.removeItem('daheeh_session');
+      localStorage.removeItem('daheeh_display_name');
+      localStorage.removeItem('daheeh_login_at');
+      renderAuth();
+      toast('تم طرد حسابك من لوحة المشرفين بواسطة مسؤول الموقع');
+    },
+    function (error) {
+      console.error('Moderator kick listener failed:', error);
+    }
+  );
+};
+
 let supabase = null;
 const supabaseInit = import("https://esm.sh/@supabase/supabase-js@2").then(function (module) {
   supabase = module.createClient("https://tmwsxwbzvattmbvlygcj.supabase.co", "sb_publishable_YEqTS6Czs8_1C47U2VGCOw_SLHrcU3x");
@@ -552,6 +650,7 @@ try {
   const firebaseUser = current || (await signInAnonymously(auth)).user;
   window.firebaseUid = firebaseUser.uid;
   window.firebaseIsAdmin = true;
+  if (user && user !== ADMIN) window.startModeratorKickListener?.();
   window.renderAuth?.();
   
   window.updateVisitorPresence?.();
