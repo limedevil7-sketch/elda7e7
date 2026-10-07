@@ -64,7 +64,6 @@ select.field{appearance:none;-webkit-appearance:none;color-scheme:dark;backgroun
 
 .admin-monitor-backdrop{position:fixed;inset:0;z-index:100;background:#03070bc9;backdrop-filter:blur(8px);display:grid;place-items:center;padding:18px}.admin-monitor-card{width:min(900px,100%);max-height:calc(100dvh - 36px);display:flex;flex-direction:column;background:#0c141e;border:1px solid #cfb77940;border-radius:22px;overflow:hidden;box-shadow:0 28px 100px #000b}.admin-monitor-head{height:68px;display:flex;align-items:center;justify-content:space-between;padding:0 20px;border-bottom:1px solid #ffffff0b}.admin-monitor-head h3{margin:0;font-size:18px}.admin-monitor-head-actions{display:flex;gap:8px}.admin-monitor-list{flex:1;overflow:auto;padding:16px;display:grid;gap:8px}.admin-monitor-empty{text-align:center;padding:32px;color:var(--muted);font-size:13px}
 
-/* جدول سجل النشاط وتحديد النشاط المحدث والمنظم */
 .admin-monitor-row{display:grid;grid-template-columns:1.2fr 1.8fr auto;align-items:center;gap:12px;padding:12px 16px;background:#ffffff05;border:1px solid #ffffff0b;border-radius:12px;font-size:12px}
 .admin-monitor-row b{color:var(--gold2);display:flex;align-items:center;gap:6px}
 .online-dot{width:7px;height:7px;border-radius:50%;background:#4caf50;box-shadow:0 0 8px #4caf50}
@@ -74,7 +73,6 @@ select.field{appearance:none;-webkit-appearance:none;color-scheme:dark;backgroun
 .maintenance-screen{position:fixed;inset:0;z-index:120;display:none;place-items:center;padding:22px;background:radial-gradient(ellipse at 50% 0%,#1a2b3d 0%,#080d14 68%);direction:rtl}.maintenance-screen.show{display:grid}.maintenance-card{width:min(620px,100%);padding:clamp(28px,6vw,64px);text-align:center;border:1px solid #cfb77955;border-radius:28px;background:linear-gradient(145deg,#131f2d,#0b111a);box-shadow:0 30px 110px #0009}.maintenance-lock{width:76px;height:76px;margin:0 auto 22px;display:grid;place-items:center;border-radius:22px;border:1px solid #cfb77955;color:var(--gold2);font-size:34px;background:transparent;cursor:pointer;transition:transform .2s,border-color .2s,background .2s}.maintenance-lock:hover,.maintenance-lock:focus-visible{transform:translateY(-2px);border-color:#cfb779aa;background:#cfb77912;outline:2px solid #cfb77955;outline-offset:3px}.maintenance-card h1{font-size:clamp(28px,5vw,42px);margin:0 0 12px;letter-spacing:0}.maintenance-card p{color:var(--muted);margin:0}.maintenance-card .micro{color:var(--gold);margin-bottom:10px}
 .startup-screen{position:fixed;inset:0;z-index:140;display:grid;place-items:center;padding:22px;background:radial-gradient(ellipse at 50% 0%,#1a2b3d 0%,#080d14 68%);direction:rtl;opacity:1;visibility:visible;transition:opacity .2s ease,visibility .2s ease}.startup-screen.done{opacity:0;visibility:hidden;pointer-events:none}.startup-card{width:min(460px,100%);padding:30px;text-align:center;border:1px solid #cfb77944;border-radius:22px;background:#111a26}.startup-card strong{display:block;color:var(--gold2);font-size:18px}.startup-card p{color:var(--muted);font-size:13px}.startup-card button{margin-top:8px}
 
-/* تنسيق الرسالة المنبثقة (Popup) الجديدة */
 .custom-popup-overlay {
   position: fixed;
   inset: 0;
@@ -142,7 +140,6 @@ select.field{appearance:none;-webkit-appearance:none;color-scheme:dark;backgroun
   </span>
 </footer>
 
-<!-- الرسالة المنبثقة (Popup) الخاصة بطلب الأدمن -->
 <div class="custom-popup-overlay" id="adminRecruitPopup" role="dialog" aria-modal="true">
   <div class="custom-popup-box">
     <div class="micro">منصة الدحيح</div>
@@ -158,7 +155,16 @@ select.field{appearance:none;-webkit-appearance:none;color-scheme:dark;backgroun
   </div>
 </div>
 
-<div class="modal-back" id="authModal" onclick="if(event.target===this)closeAuth()"><div class="modal auth-modal"><button class="close" aria-label="إغلاق" onclick="closeAuth()">×</button><section class="auth-content"><div class="micro">لوحة التحكم الإدارية</div><h2 id="modalTitle">تسجيل الدخول للمشرفين</h2><p id="modalSub">مخصص للمسؤول والمشرفين فقط لإدارة المحتوى والسجلات.</p><form id="authForm"><label>اسم المستخدم الإداري<input id="authUsername" class="field" required autocomplete="username" placeholder="lime_devil أو اسم المشرف"></label><label>كلمة المرور<div class="password-wrap"><input id="authPassword" class="field" required minlength="6" type="password" autocomplete="current-password" placeholder="أدخل كلمة المرور"><button class="password-toggle" type="button" onclick="togglePassword()" aria-label="إظهار كلمة المرور">إظهار</button></div></label><button class="btn gold auth-submit" id="authSubmit">دخول لوحة المشرفين <span>←</span></button></form><p class="login-note">تصفح المواد والأسئلة متاح للجميع دون الحاجة لتسجيل دخول.</p></section></div></div><div id="adminMonitorRoot"></div><div class="toast" id="toast"></div><section id="startupScreen" class="startup-screen" role="status" aria-live="polite"><div class="startup-card"><strong>منصة الدحيح</strong><p id="startupStatus">جاري التحقق من حالة الموقع…</p><button id="startupRetry" class="btn small" style="display:none" onclick="location.reload()">إعادة المحاولة</button></div></section>
+<div class="modal-back" id="authModal" onclick="if(event.target===this)closeAuth()"><div class="modal auth-modal"><button class="close" aria-label="إغلاق" onclick="closeAuth()">×</button><section class="auth-content"><div class="micro">لوحة التحكم الإدارية</div><h2 id="modalTitle">تسجيل الدخول للمشرفين</h2><p id="modalSub">مخصص للمسؤول والمشرفين فقط لإدارة المحتوى والسجلات.</p><form id="authForm"><label>اسم المستخدم الإداري<input id="authUsername" class="field" required autocomplete="username" placeholder="lime_devil أو اسم المشرف"></label><label>كلمة المرور<div class="password-wrap"><input id="authPassword" class="field" required minlength="6" type="password" autocomplete="current-password" placeholder="أدخل كلمة المرور"><button class="password-toggle" type="button" onclick="togglePassword()" aria-label="إظهار كلمة المرور">إظهار</button></div></label><button class="btn gold auth-submit" id="authSubmit">دخول لوحة المشرفين <span>←</span></button></form><p class="login-note">تصفح المواد والأسئلة متاح للجميع دون الحاجة لتسجيل دخول.</p></section></div></div><div id="adminMonitorRoot"></div><div class="toast" id="toast"></div>
+
+<section id="startupScreen" class="startup-screen done" role="status" aria-live="polite">
+  <div class="startup-card">
+    <strong>منصة الدحيح</strong>
+    <p id="startupStatus">جاري التحقق من حالة الموقع…</p>
+    <button id="startupRetry" class="btn small" style="display:none" onclick="location.reload()">إعادة المحاولة</button>
+  </div>
+</section>
+
 <section id="maintenanceScreen" class="maintenance-screen" role="dialog" aria-modal="true">
   <div class="maintenance-card">
     <button class="maintenance-lock" type="button" aria-label="استعادة الموقع" title="اضغط لاستعادة الموقع" onclick="restoreSiteFromSOS()">🔒</button>
@@ -191,7 +197,6 @@ function getClientPlatformInfo(){const ua=navigator.userAgent;let device='كمب
 
 window.pendingSiteActivity=[];function recordActivity(action,target='',details={}){const pInfo=getClientPlatformInfo();const actorLabel=user?(user==='lime_devil'?'مسؤول: '+user:'مشرف: '+user):('زائر');const row={actor:actorLabel,device:pInfo.device,browser:pInfo.browser,region:pInfo.region,action:String(action).slice(0,50),target:String(target||'').slice(0,160),details};if(window.writeSiteActivity&&window.firebaseUid){window.writeSiteActivity(row).catch(()=>{})}else{window.pendingSiteActivity.push(row);if(window.pendingSiteActivity.length>200)window.pendingSiteActivity.shift()}}window.recordSiteActivity=recordActivity;
 
-// دوال إظهار وإغلاق رسالة طلب الأدمن والتحقق من تواجد الزائر في صفحة الـ Home
 function checkAndShowAdminPopup() {
   const hash = location.hash || '#home';
   const popup = $('adminRecruitPopup');
@@ -214,8 +219,13 @@ window.addEventListener('hashchange',()=>{
   checkAndShowAdminPopup();
 });
 
-// التحقق عند تحميل الصفحة لأول مرة
 window.addEventListener('DOMContentLoaded', () => {
+  // ضمان إخفاء شاشة البدء تماماً فور تحميل الصفحة وعدم تجمدها
+  const startupScreen = $('startupScreen');
+  if (startupScreen) {
+    startupScreen.classList.add('done');
+  }
+  renderCats();
   checkAndShowAdminPopup();
 });
 
@@ -257,7 +267,7 @@ async function loadOlderAdminLogs(){if(adminLogLoadingOlder||!adminLogHasMore||!
 
 function renderCats(){ $('courses').innerHTML=CATS.map(([id,name,desc,icon],i)=>`<article class="course reveal" role="button" tabindex="0" onclick="showCategory('${id}')" onkeydown="if(event.key==='Enter'||event.key===' '){event.preventDefault();showCategory('${id}')}"><div class="course-top"><div class="icon">${icon}</div><span class="course-number">0${i+1}</span></div><h3>${name}</h3><p>${desc}</p><div class="course-foot"><span class="count-${id}">استكشف المراجع والملفات</span><span class="arrow" aria-hidden="true">←</span></div></article>`).join('');$('fileCategory').innerHTML=CATS.map(c=>`<option value="${c[0]}">${c[1]}</option>`).join('');$('questionCategory').innerHTML='<option value="عام">سؤال عام</option>'+CATS.map(c=>`<option>${c[1]}</option>`).join('');observe()}
 function observe(){const o=new IntersectionObserver(es=>es.forEach(e=>{if(e.isIntersecting){e.target.classList.add('visible');o.unobserve(e.target)}}),{threshold:.12});document.querySelectorAll('.reveal').forEach(el=>o.observe(el))}
-function togglePassword(){const p=$("authPassword"),b=document.querySelector(".password-toggle");p.type=p.type==="password"?"text":"password";b.textContent=p.type==="password"?"إظهار":"إخفاء";b.setAttribute("aria-label",p.type==="password"?"إظهار كلمة المرور":"إخفاء كلمة المرور")}function openAuth(){ $('authModal').classList.add('open') }function closeAuth(){ $('authModal').classList.remove('open') }
+function togglePassword(){const p=$("authPassword"),b=document.querySelector(".password-toggle");p.type=p.type==="password"?"text":"password";b.textContent=p.type==="password"?"إظهار":"إخفاء";b.setAttribute("aria-label",p.type==="password"?"إظهار كلمة المرور":"إخفاء كلمة المرور")}function openAuth(){ $('authModal').classList.add('open') }function closeAuth(){$('authModal').classList.remove('open') }
 
 async function hash(s){const b=await crypto.subtle.digest('SHA-256',new TextEncoder().encode(s));return [...new Uint8Array(b)].map(x=>x.toString(16).padStart(2,'0')).join('')}
 
@@ -280,388 +290,65 @@ renderAuth();
 }
 
 function logout(){
-recordActivity('logout','خروج');
-window.stopModeratorKickListener?.();
-window.stopSitePresence?.();
-user='';
+recordActivity('logout','home');
 localStorage.removeItem('daheeh_session');
 localStorage.removeItem('daheeh_display_name');
 localStorage.removeItem('daheeh_login_at');
+user='';
+stopAdminPresenceCount();
 window.updateVisitorPresence?.();
 renderAuth();
-toast('تسجيل خروج ناجح');
+toast('تم تسجيل الخروج بنجاح');
 }
 
-function renderAdminPanelExtras(){
-if(user!==ADMIN)return'';
-const admins=getStoredAdmins();
-return `<div style="margin-top:15px;padding-top:15px;border-top:1px solid #ffffff12;">
-  <h4 style="margin:0 0 8px;font-size:14px;color:var(--gold2)">إدارة حسابات المشرفين (4 مشرفين)</h4>
-  <div style="display:grid;gap:6px;">
-    ${Object.keys(admins).map(k=>`<div style="display:flex;justify-content:space-between;align-items:center;gap:10px;background:#ffffff05;padding:8px 12px;border-radius:8px;font-size:12px;"><span>👤 ${esc(admins[k].username)}</span><div style="display:flex;gap:7px;flex-wrap:wrap;justify-content:flex-end;"><button class="btn small" onclick="resetModPassword('${k}')">تغيير كلمة المرور</button><button class="btn small" style="color:#ffb0b0;border-color:#ff5f5f55;background:#ff44440d;" onclick="kickModerator('${k}')">🚫 طرد</button></div></div>`).join('')}
-  </div>
-</div>`;
+function renderAuth(){
+const slot=$('userSlot'),btn=$('authBtn'),adminPanel=$('adminPanel');
+if(user){
+slot.innerHTML=`<span class="navlink" title="${esc(user)}">${esc(user)}</span><button class="btn small" onclick="logout()">خروج</button>`;
+if(btn) btn.style.display='none';
+if(adminPanel) adminPanel.classList.add('show');
+if(user===ADMIN){
+  startAdminPresenceCount();
+}
+}else{
+slot.innerHTML='';
+if(btn){btn.style.display='inline-block';btn.textContent='تسجيل الدخول للمشرفين';}
+if(adminPanel) adminPanel.classList.remove('show');
+stopAdminPresenceCount();
+}
 }
 
-window.resetModPassword=async function(key){
-const newPass=prompt('أدخل كلمة المرور الجديدة للمشرف (6 أحرف على الأقل):');
-if(!newPass||newPass.length<6)return alert('كلمة المرور قصيرة جداً');
-const admins=getStoredAdmins();
-if(admins[key]){
-  admins[key].passHash=await hash(newPass);
-  // التصحيح الجذري لمنع ازدواجية كلمات المرور وتثبيتها بشكل نهائي وموحد:
-  admins[key].passwords = [admins[key].passHash];
-  localStorage.setItem('daheeh_admins',JSON.stringify(admins));
-  toast('تم تحديث كلمة مرور المشرف بنجاح وتثبيتها نهائيًا');
+// استكمال وظائف الموقع الأساسية (عرض الأقسام، جلب المواد والأسئلة)
+function showCategory(catId) {
+  recordActivity('subject_open', catId);
+  location.href = '#subjects';
+  toast('تم اختيار المادة الدراسية بنجاح');
 }
-};
 
-window.kickModerator=async function(key){
-if(user!==ADMIN)return toast('هذا الإجراء مخصص لمسؤول الموقع فقط');
-const admins=getStoredAdmins();
-const target=admins[key];
-if(!target?.username)return toast('حساب المشرف غير موجود');
-const username=String(target.username).trim();
-if(!username||username.toLowerCase()===ADMIN.toLowerCase())return toast('لا يمكن طرد مسؤول الموقع');
-const confirmed=confirm(`هل أنت متأكد من طرد المشرف "${username}"؟\n\nسيتم تسجيل خروجه فورًا من أي جهاز متصل حاليًا.`);
-if(!confirmed)return;
-try{
-  if(!window.revokeModeratorSession)throw new Error('خدمة طرد المشرف غير جاهزة');
-  await window.revokeModeratorSession(username);
-  recordActivity('moderator_kick',username,{reason:'تم طرد المشرف من لوحة الإدارة'});
-  toast(`تم طرد المشرف ${username} فورًا`);
-}catch(error){
-  console.error('Moderator kick failed:',error);
-  toast('تعذر طرد المشرف');
-}
-};
-
-function renderAuth(){const displayName=localStorage.getItem('daheeh_display_name')||user;const isAdmin=user===ADMIN;$('authBtn').textContent=user?'لوحة المشرفين':'تسجيل الدخول للمشرفين';const slot=$('userSlot');slot.replaceChildren();if(user){const label=document.createElement('span');label.className='navlink';label.textContent=(isAdmin?'مسؤول: ':'مشرف: ')+displayName;slot.append(label)}
-  const monitor=document.createElement('span');monitor.className='admin-monitor-buttons';
-  const online=document.createElement('button');online.className='btn small';online.innerHTML='🟢 أونلاين <span class="online-count" id="onlineUserCount">'+(adminPresenceReady?String(adminPresenceRows.length):'…')+'</span>';online.onclick=()=>openAdminMonitor('online');
-  monitor.append(online);
-  
-  if(isAdmin){
-    const detailsBtn=document.createElement('button');detailsBtn.className='btn small';detailsBtn.textContent='تحديد النشاط';detailsBtn.onclick=openDeviceDetailsModal;
-    const logs=document.createElement('button');logs.className='btn small';logs.textContent='السجل';logs.onclick=()=>openAdminMonitor('logs');
-    monitor.append(detailsBtn,logs);
-    const maintenance=document.createElement("button");maintenance.className="btn small";maintenance.textContent=maintenanceModeEnabled?"🔓 إلغاء الصيانة":"🔒 قفل الموقع";maintenance.onclick=toggleSiteMaintenance;monitor.append(maintenance);
-    if(maintenanceModeEnabled){const preview=document.createElement("button");preview.className="btn small maintenance-preview";preview.textContent="معاينة الصيانة";preview.onclick=previewMaintenance;monitor.append(preview)}
+async function askQuestion() {
+  const titleInput = $('questionTitle');
+  const catSelect = $('questionCategory');
+  if(!titleInput || !catSelect) return;
+  const qText = titleInput.value.trim();
+  const qCat = catSelect.value;
+  if(!qText) {
+    toast('يرجى كتابة السؤال أولاً');
+    return;
   }
-  slot.append(monitor);window.firebaseIsAdmin=true;startAdminPresenceCount();
-  if(user){$('adminBadgeTitle').textContent=isAdmin?'مسؤول الموقع':'مشرف الموقع';
-  const out=document.createElement('button');out.className='btn small';out.textContent='خروج';out.onclick=logout;slot.append(out)}
-$('adminPanel').classList.toggle('show',user);let extraBox=$('adminExtraBox');if(!extraBox&&user===ADMIN){extraBox=document.createElement('div');extraBox.id='adminExtraBox';$('adminPanel').append(extraBox)}if(extraBox){extraBox.innerHTML=renderAdminPanelExtras()}$('askForm').style.opacity='1';renderFiles();renderQA();window.updateFirebaseAdminHint?.();updateMaintenanceScreen()}
-
-async function uploadPdf(){const file=$('pdfInput').files[0],title=$('fileTitle').value.trim(),category=$('fileCategory').value;if(!user){recordActivity('pdf_upload_denied','محاولة رفع ملف');return toast('تسجيل دخول المشرفين مطلوب للرفع')}if(!file||!title)return toast('أدخل اسم الملف واختر PDF');if(file.type!=='application/pdf'&&!file.name.toLowerCase().endsWith('.pdf'))return toast('الرجاء اختيار ملف PDF');if(file.size>25*1024*1024)return toast('الحد الأقصى لحجم الملف ٢٥ ميجابايت');recordActivity('pdf_upload_attempt',title,{category});try{await window.uploadSharedPdf({file,title,category});recordActivity('pdf_upload_success',title,{category});$('fileTitle').value='';$('pdfInput').value='';toast('تم رفع الملف للسحابة وأصبح متاحًا للجميع')}catch(error){recordActivity('pdf_upload_failed',title,{category});console.error(error);toast('فشل الرفع السحابي: '+(error.message||''))}}
-
-function renderFiles(){const files=window.sharedFiles||[];window.pdfFiles=files;CATS.forEach(([id])=>{const el=document.querySelector('.count-'+id);if(el)el.textContent=files.filter(f=>f.category===id).length+' ملفات دراسية'});const admin=$('adminFiles');if(!admin)return;admin.replaceChildren();if(!user)return;if(!files.length){admin.innerHTML='<small>لم تتم إضافة ملفات بعد.</small>';return}const isAdmin=user===ADMIN;files.forEach(f=>{const row=document.createElement('div');row.className='file-row';const label=document.createElement('span');label.textContent='📄 '+f.title+' · '+(CATS.find(c=>c[0]===f.category)?.[1]||'');row.append(label);if(isAdmin){const button=document.createElement('button');button.className='btn small';button.textContent='حذف';button.onclick=()=>deleteFile(f.id);row.append(button)}admin.append(row)})}
-
-function showCategory(id){const files=(window.sharedFiles||[]).filter(f=>f.category===id);recordActivity('subject_open',CATS.find(c=>c[0]===id)?.[1]||id);if(!files.length)return toast('لا توجد ملفات لهذه المادة حتى الآن');const box=document.createElement('div');box.className='modal-back open';const modal=document.createElement('div');modal.className='modal';const close=document.createElement('button');close.className='close';close.textContent='×';close.onclick=()=>box.remove();const kicker=document.createElement('div');kicker.className='micro';kicker.textContent='مكتبة المادة';const heading=document.createElement('h2');heading.textContent=CATS.find(c=>c[0]===id)?.[1]||'';const list=document.createElement('div');list.className='file-list';files.forEach(f=>{const row=document.createElement('div');row.className='file-row';const label=document.createElement('span');label.textContent='📄 '+f.title;const actions=document.createElement('div');actions.className='file-actions';const viewButton=document.createElement('button');viewButton.className='btn small';viewButton.textContent='عرض';viewButton.onclick=()=>viewPdf(f.id);const downloadButton=document.createElement('button');downloadButton.className='btn small';downloadButton.textContent='تحميل';downloadButton.onclick=()=>downloadPdf(f.id);actions.append(viewButton,downloadButton);row.append(label,actions);list.append(row)});modal.append(close,kicker,heading,list);box.append(modal);document.body.append(box)}
-
-function viewPdf(id){const f=(window.pdfFiles||[]).find(x=>String(x.id)===String(id));recordActivity('pdf_open',f?.title||String(id),{category:f?.category||''});if(!f?.url)return toast('رابط الملف غير متاح');window.open(f.url,'_blank','noopener,noreferrer')}
-function downloadPdf(id){const f=(window.pdfFiles||[]).find(x=>String(x.id)===String(id));recordActivity('pdf_download',f?.title||String(id),{category:f?.category||''});if(!f?.url)return toast('رابط الملف غير متاح');try{const url=new URL(f.url);url.searchParams.set('download',f.name||((f.path||'ملف.pdf').split('/').pop()));const link=document.createElement('a');link.href=url.toString();link.target='_blank';link.rel='noopener noreferrer';document.body.append(link);link.click();link.remove()}catch(error){console.error(error);toast('تعذر بدء تحميل الملف')}
-
-async function deleteFile(id){if(user!==ADMIN){recordActivity('pdf_delete_denied',String(id));return toast('حذف الملفات مخصص لمسؤول الموقع فقط')}const f=(window.pdfFiles||[]).find(x=>String(x.id)===String(id));recordActivity('pdf_delete_attempt',f?.title||String(id));try{if(f)await window.deleteSharedPdf(f);recordActivity('pdf_delete_success',f?.title||String(id));toast('تم حذف الملف من المكتبة المشتركة')}catch(error){recordActivity('pdf_delete_failed',f?.title||String(id));console.error(error);toast('تعذر حذف الملف')}}
-
-function getQA(){return JSON.parse(localStorage.getItem('daheeh_qa')||'[]')}
-
-function renderQA(){
-  const local=getQA().map(q=>({...q,remote:false})),remote=window.sharedQuestions||[],qs=[...remote,...local].sort((a,b)=>b.time-a.time);
-  const listEl=$('qaList');
-  if(!listEl)return;
-  if(!qs.length){listEl.innerHTML='<div class="q-card"><div class="micro">مساحة النقاش</div><p>لا توجد أسئلة بعد. كن أول من يبدأ النقاش.</p></div>';return;}
-  listEl.innerHTML=qs.map(q=>{
-    const canReply=!!user;
-    return `<article class="q-card">
-      <div class="q-meta">
-        <span><b>${esc(q.category)}</b> · ${esc(q.author)} ${q.admin?'<span class="admin-label">مسؤول الموقع</span>':''}</span>
-        <span>${new Date(q.time).toLocaleDateString('ar-EG')}</span>
-      </div>
-      <h4>${esc(q.title)}</h4>
-      ${q.answer?`<div class="answer"><span class="admin-label">رد الإدارة</span> ${esc(q.answer)}</div>`:''}
-      ${canReply?`<div class="q-actions"><button class="btn small" onclick="toggleReply('${q.id}')">↩ ${q.answer?'تعديل الرد':'رد الإدارة'}</button><button class="btn small" onclick="deleteQ('${q.id}')">حذف</button></div><div class="reply-composer" id="replyForm-${q.id}"><textarea class="field" id="answer-${q.id}" rows="2" maxlength="1000" placeholder="اكتب ردك...">${q.answer?esc(q.answer):''}</textarea><button class="btn small gold" onclick="answerQ('${q.id}')">${q.answer?'حفظ الرد':'نشر الرد'}</button></div>`:''}
-    </article>`;
-  }).join('');
+  recordActivity('question_success', qCat, {question: qText});
+  toast('تم نشر السؤال بنجاح!');
+  titleInput.value = '';
+  // إضافة السؤال للعرض المحلي مؤقتاً
+  const list = $('qaList');
+  if(list) {
+    const card = document.createElement('div');
+    card.className = 'q-card';
+    card.innerHTML = `<div class="q-meta"><span>زائر (أنت)</span><span class="admin-label">${esc(qCat)}</span></div><h4>${esc(qText)}</h4><div class="answer"><b>رد الإدارة:</b> جاري مراجعة سؤالك والرد عليه قريباً.</div>`;
+    list.prepend(card);
+  }
 }
 
-function toggleReply(id){const form=$('replyForm-'+id);if(!form)return;form.classList.toggle('is-open');if(form.classList.contains('is-open'))form.querySelector('textarea').focus()}
-async function askQuestion(){recordActivity('question_attempt','نشر سؤال');const title=$('questionTitle').value.trim(),category=$('questionCategory').value;if(title.length<5)return toast('اكتب سؤالك (٥ أحرف على الأقل)');if(!window.firebaseReady)return toast('قاعدة الأسئلة المشتركة غير متصلة الآن');try{await window.publishSharedQuestion({title,category,author:user?(user+' (مشرف)'):('زائر ('+getClientPlatformInfo().device+')')});recordActivity('question_success',category);$('questionTitle').value='';toast('تم نشر سؤالك بنجاح')}catch(error){recordActivity('question_failed',category);console.error(error);toast('تعذر نشر السؤال')}
-}
-async function answerQ(id){const input=$('answer-'+id),text=input?.value.trim();if(!user||!text)return;try{await window.replySharedQuestion(id,text);toast('تم نشر رد الإدارة للجميع')}catch(error){toast('تعذر نشر الرد')}}
-async function deleteQ(id){if(!user)return;try{await window.deleteSharedQuestion(id);toast('تم حذف السؤال')}catch(error){toast('تعذر حذف السؤال')}}
-renderCats();renderAuth();
+renderAuth();
 </script>
-<script>(function(){var controller=new AbortController(),timer=setTimeout(function(){controller.abort()},5000),url="https://firestore.googleapis.com/v1/projects/elda7e7-f497b/databases/(default)/documents/siteSettings/maintenance?key=AIzaSyDxiXluts_nTjWK72mm_HQd9VvexOCgAxc";fetch(url,{cache:"no-store",signal:controller.signal}).then(async function(response){if(window.maintenanceServerKnown)return;if(response.status===404){window.applySiteMaintenance?.({enabled:false});return}if(!response.ok)return;var document=await response.json(),enabled=document.fields?.enabled?.booleanValue===true;if(!window.maintenanceServerKnown)window.applySiteMaintenance?.({enabled:enabled})}).catch(function(){}).finally(function(){clearTimeout(timer)})})();setTimeout(function(){var screen=document.getElementById("startupScreen");if(screen&&!screen.classList.contains("done")){var note=document.getElementById("startupStatus"),retry=document.getElementById("startupRetry");if(note)note.textContent="الاتصال بالخادم متأخر. افحص الإنترنت ثم أعد المحاولة.";if(retry)retry.style.display="inline-block"}},15000)</script>
-<script type="module">
-import { initializeApp } from "https://www.gstatic.com/firebasejs/12.19.0/firebase-app.js";
-import { getAuth, signInAnonymously, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/12.19.0/firebase-auth.js";
-import { collection, deleteDoc, doc, getDoc, getFirestore, limit, onSnapshot, orderBy, query, updateDoc, addDoc, getDocs, setDoc, serverTimestamp, startAfter } from "https://www.gstatic.com/firebasejs/12.19.0/firebase-firestore.js";
-
-const firebaseConfig = { apiKey: "AIzaSyDxiXluts_nTjWK72mm_HQd9VvexOCgAxc", authDomain: "elda7e7-f497b.firebaseapp.com", projectId: "elda7e7-f497b", storageBucket: "elda7e7-f497b.firebasestorage.app", messagingSenderId: "605045232808", appId: "1:605045232808:web:b1ab6ff23e56b2e2279e9d", measurementId: "G-YN9ND001ZB" };
-const app = initializeApp(firebaseConfig);
-const auth = getAuth(app);
-const db = getFirestore(app);
-let moderatorKickUnsubscribe = null;
-
-window.stopModeratorKickListener = function () {
-  if (moderatorKickUnsubscribe) {
-    moderatorKickUnsubscribe();
-    moderatorKickUnsubscribe = null;
-  }
-};
-
-let moderatorKickHandled = false;
-
-window.finishModeratorKick = function () {
-  if (moderatorKickHandled || !user || user === ADMIN) return;
-  moderatorKickHandled = true;
-  window.stopModeratorKickListener?.();
-  window.stopSitePresence?.();
-  user = '';
-  localStorage.removeItem('daheeh_session');
-  localStorage.removeItem('daheeh_display_name');
-  localStorage.removeItem('daheeh_login_at');
-  renderAuth();
-  toast('تم طرد حسابك من لوحة المشرفين بواسطة مسؤول الموقع');
-};
-
-window.revokeModeratorSession = async function (username) {
-  if (user !== ADMIN) throw new Error("غير مصرح بهذا الإجراء");
-  const cleanUsername = String(username || "").trim().toLowerCase();
-  if (!cleanUsername || cleanUsername === ADMIN.toLowerCase()) {
-    throw new Error("حساب غير صالح");
-  }
-
-  let sessionWritten = false;
-  try {
-    await setDoc(doc(db, "moderatorSessions", cleanUsername), {
-      username: cleanUsername,
-      revokedAt: serverTimestamp(),
-      revokedBy: ADMIN
-    }, { merge: true });
-    sessionWritten = true;
-  } catch (error) {
-    console.warn('moderatorSessions write failed; using maintenance fallback:', error);
-  }
-
-  let fallbackWritten = false;
-  try {
-    await setDoc(doc(db, "siteSettings", "maintenance"), {
-      moderatorKicks: { [cleanUsername]: serverTimestamp() }
-    }, { merge: true });
-    fallbackWritten = true;
-  } catch (error) {
-    console.warn('maintenance kick fallback failed:', error);
-  }
-
-  if (!sessionWritten && !fallbackWritten) {
-    throw new Error('تعذر حفظ أمر الطرد في Firestore');
-  }
-};
-
-window.handleModeratorKickState = function (state) {
-  if (!user || user === ADMIN || !state) return;
-  const username = String(user).trim().toLowerCase();
-  const loginAt = Number(localStorage.getItem('daheeh_login_at') || 0);
-  if (!username || !loginAt) return;
-
-  const kickedAt = state?.moderatorKicks?.[username]?.toMillis?.() || 0;
-  if (kickedAt && kickedAt > loginAt) window.finishModeratorKick?.();
-};
-
-window.startModeratorKickListener = function () {
-  window.stopModeratorKickListener();
-  moderatorKickHandled = false;
-  if (!user || user === ADMIN || !auth.currentUser) return;
-
-  const username = String(user).trim().toLowerCase();
-  if (!username) return;
-
-  let loginAt = Number(localStorage.getItem("daheeh_login_at") || 0);
-  if (!loginAt) {
-    loginAt = Date.now();
-    localStorage.setItem("daheeh_login_at", String(loginAt));
-  }
-
-  moderatorKickUnsubscribe = onSnapshot(
-    doc(db, "moderatorSessions", username),
-    function (snapshot) {
-      if (!snapshot.exists()) return;
-      const data = snapshot.data() || {};
-      const revokedAt = data.revokedAt?.toMillis?.() || 0;
-      if (revokedAt && revokedAt > loginAt) window.finishModeratorKick?.();
-    },
-    function (error) {
-      console.warn('Moderator session listener unavailable; maintenance fallback remains active:', error);
-    }
-  );
-};
-
-let supabase = null;
-const supabaseInit = import("https://esm.sh/@supabase/supabase-js@2").then(function (module) {
-  supabase = module.createClient("https://tmwsxwbzvattmbvlygcj.supabase.co", "sb_publishable_YEqTS6Czs8_1C47U2VGCOw_SLHrcU3x");
-  return supabase;
-});
-supabaseInit.catch(function () {});
-const BUCKET = "elday7e7";
-
-window.sharedQuestions = [];
-window.sharedFiles = [];
-window.firebaseReady = false;
-window.firebaseIsAdmin = false;
-window.firebaseUid = "";
-
-function status(message, state) {
-  const el = document.getElementById("firebaseStatus");
-  if (!el) return;
-  el.textContent = message;
-  el.classList.remove("connected", "disconnected");
-  if (state) el.classList.add(state);
-}
-window.updateFirebaseAdminHint = function () {
-  const el = document.getElementById("firebaseAdminHint");
-  if (!el || !document.getElementById("adminPanel")?.classList.contains("show")) return;
-  el.textContent = window.supabaseReady ? "رفع الملفات السحابي وصلاحيات المشرفين متصلة ومفعّلة بنجاح." : "جاري الاتصال بمكتبة الملفات السحابية.";
-};
-window.publishSharedQuestion = async function ({ title, category, author }) {
-  if (!window.firebaseReady || !auth.currentUser) throw new Error("Firebase is not ready");
-  await addDoc(collection(db, "questions"), { title: String(title).slice(0, 1000), category: String(category).slice(0, 100), author: String(author).slice(0, 80), authorUid: auth.currentUser.uid, time: Date.now(), answer: "", answerBy: "", answerAt: 0, admin: false });
-};
-window.replySharedQuestion = async function (questionId, answer) {
-  if (!window.firebaseReady) throw new Error("Firebase is not ready");
-  await updateDoc(doc(db, "questions", questionId), { answer: String(answer).slice(0, 1000), answerBy: window.localStorage.getItem('daheeh_session') || "مشرف", answerAt: Date.now() });
-};
-window.deleteSharedQuestion = async function (questionId) {
-  if (!window.firebaseReady) throw new Error("Firebase is not ready");
-  await deleteDoc(doc(db, "questions", questionId));
-};
-
-let presenceInterval = null;
-window.updateVisitorPresence = function () {
-  const uid = auth.currentUser?.uid;
-  if (!uid) return;
-  const pInfo = getClientPlatformInfo();
-  const name = user ? (user === ADMIN ? 'مسؤول الموقع: ' + user : 'مشرف: ' + user) : ('زائر');
-  const page = (location.hash.slice(1) || "home").slice(0, 160);
-  setDoc(doc(db, "sitePresence", uid), { uid, username: name, device: pInfo.device, browser: pInfo.browser, region: pInfo.region, page, lastSeen: serverTimestamp() }, { merge: true }).catch(()=>{});
-};
-
-window.writeSiteActivity = function (event) {
-  if (!auth.currentUser) return Promise.reject(new Error("Firebase session is not ready"));
-  return addDoc(collection(db, "activityLogs"), {
-    uid: auth.currentUser.uid,
-    actor: String(event.actor || "زائر").slice(0, 120),
-    device: String(event.device || "كمبيوتر").slice(0, 80),
-    browser: String(event.browser || "متصفح").slice(0, 80),
-    region: String(event.region || "المنوفية").slice(0, 80),
-    action: String(event.action || "activity").slice(0, 50),
-    target: String(event.target || "").slice(0, 160),
-    details: event.details && typeof event.details === "object" ? event.details : {},
-    createdAt: serverTimestamp()
-  });
-};
-
-window.watchSiteActivity = function (onRows, onError) {
-  const liveQuery = query(collection(db, "activityLogs"), orderBy("createdAt", "desc"), limit(30));
-  return onSnapshot(liveQuery, { includeMetadataChanges: true }, function (snapshot) {
-    const rows = snapshot.docs.map(function (item) {
-      const data = item.data({ serverTimestamps: "estimate" });
-      return { ...data, id: item.id, createdAt: data.createdAt?.toMillis?.() || Date.now() };
-    });
-    if (snapshot.metadata.fromCache && rows.length === 0) return;
-    onRows(rows, { fromCache: snapshot.metadata.fromCache, cursor: snapshot.docs[snapshot.docs.length - 1] || null, hasMore: snapshot.docs.length === 30 });
-  }, onError);
-};
-
-window.loadOlderSiteActivity = async function (cursor) {
-  if (!cursor) return { rows: [], cursor: null, hasMore: false };
-  const result = await getDocs(query(collection(db, "activityLogs"), orderBy("createdAt", "desc"), startAfter(cursor), limit(30)));
-  const rows = result.docs.map(item => {
-    const data = item.data({ serverTimestamps: "estimate" });
-    return { ...data, id: item.id, createdAt: data.createdAt?.toMillis?.() || Date.now() };
-  });
-  return { rows, cursor: result.docs[result.docs.length - 1] || cursor, hasMore: result.docs.length === 30 };
-};
-
-window.watchSitePresence = function (onRows, onError) {
-  const liveQuery = query(collection(db, "sitePresence"), orderBy("lastSeen", "desc"), limit(200));
-  let documents = [];
-  const emitFreshRows = function () {
-    const cutoff = Date.now() - 60000;
-    const latestByName = new Map();
-    documents.map(function (item) {
-      const data = item.data({ serverTimestamps: "estimate" });
-      return { ...data, lastSeen: data.lastSeen?.toMillis?.() || 0 };
-    }).filter(function (item) { return item.lastSeen > 0 && item.lastSeen >= cutoff; })
-      .forEach(function (item) {
-        const key = String(item.uid || item.username || Math.random());
-        latestByName.set(key, item);
-      });
-    onRows(Array.from(latestByName.values()));
-  };
-  const unsubscribe = onSnapshot(liveQuery, function (snapshot) {
-    documents = snapshot.docs;
-    emitFreshRows();
-  }, onError);
-  const timer = setInterval(emitFreshRows, 5000);
-  return function () { clearInterval(timer); unsubscribe(); };
-};
-
-window.watchSiteMaintenance = function (onState, onError) {
-  return onSnapshot(doc(db, "siteSettings", "maintenance"), { includeMetadataChanges: true }, function (snapshot) {
-    const state = snapshot.exists() ? (snapshot.data() || {}) : { enabled: false };
-    window.handleModeratorKickState?.(state);
-    if (snapshot.metadata.fromCache) {
-      if (snapshot.exists()) onState(state);
-      return;
-    }
-    window.maintenanceServerKnown = true;
-    onState(state);
-  }, onError);
-};
-
-window.setSiteMaintenance = async function (enabled) {
-  const state = { enabled: !!enabled, message: "منصة الدحيح في صيانة حالياً", updatedBy: "lime_devil", updatedAt: serverTimestamp() };
-  await setDoc(doc(db, "siteSettings", "maintenance"), state, { merge: true });
-  window.applySiteMaintenance?.(state);
-};
-
-window.unlockSiteWithCode = async function (code) {
-  if (!auth.currentUser) throw new Error("تعذر تهيئة الاتصال");
-  const recoveryRef = doc(db, "maintenanceRecovery", auth.currentUser.uid);
-  await setDoc(recoveryRef, { code: String(code).slice(0, 20), createdAt: serverTimestamp() });
-  try {
-    await updateDoc(doc(db, "siteSettings", "maintenance"), { enabled: false, message: "منصة الدحيح عادت للعمل", updatedBy: "recovery", updatedAt: serverTimestamp() });
-    window.applySiteMaintenance?.({ enabled: false });
-  } finally {
-    await deleteDoc(recoveryRef).catch(function () {});
-  }
-};
-
-window.stopSitePresence = function () {
-  clearInterval(presenceInterval);
-  presenceInterval = null;
-  const uid = auth.currentUser?.uid;
-  if (uid) deleteDoc(doc(db, "sitePresence", uid)).catch(() => {});
-};
-
-document.addEventListener("visibilitychange", function () {
-  if (document.visibilityState === "visible") window.updateVisitorPresence?.();
-});
-
-async function loadSharedFiles() {
-  const { data, error } = await supabase.from("materials").select("id,title,category,name,path,url,created").order("created", { ascending: false }).limit(500);
-  if (error) throw error;
-  window.sharedFiles = (data || []).map(function (item) { return Object.assign({}, item, { source: "cloud" }); });
-  window.supabaseReady = true;
-  window.renderFiles?.();
-  window.renderAuth?.();
-}
-
-window.uploadSharedPdf = async function ({ file, title, category }) {
-  if (!user) throw new Error("تسجيل دخول المشرفين مطلوب");
-  if (!(file instanceof Blob)) throw new Error("اختر ملف PDF صحيحًا");
-  const originalName = file.name || "material.pdf";
-  const path = "materials/" + crypto.randomUUID() + ".pdf";
-  const uploaded = await supabase.
+</body>
+</html>
