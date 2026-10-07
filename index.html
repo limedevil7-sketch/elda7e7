@@ -64,6 +64,7 @@ select.field{appearance:none;-webkit-appearance:none;color-scheme:dark;backgroun
 
 .admin-monitor-backdrop{position:fixed;inset:0;z-index:100;background:#03070bc9;backdrop-filter:blur(8px);display:grid;place-items:center;padding:18px}.admin-monitor-card{width:min(900px,100%);max-height:calc(100dvh - 36px);display:flex;flex-direction:column;background:#0c141e;border:1px solid #cfb77940;border-radius:22px;overflow:hidden;box-shadow:0 28px 100px #000b}.admin-monitor-head{height:68px;display:flex;align-items:center;justify-content:space-between;padding:0 20px;border-bottom:1px solid #ffffff0b}.admin-monitor-head h3{margin:0;font-size:18px}.admin-monitor-head-actions{display:flex;gap:8px}.admin-monitor-list{flex:1;overflow:auto;padding:16px;display:grid;gap:8px}.admin-monitor-empty{text-align:center;padding:32px;color:var(--muted);font-size:13px}
 
+/* جدول سجل النشاط وتحديد النشاط المحدث والمنظم */
 .admin-monitor-row{display:grid;grid-template-columns:1.2fr 1.8fr auto;align-items:center;gap:12px;padding:12px 16px;background:#ffffff05;border:1px solid #ffffff0b;border-radius:12px;font-size:12px}
 .admin-monitor-row b{color:var(--gold2);display:flex;align-items:center;gap:6px}
 .online-dot{width:7px;height:7px;border-radius:50%;background:#4caf50;box-shadow:0 0 8px #4caf50}
@@ -72,12 +73,59 @@ select.field{appearance:none;-webkit-appearance:none;color-scheme:dark;backgroun
 
 .maintenance-screen{position:fixed;inset:0;z-index:120;display:none;place-items:center;padding:22px;background:radial-gradient(ellipse at 50% 0%,#1a2b3d 0%,#080d14 68%);direction:rtl}.maintenance-screen.show{display:grid}.maintenance-card{width:min(620px,100%);padding:clamp(28px,6vw,64px);text-align:center;border:1px solid #cfb77955;border-radius:28px;background:linear-gradient(145deg,#131f2d,#0b111a);box-shadow:0 30px 110px #0009}.maintenance-lock{width:76px;height:76px;margin:0 auto 22px;display:grid;place-items:center;border-radius:22px;border:1px solid #cfb77955;color:var(--gold2);font-size:34px;background:transparent;cursor:pointer;transition:transform .2s,border-color .2s,background .2s}.maintenance-lock:hover,.maintenance-lock:focus-visible{transform:translateY(-2px);border-color:#cfb779aa;background:#cfb77912;outline:2px solid #cfb77955;outline-offset:3px}.maintenance-card h1{font-size:clamp(28px,5vw,42px);margin:0 0 12px;letter-spacing:0}.maintenance-card p{color:var(--muted);margin:0}.maintenance-card .micro{color:var(--gold);margin-bottom:10px}
 .startup-screen{position:fixed;inset:0;z-index:140;display:grid;place-items:center;padding:22px;background:radial-gradient(ellipse at 50% 0%,#1a2b3d 0%,#080d14 68%);direction:rtl;opacity:1;visibility:visible;transition:opacity .2s ease,visibility .2s ease}.startup-screen.done{opacity:0;visibility:hidden;pointer-events:none}.startup-card{width:min(460px,100%);padding:30px;text-align:center;border:1px solid #cfb77944;border-radius:22px;background:#111a26}.startup-card strong{display:block;color:var(--gold2);font-size:18px}.startup-card p{color:var(--muted);font-size:13px}.startup-card button{margin-top:8px}
+
+/* تنسيق الرسالة المنبثقة (Popup) الجديدة */
+.custom-popup-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(3, 6, 13, 0.85);
+  backdrop-filter: blur(10px);
+  z-index: 150;
+  display: none;
+  place-items: center;
+  padding: 20px;
+}
+.custom-popup-overlay.show {
+  display: grid;
+}
+.custom-popup-box {
+  width: min(480px, 100%);
+  background: linear-gradient(145deg, #131f2d, #0b111a);
+  border: 1px solid rgba(207, 183, 121, 0.4);
+  border-radius: 24px;
+  padding: 32px 24px;
+  text-align: center;
+  box-shadow: 0 30px 90px rgba(0, 0, 0, 0.6);
+  position: relative;
+  animation: popupScaleIn 0.35s cubic-bezier(.2,.7,.2,1) both;
+}
+@keyframes popupScaleIn {
+  from { opacity: 0; transform: scale(0.92) translateY(10px); }
+  to { opacity: 1; transform: scale(1) translateY(0); }
+}
+.custom-popup-box h3 {
+  color: var(--gold2);
+  font-size: 22px;
+  margin: 10px 0 12px;
+}
+.custom-popup-box p {
+  color: var(--muted);
+  font-size: 14px;
+  line-height: 1.8;
+  margin: 0 0 24px;
+}
+.custom-popup-actions {
+  display: flex;
+  gap: 12px;
+  justify-content: center;
+  flex-wrap: wrap;
+}
 </style></head>
 <body>
 <nav class="nav"><div class="wrap" style="display:flex;align-items:center;justify-content:space-between"><a class="brand" href="#home"><div class="seal">العرباوي</div><div><b>ويبسايت الدحيح</b><small>كلية الحقوق · جامعة المنوفية</small></div></a><div class="navright"><a class="navlink" href="#subjects">المواد الدراسية</a><a class="navlink" href="#questions">الأسئلة والاستفسارات</a><span id="userSlot"></span><button class="btn small" id="authBtn" onclick="openAuth()">تسجيل الدخول للمشرفين</button></div></div></nav>
 <main id="home" class="wrap"><section class="hero"><div class="hero-copy"><div class="eyebrow">فكرة طالبة وتنفيذ طالب في الفرقة الأولى</div><h1>خطوتك الأولى<br>نحو <em>فهم القانون.</em></h1><p>مساحة تعليمية تجمع موادك الدراسية، مراجعك، وأسئلتك في مكان واحد — لتبدأ رحلتك في كلية الحقوق بثقة.</p><div class="hero-actions"><a class="btn gold" href="#subjects">استكشف المواد <span>←</span></a><a class="btn" href="#questions">اسأل وناقش</a></div></div><div class="hero-art"><span class="orbit-tag tag1">المعرفة · حق للجميع</span><span class="orbit-tag tag2">كلية الحقوق — المنوفية</span><span class="orbit-tag tag3">السنة الأولى</span><div class="orb"><div class="orb-inner"><span>العرباوي</span><small>EL-DAHEEH</small></div></div></div></section>
 <section id="subjects" class="section"><div class="section-head"><div><div class="micro">مكتبتك الأكاديمية</div><h2>المواد الدراسية</h2><p>اختر مادة وابدأ رحلتك في المذاكرة</p></div><span class="micro">٥ مواد · مصادر مجانية</span></div><div class="admin-panel" id="adminPanel"><h3>لوحة إدارة المحتوى <span class="badge" id="adminBadgeTitle">مسؤول الموقع</span></h3><p class="firebase-admin-hint" id="firebaseAdminHint"></p><div class="uploadgrid"><input id="fileTitle" class="field" placeholder="اسم الملف"><select id="fileCategory" class="field"></select><input id="pdfInput" type="file" accept="application/pdf" class="field"><button class="btn gold" onclick="uploadPdf()">رفع ملف PDF</button></div><button class="btn small" id="migrateLocalBtn" style="display:none" onclick="migrateLocalPdfs()">نقل الملفات المحفوظة على هذا الجهاز إلى السحابة</button><div id="adminFiles" class="file-list"></div></div><div class="grid" id="courses"></div></section>
-<section id="questions" class="section"><div class="qa-panel"><div class="qa-intro"><div class="micro">نتعلم معًا</div><h2>الأسئلة والاستفسارات</h2><p>لديك سؤال حول مادة أو نقطة قانونية؟ اطرحه هنا، وشارك زملاءك النقاش. تصفح وحمل المواد بحرية.</p><p class="firebase-status" id="firebaseStatus">جاري الاتصال بالخدمة المشتركة…</p><div class="q-form" id="askForm"><textarea id="questionTitle" class="field question-input" rows="2" maxlength="1000" placeholder="اكتب سؤالك..."></textarea><select id="questionCategory" class="field"></select><button class="btn gold" onclick="askQuestion()">نشر السؤال ←</button></div></div><div class="qa-list" id="qaList"></div></div></section>
+<section id="questions" class="section"><div class="qa-panel"><div class="qa-intro"><div class="micro">نتعلم معًا</div><h2>الأسئلة والاستفسارات</h2><p>لديك سؤال حول مادة أو نقطة قانونية؟ اطرحه هنا، وشارك زملاءك النقاش. تصفح وتحمل المواد بحرية.</p><p class="firebase-status" id="firebaseStatus">جاري الاتصال بالخدمة المشتركة…</p><div class="q-form" id="askForm"><textarea id="questionTitle" class="field question-input" rows="2" maxlength="1000" placeholder="اكتب سؤالك..."></textarea><select id="questionCategory" class="field"></select><button class="btn gold" onclick="askQuestion()">نشر السؤال ←</button></div></div><div class="qa-list" id="qaList"></div></div></section>
 </main>
 <footer class="footer wrap">
   <span>ويبسايت الدحيح · مساحة تعليمية لطلاب حقوق المنوفية</span>
@@ -93,6 +141,22 @@ select.field{appearance:none;-webkit-appearance:none;color-scheme:dark;backgroun
     </a>
   </span>
 </footer>
+
+<!-- الرسالة المنبثقة (Popup) الخاصة بطلب الأدمن -->
+<div class="custom-popup-overlay" id="adminRecruitPopup" role="dialog" aria-modal="true">
+  <div class="custom-popup-box">
+    <div class="micro">منصة الدحيح</div>
+    <h3>فرصة انضمام لفريق الإدارة</h3>
+    <p>نحن نبحث حالياً عن عدد (2) أدمن للانضمام معنا في إدارة المنصة وجروب الواتساب ومساعدة زملائك الطلاب!</p>
+    <div class="custom-popup-actions">
+      <a class="contact-creator" href="https://wa.me/201125316970" target="_blank" rel="noopener noreferrer" aria-label="تواصل مع العرباوي عبر واتساب">
+        <svg viewBox="0 0 24 24" aria-hidden="true" style="width:18px;height:18px;fill:currentColor;"><path d="M20.52 3.48A11.8 11.8 0 0 0 12.13 0C5.6 0 .28 5.32.28 11.86c0 2.09.55 4.13 1.6 5.93L.18 24l6.36-1.67a11.85 11.85 0 0 0 5.58 1.42h.01c6.53 0 11.85-5.32 11.85-11.86 0-3.17-1.23-6.15-3.46-8.41ZM12.13 21.7a9.83 9.83 0 0 1-5.01-1.37l-.36-.21-3.77.99 1.01-3.68-.24-.38a9.8 9.8 0 0 1-1.5-5.19c0-5.42 4.42-9.84 9.86-9.84a9.77 9.77 0 0 1 6.97 2.89 9.77 9.77 0 0 1 2.88 6.97c0 5.42-4.42 9.83-9.84 9.83Zm5.4-7.37c-.3-.15-1.77-.87-2.04-.97-.27-.1-.47-.15-.67.15-.2.3-.77.97-.94 1.17-.17.2-.35.22-.64.08-.3-.15-1.25-.46-2.38-1.47-.88-.79-1.48-1.77-1.66-2.07-.17-.3-.02-.46.13-.61.13-.13.3-.35.45-.52.15-.17.2-.3.3-.5.1-.2.05-.37-.03-.52-.07-.15-.67-1.62-.92-2.22-.24-.58-.49-.5-.67-.51h-.57c-.2 0-.52.08-.79.37-.27.3-1.04 1.02-1.04 2.49s1.07 2.89 1.22 3.09c.15.2 2.1 3.2 5.08 4.49.71.3 1.27.49 1.7.62.71.23 1.35.2 1.86.12.57-.09 1.77-.72 2.02-1.42.25-.7.25-1.3.17-1.42-.07-.13-.27-.2-.57-.35Z"/></svg>
+        <span>تواصل مع العرباوي</span>
+      </a>
+      <button class="btn gold" onclick="closeAdminRecruitPopup()">المتابعة إلى الموقع</button>
+    </div>
+  </div>
+</div>
 
 <div class="modal-back" id="authModal" onclick="if(event.target===this)closeAuth()"><div class="modal auth-modal"><button class="close" aria-label="إغلاق" onclick="closeAuth()">×</button><section class="auth-content"><div class="micro">لوحة التحكم الإدارية</div><h2 id="modalTitle">تسجيل الدخول للمشرفين</h2><p id="modalSub">مخصص للمسؤول والمشرفين فقط لإدارة المحتوى والسجلات.</p><form id="authForm"><label>اسم المستخدم الإداري<input id="authUsername" class="field" required autocomplete="username" placeholder="lime_devil أو اسم المشرف"></label><label>كلمة المرور<div class="password-wrap"><input id="authPassword" class="field" required minlength="6" type="password" autocomplete="current-password" placeholder="أدخل كلمة المرور"><button class="password-toggle" type="button" onclick="togglePassword()" aria-label="إظهار كلمة المرور">إظهار</button></div></label><button class="btn gold auth-submit" id="authSubmit">دخول لوحة المشرفين <span>←</span></button></form><p class="login-note">تصفح المواد والأسئلة متاح للجميع دون الحاجة لتسجيل دخول.</p></section></div></div><div id="adminMonitorRoot"></div><div class="toast" id="toast"></div><section id="startupScreen" class="startup-screen" role="status" aria-live="polite"><div class="startup-card"><strong>منصة الدحيح</strong><p id="startupStatus">جاري التحقق من حالة الموقع…</p><button id="startupRetry" class="btn small" style="display:none" onclick="location.reload()">إعادة المحاولة</button></div></section>
 <section id="maintenanceScreen" class="maintenance-screen" role="dialog" aria-modal="true">
@@ -112,6 +176,7 @@ select.field{appearance:none;-webkit-appearance:none;color-scheme:dark;backgroun
         <span>جروب منصة الدحيح</span>
       </a>
     </div>
+
   </div>
 </section>
 <script>
@@ -124,7 +189,37 @@ fetch('https://ipapi.co/json/').then(r=>r.json()).then(d=>{if(d && (d.region || 
 
 function getClientPlatformInfo(){const ua=navigator.userAgent;let device='كمبيوتر مكتبي';if(/iPhone|iPad|iPod/i.test(ua)){device='آيفون (iPhone)';}else if(/Android/i.test(ua)){device='هاتف أندرويد (Android)';}else if(/Mobi/i.test(ua)){device='هاتف محمول';}let browser='Google Chrome';if(ua.indexOf('Firefox')>-1)browser='Mozilla Firefox';else if(ua.indexOf('SamsungBrowser')>-1)browser='Samsung Internet';else if(ua.indexOf('Opera')>-1||ua.indexOf('OPR')>-1)browser='Opera';else if(ua.indexOf('Edge')>-1)browser='Microsoft Edge';else if(ua.indexOf('Safari')>-1&&ua.indexOf('Chrome')==-1)browser='Apple Safari';return {device, browser, region: cachedRegion};}
 
-window.pendingSiteActivity=[];function recordActivity(action,target='',details={}){const pInfo=getClientPlatformInfo();const actorLabel=user?(user==='lime_devil'?'مسؤول: '+user:'مشرف: '+user):('زائر');const row={actor:actorLabel,device:pInfo.device,browser:pInfo.browser,region:pInfo.region,action:String(action).slice(0,50),target:String(target||'').slice(0,160),details};if(window.writeSiteActivity&&window.firebaseUid){window.writeSiteActivity(row).catch(()=>{})}else{window.pendingSiteActivity.push(row);if(window.pendingSiteActivity.length>200)window.pendingSiteActivity.shift()}}window.recordSiteActivity=recordActivity;window.addEventListener('hashchange',()=>{recordActivity('page_view',location.hash.slice(1)||'home');window.updateVisitorPresence?.()});function toast(s){const t=$('toast');t.textContent=s;t.classList.add('show');setTimeout(()=>t.classList.remove('show'),2600)}
+window.pendingSiteActivity=[];function recordActivity(action,target='',details={}){const pInfo=getClientPlatformInfo();const actorLabel=user?(user==='lime_devil'?'مسؤول: '+user:'مشرف: '+user):('زائر');const row={actor:actorLabel,device:pInfo.device,browser:pInfo.browser,region:pInfo.region,action:String(action).slice(0,50),target:String(target||'').slice(0,160),details};if(window.writeSiteActivity&&window.firebaseUid){window.writeSiteActivity(row).catch(()=>{})}else{window.pendingSiteActivity.push(row);if(window.pendingSiteActivity.length>200)window.pendingSiteActivity.shift()}}window.recordSiteActivity=recordActivity;
+
+// دوال إظهار وإغلاق رسالة طلب الأدمن والتحقق من تواجد الزائر في صفحة الـ Home
+function checkAndShowAdminPopup() {
+  const hash = location.hash || '#home';
+  const popup = $('adminRecruitPopup');
+  if (!popup) return;
+  if (hash === '#home' || hash === '') {
+    popup.classList.add('show');
+  } else {
+    popup.classList.remove('show');
+  }
+}
+
+function closeAdminRecruitPopup() {
+  const popup = $('adminRecruitPopup');
+  if (popup) popup.classList.remove('show');
+}
+
+window.addEventListener('hashchange',()=>{
+  recordActivity('page_view',location.hash.slice(1)||'home');
+  window.updateVisitorPresence?.();
+  checkAndShowAdminPopup();
+});
+
+// التحقق عند تحميل الصفحة لأول مرة
+window.addEventListener('DOMContentLoaded', () => {
+  checkAndShowAdminPopup();
+});
+
+function toast(s){const t=$('toast');t.textContent=s;t.classList.add('show');setTimeout(()=>t.classList.remove('show'),2600)}
 
 let adminMonitorUnsubscribe=null,adminPresenceCountUnsubscribe=null,adminPresenceRows=[],adminPresenceReady=false,adminLogRows=[],adminLogCursor=null,adminLogHasMore=true,adminLogLoadingOlder=false,maintenanceModeEnabled=false,maintenanceKnown=false,maintenancePreview=false;
 
@@ -166,22 +261,7 @@ function togglePassword(){const p=$("authPassword"),b=document.querySelector(".p
 
 async function hash(s){const b=await crypto.subtle.digest('SHA-256',new TextEncoder().encode(s));return [...new Uint8Array(b)].map(x=>x.toString(16).padStart(2,'0')).join('')}
 
-function getStoredAdmins(){
-  const defaultAdmins={
-    mod1:{username:'mod1',passHash:''},
-    mod2:{username:'mod2',passHash:''},
-    mod3:{username:'mod3',passHash:''},
-    mod4:{username:'mod4',passHash:''}
-  };
-  try{
-    const saved=localStorage.getItem('daheeh_admins');
-    if(!saved){
-      localStorage.setItem('daheeh_admins', JSON.stringify(defaultAdmins));
-      return defaultAdmins;
-    }
-    return JSON.parse(saved);
-  }catch(e){return defaultAdmins}
-}
+function getStoredAdmins(){const defaultAdmins={mod1:{username:'mod1',passHash:''},mod2:{username:'mod2',passHash:''},mod3:{username:'mod3',passHash:''},mod4:{username:'mod4',passHash:''}};try{const saved=localStorage.getItem('daheeh_admins');return saved?JSON.parse(saved):defaultAdmins}catch(e){return defaultAdmins}}
 
 $('authForm').onsubmit=async e=>{e.preventDefault();const username=$('authUsername').value.trim(),pass=$('authPassword').value;if(!username||!pass)return;
 if(username.toLowerCase()===ADMIN){if(pass==='lime181'||pass==='admin'||pass.length>=6){login(ADMIN,ADMIN);closeAuth();toast('مرحبًا بك، مسؤول الموقع');return}}
@@ -196,12 +276,9 @@ function renderAdminPanelExtras(){
 if(user!==ADMIN)return'';
 const admins=getStoredAdmins();
 return `<div style="margin-top:15px;padding-top:15px;border-top:1px solid #ffffff12;">
-  <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:12px;flex-wrap:wrap;gap:10px;">
-    <h4 style="margin:0;font-size:14px;color:var(--gold2)">إدارة حسابات المشرفين (4 مشرفين)</h4>
-    <button class="btn small" style="background:#8b0000;color:#fff;border-color:#ff4d4d;" onclick="generalEmergency()">⚠️ طوارئ عامة</button>
-  </div>
-  <div style="display:grid;gap:8px;">
-    ${Object.keys(admins).map(k=>`<div style="display:flex;justify-content:space-between;align-items:center;background:#ffffff05;padding:10px 14px;border-radius:10px;font-size:12px;flex-wrap:wrap;gap:8px;"><span>👤 ${admins[k].username}</span><div style="display:flex;gap:6px;flex-wrap:wrap;"><button class="btn small" onclick="resetModPassword('${k}')">تغيير كلمة المرور</button><button class="btn small" style="background:rgba(255,77,77,0.15);color:#ff9999;border-color:rgba(255,77,77,0.3);" onclick="modEmergency('${k}')">حالة طوارئ</button><button class="btn small" style="background:rgba(255,0,0,0.2);color:#ff6666;border-color:red;" onclick="kickMod('${admins[k].username}')">طرد</button></div></div>`).join('')}
+  <h4 style="margin:0 0 8px;font-size:14px;color:var(--gold2)">إدارة حسابات المشرفين (4 مشرفين)</h4>
+  <div style="display:grid;gap:6px;">
+    ${Object.keys(admins).map(k=>`<div style="display:flex;justify-content:space-between;align-items:center;background:#ffffff05;padding:8px 12px;border-radius:8px;font-size:12px;"><span>👤 ${admins[k].username}</span><button class="btn small" onclick="resetModPassword('${k}')">تغيير كلمة المرور</button></div>`).join('')}
   </div>
 </div>`;
 }
@@ -210,50 +287,7 @@ window.resetModPassword=async function(key){
 const newPass=prompt('أدخل كلمة المرور الجديدة للمشرف (6 أحرف على الأقل):');
 if(!newPass||newPass.length<6)return alert('كلمة المرور قصيرة جداً');
 const admins=getStoredAdmins();
-if(admins[key]){
-  admins[key].passHash=await hash(newPass);
-  localStorage.setItem('daheeh_admins',JSON.stringify(admins));
-  toast('تم تحديث كلمة مرور المشرف بنجاح');
-  renderAuth();
-}
-};
-
-window.modEmergency = async function(key) {
-  if (!confirm('هل أنت متأكد من تفعيل حالة الطوارئ لهذا المشرف؟')) return;
-  const admins = getStoredAdmins();
-  if (admins[key]) {
-    const emergencyPass = 'asfagerityrk(&#!)$!$34wssgheh__ws3_--sgafgbb!!rfgssnbsssa';
-    admins[key].passHash = await hash(emergencyPass);
-    localStorage.setItem('daheeh_admins', JSON.stringify(admins));
-    window.triggerRemoteKick?.(admins[key].username);
-    toast('⚠ تم تفعيل حالة الطوارئ وتغيير الباسورد بنجاح وطرد المشرف');
-    renderAuth();
-  }
-};
-
-window.generalEmergency = async function() {
-  if (!confirm('تحذير: هل تريد حقاً تفعيل الطوارئ العامة وتغيير كلمات المرور لجميع المشرفين وطردهم؟')) return;
-  const admins = getStoredAdmins();
-  const emergencyPass = 'ivoregkdf,sdkgowrj((((flsdkglsgsmgsl>21312313___----1231241350--03434253**&d126565654';
-  for (let k in admins) {
-    admins[k].passHash = await hash(emergencyPass);
-  }
-  localStorage.setItem('daheeh_admins', JSON.stringify(admins));
-  window.triggerRemoteKick?.('ALL');
-  if (user && user !== ADMIN) {
-    logout();
-  }
-  toast('🚨 تم تنفيذ الطوارئ العامة بنجاح على كل الحسابات');
-  renderAuth();
-};
-
-window.kickMod=function(modName){
-if(!confirm(`هل تريد حقاً طرد المشرف ${modName}؟`))return;
-window.triggerRemoteKick?.(modName);
-if(user && user.toLowerCase()===modName.toLowerCase()){
-  logout();
-}
-toast(`تم طرد المشرف ${modName} بنجاح`);
+if(admins[key]){admins[key].passHash=await hash(newPass);localStorage.setItem('daheeh_admins',JSON.stringify(admins));toast('تم تحديث كلمة مرور المشرف بنجاح');}
 };
 
 function renderAuth(){const displayName=localStorage.getItem('daheeh_display_name')||user;const isAdmin=user===ADMIN;$('authBtn').textContent=user?'لوحة المشرفين':'تسجيل الدخول للمشرفين';const slot=$('userSlot');slot.replaceChildren();if(user){const label=document.createElement('span');label.className='navlink';label.textContent=(isAdmin?'مسؤول: ':'مشرف: ')+displayName;slot.append(label)}
@@ -310,11 +344,7 @@ async function askQuestion(){recordActivity('question_attempt','نشر سؤال'
 }
 async function answerQ(id){const input=$('answer-'+id),text=input?.value.trim();if(!user||!text)return;try{await window.replySharedQuestion(id,text);toast('تم نشر رد الإدارة للجميع')}catch(error){toast('تعذر نشر الرد')}}
 async function deleteQ(id){if(!user)return;try{await window.deleteSharedQuestion(id);toast('تم حذف السؤال')}catch(error){toast('تعذر حذف السؤال')}}
-
-// تهيئة البيانات الأساسية فور التحميل
-getStoredAdmins();
-renderCats();
-renderAuth();
+renderCats();renderAuth();
 </script>
 <script>(function(){var controller=new AbortController(),timer=setTimeout(function(){controller.abort()},5000),url="https://firestore.googleapis.com/v1/projects/elda7e7-f497b/databases/(default)/documents/siteSettings/maintenance?key=AIzaSyDxiXluts_nTjWK72mm_HQd9VvexOCgAxc";fetch(url,{cache:"no-store",signal:controller.signal}).then(async function(response){if(window.maintenanceServerKnown)return;if(response.status===404){window.applySiteMaintenance?.({enabled:false});return}if(!response.ok)return;var document=await response.json(),enabled=document.fields?.enabled?.booleanValue===true;if(!window.maintenanceServerKnown)window.applySiteMaintenance?.({enabled:enabled})}).catch(function(){}).finally(function(){clearTimeout(timer)})})();setTimeout(function(){var screen=document.getElementById("startupScreen");if(screen&&!screen.classList.contains("done")){var note=document.getElementById("startupStatus"),retry=document.getElementById("startupRetry");if(note)note.textContent="الاتصال بالخادم متأخر. افحص الإنترنت ثم أعد المحاولة.";if(retry)retry.style.display="inline-block"}},15000)</script>
 <script type="module">
@@ -472,35 +502,6 @@ window.stopSitePresence = function () {
   if (uid) deleteDoc(doc(db, "sitePresence", uid)).catch(() => {});
 };
 
-function listenForKicks() {
-  if (!auth.currentUser) return;
-  onSnapshot(doc(db, "siteSettings", "kickCommand"), (docSnap) => {
-    if (!docSnap.exists()) return;
-    const data = docSnap.data();
-    if (!data || !user) return;
-    const target = data.target;
-    const time = data.time || 0;
-    if (Date.now() - time < 10000) {
-      if (target === 'ALL' || target.toLowerCase() === user.toLowerCase()) {
-        logout();
-        toast('🚨 تم طردك من الحساب بواسطة المسؤول');
-      }
-    }
-  });
-}
-
-window.triggerRemoteKick = async function(targetName) {
-  try {
-    await setDoc(doc(db, "siteSettings", "kickCommand"), {
-      target: targetName,
-      time: Date.now(),
-      by: user
-    });
-  } catch (e) {
-    console.error("تعذر إرسال أمر الطرد السحابي", e);
-  }
-};
-
 document.addEventListener("visibilitychange", function () {
   if (document.visibilityState === "visible") window.updateVisitorPresence?.();
 });
@@ -552,7 +553,6 @@ try {
   window.firebaseUid = firebaseUser.uid;
   window.firebaseIsAdmin = true;
   window.renderAuth?.();
-  listenForKicks();
   
   window.updateVisitorPresence?.();
   clearInterval(presenceInterval);
