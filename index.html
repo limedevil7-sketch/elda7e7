@@ -170,7 +170,6 @@ function renderAdminMonitorRows(kind,rows){
   }
   list.innerHTML=shown.map(r=>{
     if(kind==='online'){
-      // تم إضافة زر "طرد" بجانب "أونلاين" هنا
       return `<article class="admin-monitor-row">
         <b><i class="online-dot"></i>${esc(r.username||'زائر')}</b>
         <span><span class="log-device-badge">📱 ${esc(r.device||'جهاز')} · 🌐 ${esc(r.browser||'متصفح')} · 📍 ${esc(r.region||'المنوفية')}</span></span>
@@ -185,7 +184,7 @@ function renderAdminMonitorRows(kind,rows){
   }).join('')+(kind==='logs'&&adminLogHasMore?`<button class="btn small" style="display:block;margin:12px auto" onclick="loadOlderAdminLogs()" ${adminLogLoadingOlder?'disabled':''}>${adminLogLoadingOlder?'جارٍ التحميل…':'تحميل سجلات أقدم'}</button>`:'');
 }
 
-// دالة تنفيذ الطرد للزائر المحدد
+// دالة تنفيذ الطرد بتحديث حقل داخل وثيقة sitePresence لتجنب مشاكل الأذونات
 async function kickVisitor(targetUid) {
   if(!window.triggerVisitorKick) return toast('خاصية الطرد غير متصلة بالسحابة بعد');
   try {
@@ -366,21 +365,20 @@ window.updateVisitorPresence = function () {
   setDoc(doc(db, "sitePresence", uid), { uid, username: name, device: pInfo.device, browser: pInfo.browser, region: pInfo.region, page, lastSeen: serverTimestamp() }, { merge: true }).catch(()=>{});
 };
 
-// مراقبة أوامر الطرد للزائر الحالي عبر Firebase
+// الاستماع لتحديثات الطرد داخل وثيقة الحضور الحالية للزائر
 function watchKicks(uid) {
   if(!uid) return;
-  onSnapshot(doc(db, "siteKicks", uid), (snapshot) => {
-    if(snapshot.exists()) {
-      // إظهار شاشة "انت مش دحيح"
+  onSnapshot(doc(db, "sitePresence", uid), (snapshot) => {
+    if(snapshot.exists() && snapshot.data().kicked === true) {
       document.getElementById('bannedScreen').classList.add('show');
     }
   });
 }
 
-// دالة تفعيل الطرد من لوحة المشرف
+// دالة تفعيل الطرد عبر تحديث حقل kicked داخل جدول الحضور لتفادي أخطاء الأذونات
 window.triggerVisitorKick = async function(targetUid) {
   if(!targetUid) return;
-  await setDoc(doc(db, "siteKicks", targetUid), { kickedAt: serverTimestamp() });
+  await updateDoc(doc(db, "sitePresence", targetUid), { kicked: true });
 };
 
 window.writeSiteActivity = function (event) {
@@ -532,7 +530,7 @@ try {
   window.firebaseIsAdmin = true;
   window.renderAuth?.();
   
-  // تفعيل الاستماع لأمر الطرد الخاص بهذا الزائر
+  // تفعيل الاستماع لحالة الطرد للزائر الحالي
   watchKicks(firebaseUser.uid);
 
   window.updateVisitorPresence?.();
