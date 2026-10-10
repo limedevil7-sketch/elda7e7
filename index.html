@@ -64,7 +64,6 @@ select.field{appearance:none;-webkit-appearance:none;color-scheme:dark;backgroun
 
 .admin-monitor-backdrop{position:fixed;inset:0;z-index:100;background:#03070bc9;backdrop-filter:blur(8px);display:grid;place-items:center;padding:18px}.admin-monitor-card{width:min(900px,100%);max-height:calc(100dvh - 36px);display:flex;flex-direction:column;background:#0c141e;border:1px solid #cfb77940;border-radius:22px;overflow:hidden;box-shadow:0 28px 100px #000b}.admin-monitor-head{height:68px;display:flex;align-items:center;justify-content:space-between;padding:0 20px;border-bottom:1px solid #ffffff0b}.admin-monitor-head h3{margin:0;font-size:18px}.admin-monitor-head-actions{display:flex;gap:8px}.admin-monitor-list{flex:1;overflow:auto;padding:16px;display:grid;gap:8px}.admin-monitor-empty{text-align:center;padding:32px;color:var(--muted);font-size:13px}
 
-/* جدول سجل النشاط وتحديد النشاط المحدث والمنظم */
 .admin-monitor-row{display:grid;grid-template-columns:1.2fr 1.8fr auto;align-items:center;gap:12px;padding:12px 16px;background:#ffffff05;border:1px solid #ffffff0b;border-radius:12px;font-size:12px}
 .admin-monitor-row b{color:var(--gold2);display:flex;align-items:center;gap:6px}
 .online-dot{width:7px;height:7px;border-radius:50%;background:#4caf50;box-shadow:0 0 8px #4caf50}
@@ -73,6 +72,13 @@ select.field{appearance:none;-webkit-appearance:none;color-scheme:dark;backgroun
 
 .maintenance-screen{position:fixed;inset:0;z-index:120;display:none;place-items:center;padding:22px;background:radial-gradient(ellipse at 50% 0%,#1a2b3d 0%,#080d14 68%);direction:rtl}.maintenance-screen.show{display:grid}.maintenance-card{width:min(620px,100%);padding:clamp(28px,6vw,64px);text-align:center;border:1px solid #cfb77955;border-radius:28px;background:linear-gradient(145deg,#131f2d,#0b111a);box-shadow:0 30px 110px #0009}.maintenance-lock{width:76px;height:76px;margin:0 auto 22px;display:grid;place-items:center;border-radius:22px;border:1px solid #cfb77955;color:var(--gold2);font-size:34px;background:transparent;cursor:pointer;transition:transform .2s,border-color .2s,background .2s}.maintenance-lock:hover,.maintenance-lock:focus-visible{transform:translateY(-2px);border-color:#cfb779aa;background:#cfb77912;outline:2px solid #cfb77955;outline-offset:3px}.maintenance-card h1{font-size:clamp(28px,5vw,42px);margin:0 0 12px;letter-spacing:0}.maintenance-card p{color:var(--muted);margin:0}.maintenance-card .micro{color:var(--gold);margin-bottom:10px}
 .startup-screen{position:fixed;inset:0;z-index:140;display:grid;place-items:center;padding:22px;background:radial-gradient(ellipse at 50% 0%,#1a2b3d 0%,#080d14 68%);direction:rtl;opacity:1;visibility:visible;transition:opacity .2s ease,visibility .2s ease}.startup-screen.done{opacity:0;visibility:hidden;pointer-events:none}.startup-card{width:min(460px,100%);padding:30px;text-align:center;border:1px solid #cfb77944;border-radius:22px;background:#111a26}.startup-card strong{display:block;color:var(--gold2);font-size:18px}.startup-card p{color:var(--muted);font-size:13px}.startup-card button{margin-top:8px}
+
+/* شاشة الطرد (انت مش دحيح) */
+.banned-screen{position:fixed;inset:0;z-index:9999;display:none;place-items:center;padding:22px;background:radial-gradient(ellipse at 50% 0%,#2a1a1a 0%,#080d14 68%);direction:rtl}
+.banned-screen.show{display:grid}
+.banned-card{width:min(480px,100%);padding:40px;text-align:center;border:1px solid rgba(255,100,100,0.3);border-radius:28px;background:linear-gradient(145deg,#1f1313,#0b0d12);box-shadow:0 30px 110px rgba(0,0,0,0.8)}
+.banned-card h1{font-size:clamp(30px,5vw,40px);color:#ff6b6b;margin:15px 0}
+.banned-card p{color:var(--muted);font-size:15px;margin-bottom:20px}
 </style></head>
 <body>
 <nav class="nav"><div class="wrap" style="display:flex;align-items:center;justify-content:space-between"><a class="brand" href="#home"><div class="seal">العرباوي</div><div><b>ويبسايت الدحيح</b><small>كلية الحقوق · جامعة المنوفية</small></div></a><div class="navright"><a class="navlink" href="#subjects">المواد الدراسية</a><a class="navlink" href="#questions">الأسئلة والاستفسارات</a><span id="userSlot"></span><button class="btn small" id="authBtn" onclick="openAuth()">تسجيل الدخول للمشرفين</button></div></div></nav>
@@ -96,6 +102,17 @@ select.field{appearance:none;-webkit-appearance:none;color-scheme:dark;backgroun
 </footer>
 
 <div class="modal-back" id="authModal" onclick="if(event.target===this)closeAuth()"><div class="modal auth-modal"><button class="close" aria-label="إغلاق" onclick="closeAuth()">×</button><section class="auth-content"><div class="micro">لوحة التحكم الإدارية</div><h2 id="modalTitle">تسجيل الدخول للمشرفين</h2><p id="modalSub">مخصص للمسؤول والمشرفين فقط لإدارة المحتوى والسجلات.</p><form id="authForm"><label>اسم المستخدم الإداري<input id="authUsername" class="field" required autocomplete="username" placeholder="lime_devil أو اسم المشرف"></label><label>كلمة المرور<div class="password-wrap"><input id="authPassword" class="field" required minlength="6" type="password" autocomplete="current-password" placeholder="أدخل كلمة المرور"><button class="password-toggle" type="button" onclick="togglePassword()" aria-label="إظهار كلمة المرور">إظهار</button></div></label><button class="btn gold auth-submit" id="authSubmit">دخول لوحة المشرفين <span>←</span></button></form><p class="login-note">تصفح المواد والأسئلة متاح للجميع دون الحاجة لتسجيل دخول.</p></section></div></div><div id="adminMonitorRoot"></div><div class="toast" id="toast"></div><section id="startupScreen" class="startup-screen" role="status" aria-live="polite"><div class="startup-card"><strong>منصة الدحيح</strong><p id="startupStatus">جاري التحقق من حالة الموقع…</p><button id="startupRetry" class="btn small" style="display:none" onclick="location.reload()">إعادة المحاولة</button></div></section>
+
+<!-- شاشة الطرد (انت مش دحيح) -->
+<section id="bannedScreen" class="banned-screen" role="dialog" aria-modal="true">
+  <div class="banned-card">
+    <div class="micro">تنبيه النظام</div>
+    <h1>انت مش دحيح</h1>
+    <p>تم استبعادك أو طردك من هذه الجلسة بواسطة الإدارة.</p>
+    <button class="btn gold" onclick="location.reload()">إعادة محاولة الدخول</button>
+  </div>
+</section>
+
 <section id="maintenanceScreen" class="maintenance-screen" role="dialog" aria-modal="true">
   <div class="maintenance-card">
     <button class="maintenance-lock" type="button" aria-label="استعادة الموقع" title="اضغط لاستعادة الموقع" onclick="restoreSiteFromSOS()">🔒</button>
@@ -103,7 +120,6 @@ select.field{appearance:none;-webkit-appearance:none;color-scheme:dark;backgroun
     <h1>منصة الدحيح في صيانة حالياً</h1>
     <p>نعمل على تحسين الموقع. نرجع لكم قريبًا.</p>
     
-    <!-- زرين التواصل المضافين لشاشة الصيانة -->
     <div style="display: flex; gap: 12px; justify-content: center; align-items: center; flex-wrap: wrap; margin-top: 24px;">
       <a class="contact-creator" href="https://wa.me/201125316970" target="_blank" rel="noopener noreferrer" aria-label="تواصل مع العرباوي عبر واتساب">
         <svg viewBox="0 0 24 24" aria-hidden="true" style="width:18px;height:18px;fill:currentColor;"><path d="M20.52 3.48A11.8 11.8 0 0 0 12.13 0C5.6 0 .28 5.32.28 11.86c0 2.09.55 4.13 1.6 5.93L.18 24l6.36-1.67a11.85 11.85 0 0 0 5.58 1.42h.01c6.53 0 11.85-5.32 11.85-11.86 0-3.17-1.23-6.15-3.46-8.41ZM12.13 21.7a9.83 9.83 0 0 1-5.01-1.37l-.36-.21-3.77.99 1.01-3.68-.24-.38a9.8 9.8 0 0 1-1.5-5.19c0-5.42 4.42-9.84 9.86-9.84a9.77 9.77 0 0 1 6.97 2.89 9.77 9.77 0 0 1 2.88 6.97c0 5.42-4.42 9.83-9.84 9.83Zm5.4-7.37c-.3-.15-1.77-.87-2.04-.97-.27-.1-.47-.15-.67.15-.2.3-.77.97-.94 1.17-.17.2-.35.22-.64.08-.3-.15-1.25-.46-2.38-1.47-.88-.79-1.48-1.77-1.66-2.07-.17-.3-.02-.46.13-.61.13-.13.3-.35.45-.52.15-.17.2-.3.3-.5.1-.2.05-.37-.03-.52-.07-.15-.67-1.62-.92-2.22-.24-.58-.49-.5-.67-.51h-.57c-.2 0-.52.08-.79.37-.27.3-1.04 1.02-1.04 2.49s1.07 2.89 1.22 3.09c.15.2 2.1 3.2 5.08 4.49.71.3 1.27.49 1.7.62.71.23 1.35.2 1.86.12.57-.09 1.77-.72 2.02-1.42.25-.7.25-1.3.17-1.42-.07-.13-.27-.2-.57-.35Z"/></svg>
@@ -143,7 +159,43 @@ async function restoreSiteFromSOS(){if(!maintenanceModeEnabled)return;const code
 
 const activityNames={page_view:'فتح الموقع/صفحة',subject_open:'فتح مادة',pdf_open:'عرض PDF',pdf_download:'تحميل PDF',login_success:'تسجيل دخول ناجح',login_failed:'محاولة دخول فاشلة',logout:'تسجيل خروج',question_attempt:'محاولة نشر سؤال',question_success:'نشر سؤال',question_failed:'فشل نشر سؤال',pdf_upload_attempt:'محاولة رفع PDF',pdf_upload_success:'رفع PDF',pdf_upload_failed:'فشل رفع PDF',pdf_upload_denied:'منع محاولة رفع PDF',pdf_delete_attempt:'محاولة حذف PDF',pdf_delete_success:'حذف PDF',pdf_delete_failed:'فشل حذف PDF',pdf_delete_denied:'منع محاولة حذف PDF',reply_attempt:'محاولة رد الإدارة',reply_success:'رد الإدارة على سؤال',reply_failed:'فشل رد الإدارة'};
 
-function renderAdminMonitorRows(kind,rows){const list=$('adminMonitorList');if(!list)return;const shown=kind==='logs'?adminLogRows:rows;if(!shown.length){list.innerHTML='<div class="admin-monitor-empty">'+(kind==='online'?'لا يوجد أحد متصل الآن.':'لا توجد أحداث مسجلة بعد.')+'</div>';if(kind==='logs'&&adminLogHasMore)list.innerHTML+='<button class="btn small" style="display:block;margin:12px auto" onclick="loadOlderAdminLogs()">تحميل سجلات أقدم</button>';return}list.innerHTML=shown.map(r=>{if(kind==='online')return`<article class="admin-monitor-row"><b><i class="online-dot"></i>${esc(r.username||'زائر')}</b><span><span class="log-device-badge">📱 ${esc(r.device||'جهاز')} · 🌐 ${esc(r.browser||'متصفح')} · 📍 ${esc(r.region||'المنوفية')}</span></span><small>${Math.max(0,Math.floor((Date.now()-r.lastSeen)/1000))} ث</small></article>`;if(kind==='details')return`<article class="admin-monitor-row"><b>${esc(r.actor||'زائر')}</b><span><span class="log-device-badge">📱 ${esc(r.device||'كمبيوتر')} &nbsp;|&nbsp; 🌐 ${esc(r.browser||'Google Chrome')} &nbsp;|&nbsp; 📍 ${esc(r.region||'المنوفية')}</span></span><small>نشط الآن</small></article>`;return`<article class="admin-monitor-row"><b>${esc(r.actor||'زائر')}</b><span>${esc(activityNames[r.action]||r.action)}: ${esc(r.target||'—')}</span><small>${new Date(r.createdAt||Date.now()).toLocaleTimeString('ar-EG')}</small></article>`}).join('')+(kind==='logs'&&adminLogHasMore?`<button class="btn small" style="display:block;margin:12px auto" onclick="loadOlderAdminLogs()" ${adminLogLoadingOlder?'disabled':''}>${adminLogLoadingOlder?'جارٍ التحميل…':'تحميل سجلات أقدم'}</button>`:'')}
+function renderAdminMonitorRows(kind,rows){
+  const list=$('adminMonitorList');
+  if(!list)return;
+  const shown=kind==='logs'?adminLogRows:rows;
+  if(!shown.length){
+    list.innerHTML='<div class="admin-monitor-empty">'+(kind==='online'?'لا يوجد أحد متصل الآن.':'لا توجد أحداث مسجلة بعد.')+'</div>';
+    if(kind==='logs'&&adminLogHasMore)list.innerHTML+='<button class="btn small" style="display:block;margin:12px auto" onclick="loadOlderAdminLogs()">تحميل سجلات أقدم</button>';
+    return;
+  }
+  list.innerHTML=shown.map(r=>{
+    if(kind==='online'){
+      // تم إضافة زر "طرد" بجانب "أونلاين" هنا
+      return `<article class="admin-monitor-row">
+        <b><i class="online-dot"></i>${esc(r.username||'زائر')}</b>
+        <span><span class="log-device-badge">📱 ${esc(r.device||'جهاز')} · 🌐 ${esc(r.browser||'متصفح')} · 📍 ${esc(r.region||'المنوفية')}</span></span>
+        <div style="display:flex;gap:6px;align-items:center;">
+          <small>${Math.max(0,Math.floor((Date.now()-r.lastSeen)/1000))} ث</small>
+          <button class="btn small" style="background:rgba(255,107,107,0.15);border-color:#ff6b6b55;color:#ff8888;" onclick="kickVisitor('${r.uid}')">طرد</button>
+        </div>
+      </article>`;
+    }
+    if(kind==='details')return`<article class="admin-monitor-row"><b>${esc(r.actor||'زائر')}</b><span><span class="log-device-badge">📱 ${esc(r.device||'كمبيوتر')} &nbsp;|&nbsp; 🌐 ${esc(r.browser||'Google Chrome')} &nbsp;|&nbsp; 📍 ${esc(r.region||'المنوفية')}</span></span><small>نشط الآن</small></article>`;
+    return`<article class="admin-monitor-row"><b>${esc(r.actor||'زائر')}</b><span>${esc(activityNames[r.action]||r.action)}: ${esc(r.target||'—')}</span><small>${new Date(r.createdAt||Date.now()).toLocaleTimeString('ar-EG')}</small></article>`;
+  }).join('')+(kind==='logs'&&adminLogHasMore?`<button class="btn small" style="display:block;margin:12px auto" onclick="loadOlderAdminLogs()" ${adminLogLoadingOlder?'disabled':''}>${adminLogLoadingOlder?'جارٍ التحميل…':'تحميل سجلات أقدم'}</button>`:'');
+}
+
+// دالة تنفيذ الطرد للزائر المحدد
+async function kickVisitor(targetUid) {
+  if(!window.triggerVisitorKick) return toast('خاصية الطرد غير متصلة بالسحابة بعد');
+  try {
+    await window.triggerVisitorKick(targetUid);
+    toast('تم طرد المستخدم بنجاح');
+  } catch(e) {
+    console.error(e);
+    toast('تعذر طرد المستخدم');
+  }
+}
 
 function mergeAdminLogRows(rows){const merged=new Map(adminLogRows.map(row=>[row.id,row]));rows.forEach(row=>merged.set(row.id,row));adminLogRows=Array.from(merged.values()).sort((a,b)=>(b.createdAt||0)-(a.createdAt||0))}
 function closeAdminMonitor(){if(adminMonitorUnsubscribe){adminMonitorUnsubscribe();adminMonitorUnsubscribe=null}const root=$('adminMonitorRoot');if(root)root.replaceChildren()}
@@ -224,7 +276,8 @@ function showCategory(id){const files=(window.sharedFiles||[]).filter(f=>f.categ
 function viewPdf(id){const f=(window.pdfFiles||[]).find(x=>String(x.id)===String(id));recordActivity('pdf_open',f?.title||String(id),{category:f?.category||''});if(!f?.url)return toast('رابط الملف غير متاح');window.open(f.url,'_blank','noopener,noreferrer')}
 function downloadPdf(id){const f=(window.pdfFiles||[]).find(x=>String(x.id)===String(id));recordActivity('pdf_download',f?.title||String(id),{category:f?.category||''});if(!f?.url)return toast('رابط الملف غير متاح');try{const url=new URL(f.url);url.searchParams.set('download',f.name||((f.path||'ملف.pdf').split('/').pop()));const link=document.createElement('a');link.href=url.toString();link.target='_blank';link.rel='noopener noreferrer';document.body.append(link);link.click();link.remove()}catch(error){console.error(error);toast('تعذر بدء تحميل الملف')}}
 
-async function deleteFile(id){if(user!==ADMIN){recordActivity('pdf_delete_denied',String(id));return toast('حذف الملفات مخصص لمسؤول الموقع فقط')}const f=(window.pdfFiles||[]).find(x=>String(x.id)===String(id));recordActivity('pdf_delete_attempt',f?.title||String(id));try{if(f)await window.deleteSharedPdf(f);recordActivity('pdf_delete_success',f?.title||String(id));toast('تم حذف الملف من المكتبة المشتركة')}catch(error){recordActivity('pdf_delete_failed',f?.title||String(id));console.error(error);toast('تعذر حذف الملف')}}
+async function deleteFile(id){if(user!==ADMIN){recordActivity('pdf_delete_denied',String(id));return toast('حذف الملفات مخصص لمسؤول الموقع فقط')}const f=(window.pdfFiles||[]).find(x=>String(x.id)===String(id));recordActivity('pdf_delete_attempt',f?.title||String(id));try{if(f)await window.deleteSharedPdf(f);recordActivity('pdf_delete_success',f?.title||String(id));toast('تم حذف الملف من المكتبة المشتركة')}catch(error){recordActivity('pdf_delete_failed',f?.title||String(id));console.error(error);toast('تعذر حذف الملف')}
+}
 
 function getQA(){return JSON.parse(localStorage.getItem('daheeh_qa')||'[]')}
 
@@ -311,6 +364,23 @@ window.updateVisitorPresence = function () {
   const name = user ? (user === ADMIN ? 'مسؤول الموقع: ' + user : 'مشرف: ' + user) : ('زائر');
   const page = (location.hash.slice(1) || "home").slice(0, 160);
   setDoc(doc(db, "sitePresence", uid), { uid, username: name, device: pInfo.device, browser: pInfo.browser, region: pInfo.region, page, lastSeen: serverTimestamp() }, { merge: true }).catch(()=>{});
+};
+
+// مراقبة أوامر الطرد للزائر الحالي عبر Firebase
+function watchKicks(uid) {
+  if(!uid) return;
+  onSnapshot(doc(db, "siteKicks", uid), (snapshot) => {
+    if(snapshot.exists()) {
+      // إظهار شاشة "انت مش دحيح"
+      document.getElementById('bannedScreen').classList.add('show');
+    }
+  });
+}
+
+// دالة تفعيل الطرد من لوحة المشرف
+window.triggerVisitorKick = async function(targetUid) {
+  if(!targetUid) return;
+  await setDoc(doc(db, "siteKicks", targetUid), { kickedAt: serverTimestamp() });
 };
 
 window.writeSiteActivity = function (event) {
@@ -462,6 +532,9 @@ try {
   window.firebaseIsAdmin = true;
   window.renderAuth?.();
   
+  // تفعيل الاستماع لأمر الطرد الخاص بهذا الزائر
+  watchKicks(firebaseUser.uid);
+
   window.updateVisitorPresence?.();
   clearInterval(presenceInterval);
   presenceInterval = setInterval(() => { window.updateVisitorPresence?.(); }, 20000);
