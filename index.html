@@ -137,7 +137,7 @@ select.field{appearance:none;-webkit-appearance:none;color-scheme:dark;backgroun
 </section>
 <script>
 const CATS=[['مدخل','المدخل للعلوم القانونية','مبادئ القانون، مصادره، وفروعه','§'],['أحوال','الأحوال الشخصية لغير المسلمين','قواعد الأحوال الشخصية وأحكامها','◇'],['مصطلحات','المصطلحات القانونية باللغة الأجنبية','مصطلحات ومفاهيم قانونية أساسية','A'],['شريعة','الشريعة الإسلامية','الأصول والمبادئ الفقهية','۞'],['اقتصاد','الاقتصاد السياسي','مدخل إلى الاقتصاد والنظم السياسية','⌁']];const ADMIN='lime_devil';let user=localStorage.getItem('daheeh_session')||'';
-window.pdfFiles=[];window.sharedFiles=[];
+window.pdfFiles=[];window.sharedFiles=[];window.cloudAdmins = {};
 const $=id=>document.getElementById(id),esc=s=>String(s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 
 let cachedRegion = 'المنوفية';
@@ -256,11 +256,9 @@ function togglePassword(){const p=$("authPassword"),b=document.querySelector(".p
 
 async function hash(s){const b=await crypto.subtle.digest('SHA-256',new TextEncoder().encode(s));return [...new Uint8Array(b)].map(x=>x.toString(16).padStart(2,'0')).join('')}
 
-function getStoredAdmins(){const defaultAdmins={mod1:{username:'mod1',passHash:'',kicked:false},mod2:{username:'mod2',passHash:'',kicked:false},mod3:{username:'mod3',passHash:'',kicked:false},mod4:{username:'mod4',passHash:'',kicked:false}};try{const saved=localStorage.getItem('daheeh_admins');return saved?JSON.parse(saved):defaultAdmins}catch(e){return defaultAdmins}}
-
 $('authForm').onsubmit=async e=>{e.preventDefault();const username=$('authUsername').value.trim(),pass=$('authPassword').value;if(!username||!pass)return;
 if(username.toLowerCase()===ADMIN){if(pass==='lime181'||pass==='admin'||pass.length>=6){login(ADMIN,ADMIN);closeAuth();toast('مرحبًا بك، مسؤول الموقع');return}}
-const admins=getStoredAdmins();const targetMod=Object.values(admins).find(m=>m.username.toLowerCase()===username.toLowerCase());
+const targetMod=Object.values(window.cloudAdmins).find(m=>m.username.toLowerCase()===username.toLowerCase());
 if(targetMod){
   if(targetMod.kicked){
     document.getElementById('bannedTitle').textContent = "تم عزلك من دور المشرف";
@@ -279,17 +277,19 @@ function logout(){recordActivity('logout','خروج');window.stopSitePresence?.(
 
 function renderAdminPanelExtras(){
 if(user!==ADMIN)return'';
-const admins=getStoredAdmins();
 return `<div style="margin-top:15px;padding-top:15px;border-top:1px solid #ffffff12;">
   <h4 style="margin:0 0 8px;font-size:14px;color:var(--gold2)">إدارة حسابات المشرفين (4 مشرفين)</h4>
   <div style="display:grid;gap:8px;">
-    ${Object.keys(admins).map(k=>`<div style="display:flex;justify-content:space-between;align-items:center;background:#ffffff05;padding:8px 12px;border-radius:8px;font-size:12px;flex-wrap:wrap;gap:6px;">
-      <span>👤 ${admins[k].username} ${admins[k].kicked?'<span style="color:#ff6b6b">(مطرود من الإدارة)</span>':''}</span>
-      <div style="display:flex;gap:5px;">
-        <button class="btn small" onclick="resetModPassword('${k}')">كلمة السر</button>
-        ${admins[k].kicked?`<button class="btn small gold" onclick="pardonMod('${k}')">عفو</button>`:`<button class="btn small" style="background:rgba(255,107,107,0.15);border-color:#ff6b6b55;color:#ff8888;" onclick="kickMod('${k}')">طرد الحساب</button>`}
-      </div>
-    </div>`).join('')}
+    ${Object.keys(window.cloudAdmins).map(k=>{
+      const m=window.cloudAdmins[k];
+      return `<div style="display:flex;justify-content:space-between;align-items:center;background:#ffffff05;padding:8px 12px;border-radius:8px;font-size:12px;flex-wrap:wrap;gap:6px;">
+        <span>👤 ${m.username} ${m.kicked?'<span style="color:#ff6b6b">(مطرود من الإدارة)</span>':''}</span>
+        <div style="display:flex;gap:5px;">
+          <button class="btn small" onclick="resetModPassword('${k}')">كلمة السر</button>
+          ${m.kicked?`<button class="btn small gold" onclick="pardonMod('${k}')">عفو</button>`:`<button class="btn small" style="background:rgba(255,107,107,0.15);border-color:#ff6b6b55;color:#ff8888;" onclick="kickMod('${k}')">طرد الحساب</button>`}
+        </div>
+      </div>`;
+    }).join('')}
   </div>
 </div>`;
 }
@@ -297,33 +297,23 @@ return `<div style="margin-top:15px;padding-top:15px;border-top:1px solid #fffff
 window.resetModPassword=async function(key){
 const newPass=prompt('أدخل كلمة المرور الجديدة للمشرف (6 أحرف على الأقل):');
 if(!newPass||newPass.length<6)return alert('كلمة المرور قصيرة جداً');
-const admins=getStoredAdmins();
-if(admins[key]){admins[key].passHash=await hash(newPass);localStorage.setItem('daheeh_admins',JSON.stringify(admins));toast('تم تحديث كلمة مرور المشرف بنجاح');}
+if(window.updateCloudAdminPass){
+  await window.updateCloudAdminPass(key, await hash(newPass));
+  toast('تم تحديث كلمة مرور المشرف بنجاح');
+}
 };
 
-window.kickMod=function(key){
-  const admins=getStoredAdmins();
-  if(admins[key]){
-    admins[key].kicked=true;
-    localStorage.setItem('daheeh_admins',JSON.stringify(admins));
-    toast('تم طرد حساب المشرف بنجاح');
-    if(user && user.toLowerCase() === admins[key].username.toLowerCase()){
-      logout();
-      document.getElementById('bannedTitle').textContent = "تم عزلك من دور المشرف";
-      document.getElementById('bannedText').textContent = "تم استبعادك من صلاحيات الإدارة بواسطة مسؤول الموقع.";
-      document.getElementById('bannedScreen').classList.add('show');
-    }
-    renderAuth();
+window.kickMod=async function(key){
+  if(window.setCloudAdminKick){
+    await window.setCloudAdminKick(key, true);
+    toast('تم طرد حساب المشرف سحابياً بنجاح');
   }
 };
 
-window.pardonMod=function(key){
-  const admins=getStoredAdmins();
-  if(admins[key]){
-    admins[key].kicked=false;
-    localStorage.setItem('daheeh_admins',JSON.stringify(admins));
+window.pardonMod=async function(key){
+  if(window.setCloudAdminKick){
+    await window.setCloudAdminKick(key, false);
     toast('تم عمل عفو وإلغاء طرد المشرف بنجاح');
-    renderAuth();
   }
 };
 
@@ -335,9 +325,8 @@ function renderAuth(){
   slot.replaceChildren();
   
   if(user){
-    const admins=getStoredAdmins();
-    const currentModKey=Object.keys(admins).find(k=>admins[k].username.toLowerCase()===user.toLowerCase());
-    if(currentModKey && admins[currentModKey].kicked){
+    const currentModKey=Object.keys(window.cloudAdmins).find(k=>window.cloudAdmins[k].username.toLowerCase()===user.toLowerCase());
+    if(currentModKey && window.cloudAdmins[currentModKey].kicked){
       logout();
       document.getElementById('bannedTitle').textContent = "تم عزلك من دور المشرف";
       document.getElementById('bannedText').textContent = "تم استبعادك من صلاحيات الإدارة بواسطة مسؤول الموقع.";
@@ -462,7 +451,7 @@ renderCats();renderAuth();
 <script type="module">
 import { initializeApp } from "https://www.gstatic.com/firebasejs/12.19.0/firebase-app.js";
 import { getAuth, signInAnonymously, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/12.19.0/firebase-auth.js";
-import { collection, deleteDoc, doc, getDoc, getFirestore, limit, onSnapshot, orderBy, query, updateDoc, addDoc, getDocs, setDoc, serverTimestamp, startAfter } from "https://www.gstatic.com/firebasejs/12.19.0/firebase-firestore.js";
+import { collection, deleteDoc, doc, getDoc, setDoc, getFirestore, limit, onSnapshot, orderBy, query, updateDoc, addDoc, getDocs, serverTimestamp, startAfter } from "https://www.gstatic.com/firebasejs/12.19.0/firebase-firestore.js";
 
 const firebaseConfig = { apiKey: "AIzaSyDxiXluts_nTjWK72mm_HQd9VvexOCgAxc", authDomain: "elda7e7-f497b.firebaseapp.com", projectId: "elda7e7-f497b", storageBucket: "elda7e7-f497b.firebasestorage.app", messagingSenderId: "605045232808", appId: "1:605045232808:web:b1ab6ff23e56b2e2279e9d", measurementId: "G-YN9ND001ZB" };
 const app = initializeApp(firebaseConfig);
@@ -541,6 +530,63 @@ window.triggerVisitorKick = async function(targetUid, kickState) {
   if(!targetUid) return;
   await updateDoc(doc(db, "sitePresence", targetUid), { kicked: !!kickState });
 };
+
+async function initCloudAdmins() {
+  const defaultAdmins = {
+    mod1: { username: 'mod1', passHash: '', kicked: false },
+    mod2: { username: 'mod2', passHash: '', kicked: false },
+    mod3: { username: 'mod3', passHash: '', kicked: false },
+    mod4: { username: 'mod4', passHash: '', kicked: false }
+  };
+  const ref = doc(db, "siteSettings", "admins");
+  const snap = await getDoc(ref);
+  if (!snap.exists()) {
+    await setDoc(ref, defaultAdmins);
+    window.cloudAdmins = defaultAdmins;
+  } else {
+    window.cloudAdmins = snap.data();
+  }
+}
+
+window.setCloudAdminKick = async function(key, kickedState) {
+  const ref = doc(db, "siteSettings", "admins");
+  if (window.cloudAdmins[key]) {
+    window.cloudAdmins[key].kicked = kickedState;
+    await setDoc(ref, window.cloudAdmins);
+    if(user && user.toLowerCase() === window.cloudAdmins[key].username.toLowerCase() && kickedState){
+      logout();
+      document.getElementById('bannedTitle').textContent = "تم عزلك من دور المشرف";
+      document.getElementById('bannedText').textContent = "تم استبعادك من صلاحيات الإدارة بواسطة مسؤول الموقع.";
+      document.getElementById('bannedScreen').classList.add('show');
+    }
+    window.renderAuth?.();
+  }
+};
+
+window.updateCloudAdminPass = async function(key, newHash) {
+  const ref = doc(db, "siteSettings", "admins");
+  if (window.cloudAdmins[key]) {
+    window.cloudAdmins[key].passHash = newHash;
+    await setDoc(ref, window.cloudAdmins);
+    window.renderAuth?.();
+  }
+};
+
+onSnapshot(doc(db, "siteSettings", "admins"), (snap) => {
+  if (snap.exists()) {
+    window.cloudAdmins = snap.data();
+    window.renderAuth?.();
+    if(user && user !== ADMIN) {
+      const currentMod = Object.values(window.cloudAdmins).find(m => m.username.toLowerCase() === user.toLowerCase());
+      if(currentMod && currentMod.kicked) {
+        logout();
+        document.getElementById('bannedTitle').textContent = "تم عزلك من دور المشرف";
+        document.getElementById('bannedText').textContent = "تم استبعادك من صلاحيات الإدارة بواسطة مسؤول الموقع.";
+        document.getElementById('bannedScreen').classList.add('show');
+      }
+    }
+  }
+});
 
 window.writeSiteActivity = function (event) {
   if (!auth.currentUser) return Promise.reject(new Error("Firebase session is not ready"));
@@ -681,6 +727,7 @@ window.deleteSharedPdf = async function (material) {
 };
 
 try {
+  await initCloudAdmins();
   window.watchSiteMaintenance(window.applySiteMaintenance, function (error) { console.error(error); });
   const current = await new Promise(function (resolve) {
     let stop = function () {};
