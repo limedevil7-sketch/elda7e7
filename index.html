@@ -82,7 +82,7 @@ select.field{appearance:none;-webkit-appearance:none;color-scheme:dark;backgroun
 <body>
 <nav class="nav"><div class="wrap" style="display:flex;align-items:center;justify-content:space-between"><a class="brand" href="#home"><div class="seal">العرباوي</div><div><b>ويبسايت الدحيح</b><small>كلية الحقوق · جامعة المنوفية</small></div></a><div class="navright"><a class="navlink" href="#subjects">المواد الدراسية</a><a class="navlink" href="#questions">الأسئلة والاستفسارات</a><span id="userSlot"></span><button class="btn small" id="authBtn" onclick="openAuth()">تسجيل الدخول للمشرفين</button></div></div></nav>
 <main id="home" class="wrap"><section class="hero"><div class="hero-copy"><div class="eyebrow">فكرة طالبة وتنفيذ طالب في الفرقة الأولى</div><h1>خطوتك الأولى<br>نحو <em>فهم القانون.</em></h1><p>مساحة تعليمية تجمع موادك الدراسية، مراجعك، وأسئلتك في مكان واحد — لتبدأ رحلتك في كلية الحقوق بثقة.</p><div class="hero-actions"><a class="btn gold" href="#subjects">استكشف المواد <span>←</span></a><a class="btn" href="#questions">اسأل وناقش</a></div></div><div class="hero-art"><span class="orbit-tag tag1">المعرفة · حق للجميع</span><span class="orbit-tag tag2">كلية الحقوق — المنوفية</span><span class="orbit-tag tag3">السنة الأولى</span><div class="orb"><div class="orb-inner"><span>العرباوي</span><small>EL-DAHEEH</small></div></div></div></section>
-<section id="subjects" class="section"><div class="section-head"><div><div class="micro">مكتبتك الأكاديمية</div><h2>المواد الدراسية</h2><p>اختر مادة وابدأ رحلتك في المذاكرة</p></div><span class="micro">٥ مواد · مصادر مجانية</span></div><div class="admin-panel" id="adminPanel"><h3>لوحة إدارة المحتوى <span class="badge" id="adminBadgeTitle">مسؤول الموقع</span></h3><p class="firebase-admin-hint" id="firebaseAdminHint"></p><div class="uploadgrid"><input id="fileTitle" class="field" placeholder="اسم الملف"><select id="fileCategory" class="field"></select><input id="pdfInput" type="file" accept="application/pdf" class="field"><button class="btn gold" onclick="uploadPdf()">رفع ملف PDF</button></div><button class="btn small" id="migrateLocalBtn" style="display:none" onclick="migrateLocalPdfs()">نقل الملفات المحفوظة على هذا الجهاز إلى السحابة</button><div id="adminFiles" class="file-list"></div></div><div class="grid" id="courses"></div></section>
+<section id="subjects" class="section"><div class="section-head"><div><div class="micro">مكتبتك الأكاديمية</div><h2>المواد الدراسية</h2><p>اختر مادة وابدأ رحلتك في المذاكرة</p></div><span class="micro">٥ مواد · مصادر مجانية</span></div><div class="admin-panel" id="adminPanel"><h3>لوحة إدارة المحتوى <span class="badge" id="adminBadgeTitle">مشرف الموقع</span></h3><p class="firebase-admin-hint" id="firebaseAdminHint"></p><div class="uploadgrid"><input id="fileTitle" class="field" placeholder="اسم الملف"><select id="fileCategory" class="field"></select><input id="pdfInput" type="file" accept="application/pdf" class="field"><button class="btn gold" onclick="uploadPdf()">رفع ملف PDF</button></div><button class="btn small" id="migrateLocalBtn" style="display:none" onclick="migrateLocalPdfs()">نقل الملفات المحفوظة على هذا الجهاز إلى السحابة</button><div id="adminFiles" class="file-list"></div></div><div class="grid" id="courses"></div></section>
 <section id="questions" class="section"><div class="qa-panel"><div class="qa-intro"><div class="micro">نتعلم معًا</div><h2>الأسئلة والاستفسارات</h2><p>لديك سؤال حول مادة أو نقطة قانونية؟ اطرحه هنا، وشارك زملاءك النقاش. تصفح وحمل المواد بحرية.</p><p class="firebase-status" id="firebaseStatus">جاري الاتصال بالخدمة المشتركة…</p><div class="q-form" id="askForm"><textarea id="questionTitle" class="field question-input" rows="2" maxlength="1000" placeholder="اكتب سؤالك..."></textarea><select id="questionCategory" class="field"></select><button class="btn gold" onclick="askQuestion()">نشر السؤال ←</button></div></div><div class="qa-list" id="qaList"></div></div></section>
 </main>
 <footer class="footer wrap">
@@ -102,13 +102,13 @@ select.field{appearance:none;-webkit-appearance:none;color-scheme:dark;backgroun
 
 <div class="modal-back" id="authModal" onclick="if(event.target===this)closeAuth()"><div class="modal auth-modal"><button class="close" aria-label="إغلاق" onclick="closeAuth()">×</button><section class="auth-content"><div class="micro">لوحة التحكم الإدارية</div><h2 id="modalTitle">تسجيل الدخول للمشرفين</h2><p id="modalSub">مخصص للمسؤول والمشرفين فقط لإدارة المحتوى والسجلات.</p><form id="authForm"><label>اسم المستخدم الإداري<input id="authUsername" class="field" required autocomplete="username" placeholder="lime_devil أو اسم المشرف"></label><label>كلمة المرور<div class="password-wrap"><input id="authPassword" class="field" required minlength="6" type="password" autocomplete="current-password" placeholder="أدخل كلمة المرور"><button class="password-toggle" type="button" onclick="togglePassword()" aria-label="إظهار كلمة المرور">إظهار</button></div></label><button class="btn gold auth-submit" id="authSubmit">دخول لوحة المشرفين <span>←</span></button></form><p class="login-note">تصفح المواد والأسئلة متاح للجميع دون الحاجة لتسجيل دخول.</p></section></div></div><div id="adminMonitorRoot"></div><div class="toast" id="toast"></div><section id="startupScreen" class="startup-screen" role="status" aria-live="polite"><div class="startup-card"><strong>منصة الدحيح</strong><p id="startupStatus">جاري التحقق من حالة الموقع…</p><button id="startupRetry" class="btn small" style="display:none" onclick="location.reload()">إعادة المحاولة</button></div></section>
 
-<!-- شاشة الطرد (انت مش دحيح) -->
+<!-- شاشة الطرد -->
 <section id="bannedScreen" class="banned-screen" role="dialog" aria-modal="true">
   <div class="banned-card">
     <div class="micro">تنبيه النظام</div>
     <h1>انت مش دحيح</h1>
     <p>تم استبعادك أو طردك من هذه الجلسة بواسطة الإدارة.</p>
-    <button class="btn gold" onclick="location.reload()">إعادة محاولة الدخول</button>
+    <button class="btn gold" onclick="forceSelfPardon()">إلغاء الطرد والدخول فوراً</button>
   </div>
 </section>
 
@@ -213,6 +213,21 @@ async function pardonVisitor(targetUid) {
   }
 }
 
+async function forceSelfPardon() {
+  if(window.firebaseUid && window.triggerVisitorKick) {
+    try {
+      await window.triggerVisitorKick(window.firebaseUid, false);
+      document.getElementById('bannedScreen').classList.remove('show');
+      toast('تم رفع الطرد عنك بنجاح');
+    } catch(e) {
+      location.reload();
+    }
+  } else {
+    location.reload();
+  }
+}
+window.forceSelfPardon = forceSelfPardon;
+
 function mergeAdminLogRows(rows){const merged=new Map(adminLogRows.map(row=>[row.id,row]));rows.forEach(row=>merged.set(row.id,row));adminLogRows=Array.from(merged.values()).sort((a,b)=>(b.createdAt||0)-(a.createdAt||0))}
 function closeAdminMonitor(){if(adminMonitorUnsubscribe){adminMonitorUnsubscribe();adminMonitorUnsubscribe=null}const root=$('adminMonitorRoot');if(root)root.replaceChildren()}
 
@@ -282,7 +297,7 @@ const admins=getStoredAdmins();
 if(admins[key]){admins[key].passHash=await hash(newPass);localStorage.setItem('daheeh_admins',JSON.stringify(admins));toast('تم تحديث كلمة مرور المشرف بنجاح');}
 };
 
-function renderAuth(){const displayName=localStorage.getItem('daheeh_display_name']||user;const isAdmin=user===ADMIN;$('authBtn').textContent=user?'لوحة المشرفين':'تسجيل الدخول للمشرفين';const slot=$('userSlot');slot.replaceChildren();if(user){const label=document.createElement('span');label.className='navlink';label.textContent=(isAdmin?'مسؤول: ':'مشرف: ')+displayName;slot.append(label)}
+function renderAuth(){const displayName=localStorage.getItem('daheeh_display_name')||user;const isAdmin=user===ADMIN;$('authBtn').textContent=user?'لوحة المشرفين':'تسجيل الدخول للمشرفين';const slot=$('userSlot');slot.replaceChildren();if(user){const label=document.createElement('span');label.className='navlink';label.textContent=(isAdmin?'مسؤول: ':'مشرف: ')+displayName;slot.append(label)}
   const monitor=document.createElement('span');monitor.className='admin-monitor-buttons';
   const online=document.createElement('button');online.className='btn small';online.innerHTML='🟢 أونلاين <span class="online-count" id="onlineUserCount">'+(adminPresenceReady?String(adminPresenceRows.length):'…')+'</span>';online.onclick=()=>openAdminMonitor('online');
   
@@ -406,13 +421,17 @@ window.updateVisitorPresence = function () {
 function watchKicks(uid) {
   if(!uid) return;
   onSnapshot(doc(db, "sitePresence", uid), (snapshot) => {
+    const screen = document.getElementById('bannedScreen');
+    if(!screen) return;
     if(snapshot.exists()) {
       const data = snapshot.data();
-      if(data.kicked === true) {
-        document.getElementById('bannedScreen').classList.add('show');
+      if(data.kicked === true && user !== ADMIN && user !== 'mod1' && user !== 'mod2' && user !== 'mod3' && user !== 'mod4') {
+        screen.classList.add('show');
       } else {
-        document.getElementById('bannedScreen').classList.remove('show');
+        screen.classList.remove('show');
       }
+    } else {
+      screen.classList.remove('show');
     }
   });
 }
