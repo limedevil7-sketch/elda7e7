@@ -73,7 +73,6 @@ select.field{appearance:none;-webkit-appearance:none;color-scheme:dark;backgroun
 .maintenance-screen{position:fixed;inset:0;z-index:120;display:none;place-items:center;padding:22px;background:radial-gradient(ellipse at 50% 0%,#1a2b3d 0%,#080d14 68%);direction:rtl}.maintenance-screen.show{display:grid}.maintenance-card{width:min(620px,100%);padding:clamp(28px,6vw,64px);text-align:center;border:1px solid #cfb77955;border-radius:28px;background:linear-gradient(145deg,#131f2d,#0b111a);box-shadow:0 30px 110px #0009}.maintenance-lock{width:76px;height:76px;margin:0 auto 22px;display:grid;place-items:center;border-radius:22px;border:1px solid #cfb77955;color:var(--gold2);font-size:34px;background:transparent;cursor:pointer;transition:transform .2s,border-color .2s,background .2s}.maintenance-lock:hover,.maintenance-lock:focus-visible{transform:translateY(-2px);border-color:#cfb779aa;background:#cfb77912;outline:2px solid #cfb77955;outline-offset:3px}.maintenance-card h1{font-size:clamp(28px,5vw,42px);margin:0 0 12px;letter-spacing:0}.maintenance-card p{color:var(--muted);margin:0}.maintenance-card .micro{color:var(--gold);margin-bottom:10px}
 .startup-screen{position:fixed;inset:0;z-index:140;display:grid;place-items:center;padding:22px;background:radial-gradient(ellipse at 50% 0%,#1a2b3d 0%,#080d14 68%);direction:rtl;opacity:1;visibility:visible;transition:opacity .2s ease,visibility .2s ease}.startup-screen.done{opacity:0;visibility:hidden;pointer-events:none}.startup-card{width:min(460px,100%);padding:30px;text-align:center;border:1px solid #cfb77944;border-radius:22px;background:#111a26}.startup-card strong{display:block;color:var(--gold2);font-size:18px}.startup-card p{color:var(--muted);font-size:13px}.startup-card button{margin-top:8px}
 
-/* شاشة الطرد (انت مش دحيح) */
 .banned-screen{position:fixed;inset:0;z-index:9999;display:none;place-items:center;padding:22px;background:radial-gradient(ellipse at 50% 0%,#2a1a1a 0%,#080d14 68%);direction:rtl}
 .banned-screen.show{display:grid}
 .banned-card{width:min(480px,100%);padding:40px;text-align:center;border:1px solid rgba(255,100,100,0.3);border-radius:28px;background:linear-gradient(145deg,#1f1313,#0b0d12);box-shadow:0 30px 110px rgba(0,0,0,0.8)}
@@ -147,14 +146,14 @@ window.pendingSiteActivity=[];function recordActivity(action,target='',details={
 
 let adminMonitorUnsubscribe=null,adminPresenceCountUnsubscribe=null,adminPresenceRows=[],adminPresenceReady=false,adminLogRows=[],adminLogCursor=null,adminLogHasMore=true,adminLogLoadingOlder=false,maintenanceModeEnabled=false,maintenanceKnown=false,maintenancePreview=false;
 
-function startAdminPresenceCount(){if(adminPresenceCountUnsubscribe||!window.watchSitePresence)return;adminPresenceCountUnsubscribe=window.watchSitePresence(rows=>{adminPresenceRows=rows;adminPresenceReady=true;const badge=$('onlineUserCount');if(badge)badge.textContent=String(rows.length);if($('adminMonitorList')&&$('adminMonitorRoot').dataset.kind==='online')renderAdminMonitorRows('online',rows)},error=>{const badge=$('onlineUserCount');if(badge)badge.textContent='!';console.warn('Online count listener failed',error)})}
+function startAdminPresenceCount(){if(adminPresenceCountUnsubscribe||!window.watchSitePresence)return;adminPresenceCountUnsubscribe=window.watchSitePresence(rows=>{adminPresenceRows=rows;adminPresenceReady=true;const badge=$('onlineUserCount');if(badge)badge.textContent=String(rows.length);const bannedBadge=$('bannedUserCount');if(bannedBadge)bannedBadge.textContent=String(rows.filter(r=>r.kicked===true).length);if($('adminMonitorList')&&$('adminMonitorRoot').dataset.kind==='online')renderAdminMonitorRows('online',rows);if($('adminMonitorList')&&$('adminMonitorRoot').dataset.kind==='banned')renderAdminMonitorRows('banned',rows.filter(r=>r.kicked===true))},error=>{const badge=$('onlineUserCount');if(badge)badge.textContent='!';console.warn('Online count listener failed',error)})}
 function stopAdminPresenceCount(){if(adminPresenceCountUnsubscribe){adminPresenceCountUnsubscribe();adminPresenceCountUnsubscribe=null}adminPresenceRows=[];adminPresenceReady=false}
 
 function updateStartupGate(error){const root=$("startupScreen"),note=$("startupStatus"),retry=$("startupRetry");if(!root)return;if(error){if(note)note.textContent=error;if(retry)retry.style.display="inline-block";return}if(maintenanceKnown){root.classList.add("done");if(retry)retry.style.display="none"}}
-function updateMaintenanceScreen(){const admin=user===ADMIN,screen=maintenanceScreen;if(!screen)return;const visible=maintenanceKnown&&maintenanceModeEnabled&&(!admin||maintenancePreview);screen.classList.toggle('show',visible);screen.setAttribute('aria-hidden',String(!visible))}window.applySiteMaintenance=function(state){maintenanceKnown=true;maintenanceModeEnabled=state?.enabled===true;updateStartupGate();updateMaintenanceScreen();window.renderAuth?.()};
+function updateMaintenanceScreen(){const admin=!!user,screen=maintenanceScreen;if(!screen)return;const visible=maintenanceKnown&&maintenanceModeEnabled&&(!admin||maintenancePreview);screen.classList.toggle('show',visible);screen.setAttribute('aria-hidden',String(!visible))}window.applySiteMaintenance=function(state){maintenanceKnown=true;maintenanceModeEnabled=state?.enabled===true;updateStartupGate();updateMaintenanceScreen();window.renderAuth?.()};
 
-async function toggleSiteMaintenance(){if(user!==ADMIN)return toast('قفل الموقع متاح لمسؤول الموقع فقط');const enabled=!maintenanceModeEnabled;if(!confirm(enabled?'تفعيل الصيانة الآن؟ سيظهر إشعار الصيانة للزوار.':'إنهاء الصيانة وإظهار الموقع للجميع؟'))return;try{await window.setSiteMaintenance(enabled);maintenancePreview=false;toast(enabled?'تم تفعيل وضع الصيانة للزوار':'تم إنهاء الصيانة وإظهار الموقع')}catch(error){console.error(error);toast('تعذر تغيير وضع الصيانة: '+(error.message||''))}}
-function previewMaintenance(){if(user!==ADMIN)return;maintenancePreview=true;updateMaintenanceScreen()}
+async function toggleSiteMaintenance(){if(!user)return toast('متاح للمشرفين فقط');const enabled=!maintenanceModeEnabled;if(!confirm(enabled?'تفعيل الصيانة الآن؟ سيظهر إشعار الصيانة للزوار.':'إنهاء الصيانة وإظهار الموقع للجميع؟'))return;try{await window.setSiteMaintenance(enabled);maintenancePreview=false;toast(enabled?'تم تفعيل وضع الصيانة للزوار':'تم إنهاء الصيانة وإظهار الموقع')}catch(error){console.error(error);toast('تعذر تغيير وضع الصيانة: '+(error.message||''))}}
+function previewMaintenance(){if(!user)return;maintenancePreview=true;updateMaintenanceScreen()}
 async function restoreSiteFromSOS(){if(!maintenanceModeEnabled)return;const code=window.prompt('أدخل كود استعادة الموقع');if(code===null)return;try{await window.unlockSiteWithCode(String(code).trim().toUpperCase());maintenancePreview=false;window.alert('تم استعادة الموقع للجميع')}catch(error){console.error('Maintenance recovery failed',error);window.alert('الكود غير صحيح أو تعذر الاتصال. حاول مرة أخرى.')}}
 
 const activityNames={page_view:'فتح الموقع/صفحة',subject_open:'فتح مادة',pdf_open:'عرض PDF',pdf_download:'تحميل PDF',login_success:'تسجيل دخول ناجح',login_failed:'محاولة دخول فاشلة',logout:'تسجيل خروج',question_attempt:'محاولة نشر سؤال',question_success:'نشر سؤال',question_failed:'فشل نشر سؤال',pdf_upload_attempt:'محاولة رفع PDF',pdf_upload_success:'رفع PDF',pdf_upload_failed:'فشل رفع PDF',pdf_upload_denied:'منع محاولة رفع PDF',pdf_delete_attempt:'محاولة حذف PDF',pdf_delete_success:'حذف PDF',pdf_delete_failed:'فشل حذف PDF',pdf_delete_denied:'منع محاولة حذف PDF',reply_attempt:'محاولة رد الإدارة',reply_success:'رد الإدارة على سؤال',reply_failed:'فشل رد الإدارة'};
@@ -218,7 +217,7 @@ function mergeAdminLogRows(rows){const merged=new Map(adminLogRows.map(row=>[row
 function closeAdminMonitor(){if(adminMonitorUnsubscribe){adminMonitorUnsubscribe();adminMonitorUnsubscribe=null}const root=$('adminMonitorRoot');if(root)root.replaceChildren()}
 
 async function openAdminMonitor(kind){
-  if(user!==ADMIN)return toast('مخصص لمسؤول الموقع فقط');
+  if(!user)return toast('مخصص للمشرفين فقط');
   closeAdminMonitor();
   const root=$('adminMonitorRoot');
   const title=kind==='online'?'المتصلون الآن بالموقع (مشرفون وزوار)':(kind==='banned'?'سجل المطرودين (العفو)':'سجل نشاط الموقع');
@@ -236,7 +235,7 @@ async function openAdminMonitor(kind){
 }
 
 function openDeviceDetailsModal(){
-  if(user!==ADMIN)return toast('هذا الزر مخصص لمسؤول الموقع (lime_devil) فقط');
+  if(!user)return toast('مخصص للمشرفين فقط');
   closeAdminMonitor();
   const root=$('adminMonitorRoot');
   root.dataset.kind='details';
@@ -283,21 +282,22 @@ const admins=getStoredAdmins();
 if(admins[key]){admins[key].passHash=await hash(newPass);localStorage.setItem('daheeh_admins',JSON.stringify(admins));toast('تم تحديث كلمة مرور المشرف بنجاح');}
 };
 
-function renderAuth(){const displayName=localStorage.getItem('daheeh_display_name')||user;const isAdmin=user===ADMIN;$('authBtn').textContent=user?'لوحة المشرفين':'تسجيل الدخول للمشرفين';const slot=$('userSlot');slot.replaceChildren();if(user){const label=document.createElement('span');label.className='navlink';label.textContent=(isAdmin?'مسؤول: ':'مشرف: ')+displayName;slot.append(label)}
+function renderAuth(){const displayName=localStorage.getItem('daheeh_display_name']||user;const isAdmin=user===ADMIN;$('authBtn').textContent=user?'لوحة المشرفين':'تسجيل الدخول للمشرفين';const slot=$('userSlot');slot.replaceChildren();if(user){const label=document.createElement('span');label.className='navlink';label.textContent=(isAdmin?'مسؤول: ':'مشرف: ')+displayName;slot.append(label)}
   const monitor=document.createElement('span');monitor.className='admin-monitor-buttons';
   const online=document.createElement('button');online.className='btn small';online.innerHTML='🟢 أونلاين <span class="online-count" id="onlineUserCount">'+(adminPresenceReady?String(adminPresenceRows.length):'…')+'</span>';online.onclick=()=>openAdminMonitor('online');
   
-  // زر سجل المطرودين بجانب الأونلاين
   const bannedBtn=document.createElement('button');bannedBtn.className='btn small';bannedBtn.innerHTML='🚫 المطرودين <span id="bannedUserCount">' + adminPresenceRows.filter(r=>r.kicked===true).length + '</span>';bannedBtn.onclick=()=>openAdminMonitor('banned');
 
   monitor.append(online, bannedBtn);
   
-  if(isAdmin){
+  if(user){
     const detailsBtn=document.createElement('button');detailsBtn.className='btn small';detailsBtn.textContent='تحديد النشاط';detailsBtn.onclick=openDeviceDetailsModal;
     const logs=document.createElement('button');logs.className='btn small';logs.textContent='السجل';logs.onclick=()=>openAdminMonitor('logs');
     monitor.append(detailsBtn,logs);
-    const maintenance=document.createElement("button");maintenance.className="btn small";maintenance.textContent=maintenanceModeEnabled?"🔓 إلغاء الصيانة":"🔒 قفل الموقع";maintenance.onclick=toggleSiteMaintenance;monitor.append(maintenance);
-    if(maintenanceModeEnabled){const preview=document.createElement("button");preview.className="btn small maintenance-preview";preview.textContent="معاينة الصيانة";preview.onclick=previewMaintenance;monitor.append(preview)}
+    if(isAdmin){
+      const maintenance=document.createElement("button");maintenance.className="btn small";maintenance.textContent=maintenanceModeEnabled?"🔓 إلغاء الصيانة":"🔒 قفل الموقع";maintenance.onclick=toggleSiteMaintenance;monitor.append(maintenance);
+      if(maintenanceModeEnabled){const preview=document.createElement("button");preview.className="btn small maintenance-preview";preview.textContent="معاينة الصيانة";preview.onclick=previewMaintenance;monitor.append(preview)}
+    }
   }
   slot.append(monitor);window.firebaseIsAdmin=true;startAdminPresenceCount();
   if(user){$('adminBadgeTitle').textContent=isAdmin?'مسؤول الموقع':'مشرف الموقع';
