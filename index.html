@@ -102,7 +102,7 @@ select.field{appearance:none;-webkit-appearance:none;color-scheme:dark;backgroun
 
 <div class="modal-back" id="authModal" onclick="if(event.target===this)closeAuth()"><div class="modal auth-modal"><button class="close" aria-label="إغلاق" onclick="closeAuth()">×</button><section class="auth-content"><div class="micro">لوحة التحكم الإدارية</div><h2 id="modalTitle">تسجيل الدخول للمشرفين</h2><p id="modalSub">مخصص للمسؤول والمشرفين فقط لإدارة المحتوى والسجلات.</p><form id="authForm"><label>اسم المستخدم الإداري<input id="authUsername" class="field" required autocomplete="username" placeholder="lime_devil أو اسم المشرف"></label><label>كلمة المرور<div class="password-wrap"><input id="authPassword" class="field" required minlength="6" type="password" autocomplete="current-password" placeholder="أدخل كلمة المرور"><button class="password-toggle" type="button" onclick="togglePassword()" aria-label="إظهار كلمة المرور">إظهار</button></div></label><button class="btn gold auth-submit" id="authSubmit">دخول لوحة المشرفين <span>←</span></button></form><p class="login-note">تصفح المواد والأسئلة متاح للجميع دون الحاجة لتسجيل دخول.</p></section></div></div><div id="adminMonitorRoot"></div><div class="toast" id="toast"></div><section id="startupScreen" class="startup-screen" role="status" aria-live="polite"><div class="startup-card"><strong>منصة الدحيح</strong><p id="startupStatus">جاري التحقق من حالة الموقع…</p><button id="startupRetry" class="btn small" style="display:none" onclick="location.reload()">إعادة المحاولة</button></div></section>
 
-<!-- شاشة الطرد للزوار والمشرفين المعزولين -->
+<!-- شاشة الطرد للمشرفين المعزولين والزوار -->
 <section id="bannedScreen" class="banned-screen" role="dialog" aria-modal="true">
   <div class="banned-card">
     <div class="micro">تنبيه النظام</div>
@@ -262,7 +262,13 @@ $('authForm').onsubmit=async e=>{e.preventDefault();const username=$('authUserna
 if(username.toLowerCase()===ADMIN){if(pass==='lime181'||pass==='admin'||pass.length>=6){login(ADMIN,ADMIN);closeAuth();toast('مرحبًا بك، مسؤول الموقع');return}}
 const admins=getStoredAdmins();const targetMod=Object.values(admins).find(m=>m.username.toLowerCase()===username.toLowerCase());
 if(targetMod){
-  if(targetMod.kicked){toast('تم طرد هذا المشرف من الإدارة');return;}
+  if(targetMod.kicked){
+    document.getElementById('bannedTitle').textContent = "تم عزلك من دور المشرف";
+    document.getElementById('bannedText').textContent = "تم استبعادك من صلاحيات الإدارة بواسطة مسؤول الموقع.";
+    document.getElementById('bannedScreen').classList.add('show');
+    closeAuth();
+    return;
+  }
   if(targetMod.passHash&&targetMod.passHash!==await hash(pass)){toast('كلمة المرور غير صحيحة');recordActivity('login_failed',username);return}
   login(targetMod.username,targetMod.username);closeAuth();toast('تم تسجيل دخول المشرف بنجاح');recordActivity('login_success',username);return;
 }
@@ -278,10 +284,10 @@ return `<div style="margin-top:15px;padding-top:15px;border-top:1px solid #fffff
   <h4 style="margin:0 0 8px;font-size:14px;color:var(--gold2)">إدارة حسابات المشرفين (4 مشرفين)</h4>
   <div style="display:grid;gap:8px;">
     ${Object.keys(admins).map(k=>`<div style="display:flex;justify-content:space-between;align-items:center;background:#ffffff05;padding:8px 12px;border-radius:8px;font-size:12px;flex-wrap:wrap;gap:6px;">
-      <span>👤 ${admins[k].username} ${admins[k].kicked?'<span style="color:#ff6b6b">(مطرود)</span>':''}</span>
+      <span>👤 ${admins[k].username} ${admins[k].kicked?'<span style="color:#ff6b6b">(مطرود من الإدارة)</span>':''}</span>
       <div style="display:flex;gap:5px;">
         <button class="btn small" onclick="resetModPassword('${k}')">كلمة السر</button>
-        ${admins[k].kicked?`<button class="btn small gold" onclick="pardonMod('${k}')">عفو</button>`:`<button class="btn small" style="background:rgba(255,107,107,0.15);border-color:#ff6b6b55;color:#ff8888;" onclick="kickMod('${k}')">طرد</button>`}
+        ${admins[k].kicked?`<button class="btn small gold" onclick="pardonMod('${k}')">عفو</button>`:`<button class="btn small" style="background:rgba(255,107,107,0.15);border-color:#ff6b6b55;color:#ff8888;" onclick="kickMod('${k}')">طرد الحساب</button>`}
       </div>
     </div>`).join('')}
   </div>
@@ -300,7 +306,13 @@ window.kickMod=function(key){
   if(admins[key]){
     admins[key].kicked=true;
     localStorage.setItem('daheeh_admins',JSON.stringify(admins));
-    toast('تم طرد المشرف بنجاح');
+    toast('تم طرد حساب المشرف بنجاح');
+    if(user && user.toLowerCase() === admins[key].username.toLowerCase()){
+      logout();
+      document.getElementById('bannedTitle').textContent = "تم عزلك من دور المشرف";
+      document.getElementById('bannedText').textContent = "تم استبعادك من صلاحيات الإدارة بواسطة مسؤول الموقع.";
+      document.getElementById('bannedScreen').classList.add('show');
+    }
     renderAuth();
   }
 };
@@ -310,7 +322,7 @@ window.pardonMod=function(key){
   if(admins[key]){
     admins[key].kicked=false;
     localStorage.setItem('daheeh_admins',JSON.stringify(admins));
-    toast('تم عمل عفو للمشرف بنجاح');
+    toast('تم عمل عفو وإلغاء طرد المشرف بنجاح');
     renderAuth();
   }
 };
@@ -324,8 +336,8 @@ function renderAuth(){
   
   if(user){
     const admins=getStoredAdmins();
-    const currentModData=Object.values(admins).find(m=>m.username.toLowerCase()===user.toLowerCase());
-    if(currentModData && currentModData.kicked){
+    const currentModKey=Object.keys(admins).find(k=>admins[k].username.toLowerCase()===user.toLowerCase());
+    if(currentModKey && admins[currentModKey].kicked){
       logout();
       document.getElementById('bannedTitle').textContent = "تم عزلك من دور المشرف";
       document.getElementById('bannedText').textContent = "تم استبعادك من صلاحيات الإدارة بواسطة مسؤول الموقع.";
