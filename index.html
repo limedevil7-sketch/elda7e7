@@ -102,12 +102,12 @@ select.field{appearance:none;-webkit-appearance:none;color-scheme:dark;backgroun
 
 <div class="modal-back" id="authModal" onclick="if(event.target===this)closeAuth()"><div class="modal auth-modal"><button class="close" aria-label="إغلاق" onclick="closeAuth()">×</button><section class="auth-content"><div class="micro">لوحة التحكم الإدارية</div><h2 id="modalTitle">تسجيل الدخول للمشرفين</h2><p id="modalSub">مخصص للمسؤول والمشرفين فقط لإدارة المحتوى والسجلات.</p><form id="authForm"><label>اسم المستخدم الإداري<input id="authUsername" class="field" required autocomplete="username" placeholder="lime_devil أو اسم المشرف"></label><label>كلمة المرور<div class="password-wrap"><input id="authPassword" class="field" required minlength="6" type="password" autocomplete="current-password" placeholder="أدخل كلمة المرور"><button class="password-toggle" type="button" onclick="togglePassword()" aria-label="إظهار كلمة المرور">إظهار</button></div></label><button class="btn gold auth-submit" id="authSubmit">دخول لوحة المشرفين <span>←</span></button></form><p class="login-note">تصفح المواد والأسئلة متاح للجميع دون الحاجة لتسجيل دخول.</p></section></div></div><div id="adminMonitorRoot"></div><div class="toast" id="toast"></div><section id="startupScreen" class="startup-screen" role="status" aria-live="polite"><div class="startup-card"><strong>منصة الدحيح</strong><p id="startupStatus">جاري التحقق من حالة الموقع…</p><button id="startupRetry" class="btn small" style="display:none" onclick="location.reload()">إعادة المحاولة</button></div></section>
 
-<!-- شاشة الطرد -->
+<!-- شاشة الطرد للزوار والمشرفين المعزولين -->
 <section id="bannedScreen" class="banned-screen" role="dialog" aria-modal="true">
   <div class="banned-card">
     <div class="micro">تنبيه النظام</div>
-    <h1>انت مش دحيح</h1>
-    <p>تم استبعادك أو طردك من هذه الجلسة بواسطة الإدارة.</p>
+    <h1 id="bannedTitle">انت مش دحيح</h1>
+    <p id="bannedText">تم استبعادك أو طردك من هذه الجلسة بواسطة الإدارة.</p>
     <a class="contact-creator" href="https://wa.me/201125316970" target="_blank" rel="noopener noreferrer" style="margin: 0 auto; display: inline-flex;">
       <svg viewBox="0 0 24 24" aria-hidden="true" style="width:18px;height:18px;fill:currentColor;"><path d="M20.52 3.48A11.8 11.8 0 0 0 12.13 0C5.6 0 .28 5.32.28 11.86c0 2.09.55 4.13 1.6 5.93L.18 24l6.36-1.67a11.85 11.85 0 0 0 5.58 1.42h.01c6.53 0 11.85-5.32 11.85-11.86 0-3.17-1.23-6.15-3.46-8.41ZM12.13 21.7a9.83 9.83 0 0 1-5.01-1.37l-.36-.21-3.77.99 1.01-3.68-.24-.38a9.8 9.8 0 0 1-1.5-5.19c0-5.42 4.42-9.84 9.86-9.84a9.77 9.77 0 0 1 6.97 2.89 9.77 9.77 0 0 1 2.88 6.97c0 5.42-4.42 9.83-9.84 9.83Zm5.4-7.37c-.3-.15-1.77-.87-2.04-.97-.27-.1-.47-.15-.67.15-.2.3-.77.97-.94 1.17-.17.2-.35.22-.64.08-.3-.15-1.25-.46-2.38-1.47-.88-.79-1.48-1.77-1.66-2.07-.17-.3-.02-.46.13-.61.13-.13.3-.35.45-.52.15-.17.2-.3.3-.5.1-.2.05-.37-.03-.52-.07-.15-.67-1.62-.92-2.22-.24-.58-.49-.5-.67-.51h-.57c-.2 0-.52.08-.79.37-.27.3-1.04 1.02-1.04 2.49s1.07 2.89 1.22 3.09c.15.2 2.1 3.2 5.08 4.49.71.3 1.27.49 1.7.62.71.23 1.35.2 1.86.12.57-.09 1.77-.72 2.02-1.42.25-.7.25-1.3.17-1.42-.07-.13-.27-.2-.57-.35Z"/></svg>
       <span>تواصل مع العرباوي</span>
@@ -256,12 +256,16 @@ function togglePassword(){const p=$("authPassword"),b=document.querySelector(".p
 
 async function hash(s){const b=await crypto.subtle.digest('SHA-256',new TextEncoder().encode(s));return [...new Uint8Array(b)].map(x=>x.toString(16).padStart(2,'0')).join('')}
 
-function getStoredAdmins(){const defaultAdmins={mod1:{username:'mod1',passHash:''},mod2:{username:'mod2',passHash:''},mod3:{username:'mod3',passHash:''},mod4:{username:'mod4',passHash:''}};try{const saved=localStorage.getItem('daheeh_admins');return saved?JSON.parse(saved):defaultAdmins}catch(e){return defaultAdmins}}
+function getStoredAdmins(){const defaultAdmins={mod1:{username:'mod1',passHash:'',kicked:false},mod2:{username:'mod2',passHash:'',kicked:false},mod3:{username:'mod3',passHash:'',kicked:false},mod4:{username:'mod4',passHash:'',kicked:false}};try{const saved=localStorage.getItem('daheeh_admins');return saved?JSON.parse(saved):defaultAdmins}catch(e){return defaultAdmins}}
 
 $('authForm').onsubmit=async e=>{e.preventDefault();const username=$('authUsername').value.trim(),pass=$('authPassword').value;if(!username||!pass)return;
 if(username.toLowerCase()===ADMIN){if(pass==='lime181'||pass==='admin'||pass.length>=6){login(ADMIN,ADMIN);closeAuth();toast('مرحبًا بك، مسؤول الموقع');return}}
 const admins=getStoredAdmins();const targetMod=Object.values(admins).find(m=>m.username.toLowerCase()===username.toLowerCase());
-if(targetMod){if(targetMod.passHash&&targetMod.passHash!==await hash(pass)){toast('كلمة المرور غير صحيحة');recordActivity('login_failed',username);return}login(targetMod.username,targetMod.username);closeAuth();toast('تم تسجيل دخول المشرف بنجاح');recordActivity('login_success',username);return}
+if(targetMod){
+  if(targetMod.kicked){toast('تم طرد هذا المشرف من الإدارة');return;}
+  if(targetMod.passHash&&targetMod.passHash!==await hash(pass)){toast('كلمة المرور غير صحيحة');recordActivity('login_failed',username);return}
+  login(targetMod.username,targetMod.username);closeAuth();toast('تم تسجيل دخول المشرف بنجاح');recordActivity('login_success',username);return;
+}
 toast('اسم المستخدم أو كلمة المرور غير صحيحة');recordActivity('login_failed',username);};
 
 function login(n,displayName){user=n;localStorage.setItem('daheeh_session',n);localStorage.setItem('daheeh_display_name',displayName||n);window.updateVisitorPresence?.();renderAuth()}
@@ -272,8 +276,14 @@ if(user!==ADMIN)return'';
 const admins=getStoredAdmins();
 return `<div style="margin-top:15px;padding-top:15px;border-top:1px solid #ffffff12;">
   <h4 style="margin:0 0 8px;font-size:14px;color:var(--gold2)">إدارة حسابات المشرفين (4 مشرفين)</h4>
-  <div style="display:grid;gap:6px;">
-    ${Object.keys(admins).map(k=>`<div style="display:flex;justify-content:space-between;align-items:center;background:#ffffff05;padding:8px 12px;border-radius:8px;font-size:12px;"><span>👤 ${admins[k].username}</span><button class="btn small" onclick="resetModPassword('${k}')">تغيير كلمة المرور</button></div>`).join('')}
+  <div style="display:grid;gap:8px;">
+    ${Object.keys(admins).map(k=>`<div style="display:flex;justify-content:space-between;align-items:center;background:#ffffff05;padding:8px 12px;border-radius:8px;font-size:12px;flex-wrap:wrap;gap:6px;">
+      <span>👤 ${admins[k].username} ${admins[k].kicked?'<span style="color:#ff6b6b">(مطرود)</span>':''}</span>
+      <div style="display:flex;gap:5px;">
+        <button class="btn small" onclick="resetModPassword('${k}')">كلمة السر</button>
+        ${admins[k].kicked?`<button class="btn small gold" onclick="pardonMod('${k}')">عفو</button>`:`<button class="btn small" style="background:rgba(255,107,107,0.15);border-color:#ff6b6b55;color:#ff8888;" onclick="kickMod('${k}')">طرد</button>`}
+      </div>
+    </div>`).join('')}
   </div>
 </div>`;
 }
@@ -285,6 +295,26 @@ const admins=getStoredAdmins();
 if(admins[key]){admins[key].passHash=await hash(newPass);localStorage.setItem('daheeh_admins',JSON.stringify(admins));toast('تم تحديث كلمة مرور المشرف بنجاح');}
 };
 
+window.kickMod=function(key){
+  const admins=getStoredAdmins();
+  if(admins[key]){
+    admins[key].kicked=true;
+    localStorage.setItem('daheeh_admins',JSON.stringify(admins));
+    toast('تم طرد المشرف بنجاح');
+    renderAuth();
+  }
+};
+
+window.pardonMod=function(key){
+  const admins=getStoredAdmins();
+  if(admins[key]){
+    admins[key].kicked=false;
+    localStorage.setItem('daheeh_admins',JSON.stringify(admins));
+    toast('تم عمل عفو للمشرف بنجاح');
+    renderAuth();
+  }
+};
+
 function renderAuth(){
   const displayName=localStorage.getItem('daheeh_display_name')||user;
   const isAdmin=user===ADMIN;
@@ -293,6 +323,16 @@ function renderAuth(){
   slot.replaceChildren();
   
   if(user){
+    const admins=getStoredAdmins();
+    const currentModData=Object.values(admins).find(m=>m.username.toLowerCase()===user.toLowerCase());
+    if(currentModData && currentModData.kicked){
+      logout();
+      document.getElementById('bannedTitle').textContent = "تم عزلك من دور المشرف";
+      document.getElementById('bannedText').textContent = "تم استبعادك من صلاحيات الإدارة بواسطة مسؤول الموقع.";
+      document.getElementById('bannedScreen').classList.add('show');
+      return;
+    }
+
     const label=document.createElement('span');
     label.className='navlink';
     label.textContent=(isAdmin?'مسؤول: ':'مشرف: ')+displayName;
@@ -472,7 +512,9 @@ function watchKicks(uid) {
     if(!screen) return;
     if(snapshot.exists()) {
       const data = snapshot.data();
-      if(data.kicked === true && user !== ADMIN && user !== 'mod1' && user !== 'mod2' && user !== 'mod3' && user !== 'mod4') {
+      if(data.kicked === true && user !== ADMIN) {
+        document.getElementById('bannedTitle').textContent = "انت مش دحيح";
+        document.getElementById('bannedText').textContent = "تم استبعادك أو طردك من هذه الجلسة بواسطة الإدارة.";
         screen.classList.add('show');
       } else {
         screen.classList.remove('show');
