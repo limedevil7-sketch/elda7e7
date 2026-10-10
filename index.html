@@ -164,7 +164,7 @@ function renderAdminMonitorRows(kind,rows){
   if(!list)return;
   const shown=kind==='logs'?adminLogRows:rows;
   if(!shown.length){
-    list.innerHTML='<div class="admin-monitor-empty">'+(kind==='online'?'لا يوجد أحد متصل الآن.':'لا توجد أحداث مسجلة بعد.')+'</div>';
+    list.innerHTML='<div class="admin-monitor-empty">'+(kind==='online'?'لا يوجد أحد متصل الآن.':(kind==='banned'?'لا يوجد مستخدمون مطرودون.':'لا توجد أحداث مسجلة بعد.'))+'</div>';
     if(kind==='logs'&&adminLogHasMore)list.innerHTML+='<button class="btn small" style="display:block;margin:12px auto" onclick="loadOlderAdminLogs()">تحميل سجلات أقدم</button>';
     return;
   }
@@ -172,11 +172,18 @@ function renderAdminMonitorRows(kind,rows){
     if(kind==='online'){
       return `<article class="admin-monitor-row">
         <b><i class="online-dot"></i>${esc(r.username||'زائر')}</b>
-        <span><span class="log-device-badge">📱 ${esc(r.device||'جهاز')} · 🌐 ${esc(r.browser||'متصفح')} · 📍 ${esc(r.region||'المنوفية')}</span></span>
+        <span><span class="log-device-badge">📍 العنوان: ${esc(r.region||'المنوفية')} &nbsp;|&nbsp; 📱 الجهاز: ${esc(r.device||'جهاز')} &nbsp;|&nbsp; 🌐 المتصفح: ${esc(r.browser||'متصفح')}</span></span>
         <div style="display:flex;gap:6px;align-items:center;">
           <small>${Math.max(0,Math.floor((Date.now()-r.lastSeen)/1000))} ث</small>
           <button class="btn small" style="background:rgba(255,107,107,0.15);border-color:#ff6b6b55;color:#ff8888;" onclick="kickVisitor('${r.uid}')">طرد</button>
         </div>
+      </article>`;
+    }
+    if(kind==='banned'){
+      return `<article class="admin-monitor-row">
+        <b>🚫 ${esc(r.username||'زائر')}</b>
+        <span><span class="log-device-badge">📍 العنوان: ${esc(r.region||'المنوفية')} &nbsp;|&nbsp; 📱 الجهاز: ${esc(r.device||'جهاز')} &nbsp;|&nbsp; 🌐 المتصفح: ${esc(r.browser||'متصفح')}</span></span>
+        <button class="btn small gold" onclick="pardonVisitor('${r.uid}')">عفو</button>
       </article>`;
     }
     if(kind==='details')return`<article class="admin-monitor-row"><b>${esc(r.actor||'زائر')}</b><span><span class="log-device-badge">📱 ${esc(r.device||'كمبيوتر')} &nbsp;|&nbsp; 🌐 ${esc(r.browser||'Google Chrome')} &nbsp;|&nbsp; 📍 ${esc(r.region||'المنوفية')}</span></span><small>نشط الآن</small></article>`;
@@ -184,11 +191,10 @@ function renderAdminMonitorRows(kind,rows){
   }).join('')+(kind==='logs'&&adminLogHasMore?`<button class="btn small" style="display:block;margin:12px auto" onclick="loadOlderAdminLogs()" ${adminLogLoadingOlder?'disabled':''}>${adminLogLoadingOlder?'جارٍ التحميل…':'تحميل سجلات أقدم'}</button>`:'');
 }
 
-// دالة تنفيذ الطرد بتحديث حقل داخل وثيقة sitePresence لتجنب مشاكل الأذونات
 async function kickVisitor(targetUid) {
   if(!window.triggerVisitorKick) return toast('خاصية الطرد غير متصلة بالسحابة بعد');
   try {
-    await window.triggerVisitorKick(targetUid);
+    await window.triggerVisitorKick(targetUid, true);
     toast('تم طرد المستخدم بنجاح');
   } catch(e) {
     console.error(e);
@@ -196,10 +202,38 @@ async function kickVisitor(targetUid) {
   }
 }
 
+async function pardonVisitor(targetUid) {
+  if(!window.triggerVisitorKick) return toast('خاصية العفو غير متصلة بالسحابة بعد');
+  try {
+    await window.triggerVisitorKick(targetUid, false);
+    toast('تم منح العفو وإلغاء الطرد بنجاح');
+    openAdminMonitor('banned');
+  } catch(e) {
+    console.error(e);
+    toast('تعذر تنفيذ العفو');
+  }
+}
+
 function mergeAdminLogRows(rows){const merged=new Map(adminLogRows.map(row=>[row.id,row]));rows.forEach(row=>merged.set(row.id,row));adminLogRows=Array.from(merged.values()).sort((a,b)=>(b.createdAt||0)-(a.createdAt||0))}
 function closeAdminMonitor(){if(adminMonitorUnsubscribe){adminMonitorUnsubscribe();adminMonitorUnsubscribe=null}const root=$('adminMonitorRoot');if(root)root.replaceChildren()}
 
-async function openAdminMonitor(kind){if(user!==ADMIN)return toast('مخصص لمسؤول الموقع فقط');closeAdminMonitor();const root=$('adminMonitorRoot'),title=kind==='online'?'المتصلون الآن بالموقع (مشرفون وزوار)':'سجل نشاط الموقع';root.dataset.kind=kind;root.innerHTML=`<div class="admin-monitor-backdrop" onclick="if(event.target===this)closeAdminMonitor()"><section class="admin-monitor-card" role="dialog" aria-modal="true"><header class="admin-monitor-head"><h3>${title}</h3><div class="admin-monitor-head-actions">${kind==='logs'?'<button class="btn small" onclick="refreshAdminLogs()">تحديث</button>':''}<button class="btn small" onclick="closeAdminMonitor()" aria-label="إغلاق">إغلاق ×</button></div></header><div class="admin-monitor-list" id="adminMonitorList"><div class="admin-monitor-empty">جارٍ التحميل…</div></div></section></div>`;if(kind==='online'){renderAdminMonitorRows('online',adminPresenceRows);if(!adminPresenceReady){const list=$('adminMonitorList');if(list)list.innerHTML='<div class="admin-monitor-empty">جارٍ جلب المتصلين الآن…</div>'}return}refreshAdminLogs()}
+async function openAdminMonitor(kind){
+  if(user!==ADMIN)return toast('مخصص لمسؤول الموقع فقط');
+  closeAdminMonitor();
+  const root=$('adminMonitorRoot');
+  const title=kind==='online'?'المتصلون الآن بالموقع (مشرفون وزوار)':(kind==='banned'?'سجل المطرودين (العفو)':'سجل نشاط الموقع');
+  root.dataset.kind=kind;
+  root.innerHTML=`<div class="admin-monitor-backdrop" onclick="if(event.target===this)closeAdminMonitor()"><section class="admin-monitor-card" role="dialog" aria-modal="true"><header class="admin-monitor-head"><h3>${title}</h3><div class="admin-monitor-head-actions">${kind==='logs'?'<button class="btn small" onclick="refreshAdminLogs()">تحديث</button>':''}<button class="btn small" onclick="closeAdminMonitor()" aria-label="إغلاق">إغلاق ×</button></div></header><div class="admin-monitor-list" id="adminMonitorList"><div class="admin-monitor-empty">جارٍ التحميل…</div></div></section></div>`;
+  
+  if(kind==='online'){
+    renderAdminMonitorRows('online',adminPresenceRows);
+  } else if(kind==='banned'){
+    const bannedRows = adminPresenceRows.filter(r => r.kicked === true);
+    renderAdminMonitorRows('banned', bannedRows);
+  } else {
+    refreshAdminLogs();
+  }
+}
 
 function openDeviceDetailsModal(){
   if(user!==ADMIN)return toast('هذا الزر مخصص لمسؤول الموقع (lime_devil) فقط');
@@ -252,7 +286,11 @@ if(admins[key]){admins[key].passHash=await hash(newPass);localStorage.setItem('d
 function renderAuth(){const displayName=localStorage.getItem('daheeh_display_name')||user;const isAdmin=user===ADMIN;$('authBtn').textContent=user?'لوحة المشرفين':'تسجيل الدخول للمشرفين';const slot=$('userSlot');slot.replaceChildren();if(user){const label=document.createElement('span');label.className='navlink';label.textContent=(isAdmin?'مسؤول: ':'مشرف: ')+displayName;slot.append(label)}
   const monitor=document.createElement('span');monitor.className='admin-monitor-buttons';
   const online=document.createElement('button');online.className='btn small';online.innerHTML='🟢 أونلاين <span class="online-count" id="onlineUserCount">'+(adminPresenceReady?String(adminPresenceRows.length):'…')+'</span>';online.onclick=()=>openAdminMonitor('online');
-  monitor.append(online);
+  
+  // زر سجل المطرودين بجانب الأونلاين
+  const bannedBtn=document.createElement('button');bannedBtn.className='btn small';bannedBtn.innerHTML='🚫 المطرودين <span id="bannedUserCount">' + adminPresenceRows.filter(r=>r.kicked===true).length + '</span>';bannedBtn.onclick=()=>openAdminMonitor('banned');
+
+  monitor.append(online, bannedBtn);
   
   if(isAdmin){
     const detailsBtn=document.createElement('button');detailsBtn.className='btn small';detailsBtn.textContent='تحديد النشاط';detailsBtn.onclick=openDeviceDetailsModal;
@@ -365,20 +403,23 @@ window.updateVisitorPresence = function () {
   setDoc(doc(db, "sitePresence", uid), { uid, username: name, device: pInfo.device, browser: pInfo.browser, region: pInfo.region, page, lastSeen: serverTimestamp() }, { merge: true }).catch(()=>{});
 };
 
-// الاستماع لتحديثات الطرد داخل وثيقة الحضور الحالية للزائر
 function watchKicks(uid) {
   if(!uid) return;
   onSnapshot(doc(db, "sitePresence", uid), (snapshot) => {
-    if(snapshot.exists() && snapshot.data().kicked === true) {
-      document.getElementById('bannedScreen').classList.add('show');
+    if(snapshot.exists()) {
+      const data = snapshot.data();
+      if(data.kicked === true) {
+        document.getElementById('bannedScreen').classList.add('show');
+      } else {
+        document.getElementById('bannedScreen').classList.remove('show');
+      }
     }
   });
 }
 
-// دالة تفعيل الطرد عبر تحديث حقل kicked داخل جدول الحضور لتفادي أخطاء الأذونات
-window.triggerVisitorKick = async function(targetUid) {
+window.triggerVisitorKick = async function(targetUid, kickState) {
   if(!targetUid) return;
-  await updateDoc(doc(db, "sitePresence", targetUid), { kicked: true });
+  await updateDoc(doc(db, "sitePresence", targetUid), { kicked: !!kickState });
 };
 
 window.writeSiteActivity = function (event) {
@@ -530,7 +571,6 @@ try {
   window.firebaseIsAdmin = true;
   window.renderAuth?.();
   
-  // تفعيل الاستماع لحالة الطرد للزائر الحالي
   watchKicks(firebaseUser.uid);
 
   window.updateVisitorPresence?.();
